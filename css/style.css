@@ -1,0 +1,18 @@
+body{
+    background-color: #FFD84D;
+    font-family: Arial, sans-serif;
+}
+
+nav{
+    background-color: #F7931E;
+    overflow: hidden;
+}
+
+nav a{
+    float: left;
+    display: block;
+    color: #FFC36E;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
