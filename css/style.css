@@ -1,3 +1,9 @@
+body {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
 body{
     background-color: #FFD84D;
     font-family: Arial, sans-serif;
@@ -6,13 +12,103 @@ body{
 nav{
     background-color: #F7931E;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 12px;
 }
 
 nav a{
-    float: left;
-    display: block;
-    color: #FFC36E;
-    text-align: center;
-    padding: 14px 16px;
+    color: #000000;
     text-decoration: none;
+    font-size: 18px;
+    padding: 8px 16px;
+    border-radius: 24px;
+    transition: background 0.3s;
+}
+
+nav a:hover{
+    background-color: #F15A24;
+    color: #FFFFFF;
+}
+
+nav a.active{
+    background-color: #F15A24;
+    color: #FFFFFF;
+}
+h1 {
+    color: #333333;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.question-structure {
+    margin: 24px 0 28px;
+    background: #F9FAFB;
+    border: 8px solid #ffae00b9;
+    border-radius: 36px;
+    padding: 32px 24px;
+    margin: 0 auto;
+    max-width: 1400px;
+    margin-bottom: 96px;
+}
+
+.storyboard-title {
+    font-size: 28px;
+    margin-top: 64px;
+    margin-bottom: 4px;
+    color: #222;
+}
+
+.storyboard-subtitle {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 18px;
+}
+
+.story-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.story-card-large {
+    border: 1px solid #cfcfcf;
+    border-radius: 14px;
+    background: #FFD84D;
+    min-height: 160px;
+    padding: 32px 16px 16px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    align-items: center;
+    gap: 18px;
+}
+
+.story-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #F7931E;
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 12px 0 12px 0;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.story-icon {
+    font-size: 40px;
+    text-align: center;
+    line-height: 1;
+    color: #222;
+    filter: grayscale(100%);
+}
+
+.story-card-large p {
+    font-size: 16px;
+    color: #333;
+    line-height: 1.55;
 }

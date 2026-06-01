@@ -2,10 +2,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const contentContainer = document.getElementById("content-container");
   const navLinks = document.querySelectorAll(".nav-links a");
 
+  const pageRenderers = {
+    "fine_trend.html": renderFineTrendPage,
+    "fine_jurisdiction.html": renderFineJurisdictionPage,
+    "testing_activity.html": renderTestingActivityPage,
+    "drug_outcome.html": renderDrugOutcomePage,
+    "drug_trend.html": renderDrugTrendPage
+  };
+
   function setActiveLink(url) {
     navLinks.forEach(link => {
       link.classList.toggle("active", link.getAttribute("href") === url);
     });
+  }
+
+  function getPageFromQuery() {
+    const params = new URLSearchParams(location.search);
+    return params.get("page") || "home.html";
   }
 
   function loadPageContent(url, pushToHistory = true) {
@@ -28,6 +41,12 @@ document.addEventListener("DOMContentLoaded", () => {
         contentContainer.innerHTML = "";
         contentContainer.appendChild(section.cloneNode(true));
 
+        // Call any page-specific renderer after injecting the content
+        const renderer = pageRenderers[url];
+        if (typeof renderer === "function") {
+          renderer();
+        }
+
         // Re-execute any inline or external scripts from the fetched file
         temp.querySelectorAll("script").forEach(oldScript => {
           const script = document.createElement("script");
@@ -36,9 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
           contentContainer.appendChild(script);
         });
 
-        // Update browser history and URL
+        // Update browser history and URL with query string
         if (pushToHistory) {
-          history.pushState({ url }, document.title, url);
+          history.pushState({ url }, document.title, `?page=${url}`);
         }
 
         // Sync active nav link
@@ -55,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Handle browser back/forward buttons
   window.addEventListener("popstate", e => {
-    const url = e.state?.url ?? "home.html";
+    const url = e.state?.url ?? getPageFromQuery() ?? "home.html";
     loadPageContent(url, false);
   });
 
@@ -70,11 +89,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Load initial page — respect deep-linked URL if present
-  const initialUrl = location.pathname !== "/" && location.pathname !== "/index.html"
-    ? location.pathname
-    : "home.html";
+  // Load initial page — check query string first, otherwise default to home.html
+  const initialUrl = getPageFromQuery();
 
   loadPageContent(initialUrl, false);
-  history.replaceState({ url: initialUrl }, document.title, initialUrl);
+  history.replaceState({ url: initialUrl }, document.title, `?page=${initialUrl}`);
 });
