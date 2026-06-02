@@ -55,6 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
           contentContainer.appendChild(script);
         });
 
+        // Attach navigation to any dashboard buttons loaded in the page
+        attachNavigationHandlers(contentContainer);
+
         // Update browser history and URL with query string
         if (pushToHistory) {
           history.pushState({ url }, document.title, `?page=${url}`);
@@ -78,16 +81,23 @@ document.addEventListener("DOMContentLoaded", () => {
     loadPageContent(url, false);
   });
 
-  // Attach click handlers to nav links
-  navLinks.forEach(link => {
-    link.addEventListener("click", e => {
-      e.preventDefault();
-      const url = link.getAttribute("href");
-      // Don't reload the already-active page
-      if (link.classList.contains("active")) return;
-      loadPageContent(url);
+  function attachNavigationHandlers(container = document) {
+    const links = container.querySelectorAll(".nav-links a, .dashboard-link, .home-return-link");
+    links.forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        const url = link.getAttribute("href");
+        if (!url) return;
+        // Avoid reloading the same page
+        const activeNav = document.querySelector(".nav-links a.active");
+        if (activeNav && activeNav.getAttribute("href") === url) return;
+        loadPageContent(url);
+      });
     });
-  });
+  }
+
+  // Attach initial handlers for navbar links
+  attachNavigationHandlers();
 
   // Load initial page — check query string first, otherwise default to home.html
   const initialUrl = getPageFromQuery();

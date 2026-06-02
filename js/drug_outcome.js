@@ -17,27 +17,71 @@ function renderDrugOutcomePage() {
       const years = [...new Set(rawData.map(d => d.YEAR))].sort((a, b) => a - b);
       const jurisdictions = [...new Set(rawData.map(d => d.JURISDICTION))].sort();
 
+      // Create filter controls
+      const filterDiv = container.append("div")
+        .style("margin-bottom", "16px")
+        .style("padding", "12px 20px")
+        .style("background", "#F9FAFB")
+        .style("border-radius", "8px")
+        .style("display", "flex")
+        .style("gap", "20px")
+        .style("flex-wrap", "wrap")
+        .style("align-items", "center")
+        .style("max-width", "400px")
+        .style("margin", "0 auto 16px auto");
+
+      filterDiv.append("label")
+        .style("font-weight", "600")
+        .style("color", "#374151")
+        .text("Filter:");
+
+      const minYear = d3.min(years);
+      const maxYear = d3.max(years);
+
+      filterDiv.append("label")
+        .style("font-size", "12px")
+        .style("color", "#6B7280")
+        .text("Year Range:");
+
+      const yearRange = filterDiv.append("input")
+        .attr("type", "range")
+        .attr("min", minYear)
+        .attr("max", maxYear)
+        .attr("value", maxYear)
+        .style("width", "120px");
+
+      const yearLabel = filterDiv.append("span")
+        .style("color", "#6B7280")
+        .style("min-width", "60px")
+        .style("font-size", "12px")
+        .text(`${minYear} - ${maxYear}`);
+
+      // Tooltip div
+      const tooltip = container.append("div")
+        .style("position", "fixed")
+        .style("opacity", 0)
+        .style("background", "rgba(0, 0, 0, 0.9)")
+        .style("color", "#fff")
+        .style("padding", "10px 14px")
+        .style("border-radius", "6px")
+        .style("font-size", "13px")
+        .style("font-weight", "500")
+        .style("pointer-events", "none")
+        .style("z-index", "1000")
+        .style("white-space", "nowrap")
+        .style("border-left", "3px solid #EC4899");
+
       // Build lookup map
       const dataMap = new Map();
       rawData.forEach(d => {
         dataMap.set(`${d.YEAR}-${d.JURISDICTION}`, d.Positive_drug_tests);
       });
 
-      // Heatmap dimensions — extra right margin for colour legend
       const heatMargin = { top: 60, right: 120, bottom: 60, left: 70 };
       const heatWidth = width;
       const heatHeight = height;
       const heatInnerWidth = heatWidth - heatMargin.left - heatMargin.right;
       const heatInnerHeight = heatHeight - heatMargin.top - heatMargin.bottom;
-
-      const cellWidth = heatInnerWidth / years.length;
-      const cellHeight = heatInnerHeight / jurisdictions.length;
-
-      const maxVal = d3.max(rawData, d => d.Positive_drug_tests);
-
-      const colorScale = d3.scaleSequential()
-        .domain([0, maxVal])
-        .interpolator(d3.interpolateOranges);
 
       const svg = container.append("svg")
         .attr("width", heatWidth)
@@ -47,34 +91,102 @@ function renderDrugOutcomePage() {
       const inner = svg.append("g")
         .attr("transform", `translate(${heatMargin.left},${heatMargin.top})`);
 
-      // Draw cells
-      years.forEach((year, xi) => {
-        jurisdictions.forEach((jur, yi) => {
-          const val = dataMap.get(`${year}-${jur}`) || 0;
+      function updateChart(filteredYears) {
+        inner.selectAll(".heatmap-cell, .cell-label").remove();
 
-          inner.append("rect")
-            .attr("x", xi * cellWidth)
-            .attr("y", yi * cellHeight)
-            .attr("width", cellWidth - 2)
-            .attr("height", cellHeight - 2)
-            .attr("rx", 3)
-            .attr("fill", val > 0 ? colorScale(val) : "#E5E7EB");
+        const cellWidth = heatInnerWidth / filteredYears.length;
+        const cellHeight = heatInnerHeight / jurisdictions.length;
 
-          // Cell value label (hide if too small to read)
-          if (cellWidth > 35 && cellHeight > 18) {
-            inner.append("text")
-              .attr("x", xi * cellWidth + cellWidth / 2 - 1)
-              .attr("y", yi * cellHeight + cellHeight / 2 + 4)
-              .attr("text-anchor", "middle")
-              .attr("font-size", "10px")
-              .attr("fill", val > maxVal * 0.6 ? "#fff" : "#374151")
-              .text(val > 0 ? d3.format(",")(val) : "–");
-          }
+        const maxVal = d3.max(rawData, d => d.Positive_drug_tests);
+
+        const colorScale = d3.scaleSequential()
+          .domain([0, maxVal])
+          .interpolator(d3.interpolateOranges);
+
+        // Draw cells
+        filteredYears.forEach((year, xi) => {
+          jurisdictions.forEach((jur, yi) => {
+            const val = dataMap.get(`${year}-${jur}`) || 0;
+
+            inner.append("rect")
+              .attr("class", "heatmap-cell")
+              .attr("x", xi * cellWidth)
+              .attr("y", yi * cellHeight)
+              .attr("width", cellWidth - 2)
+              .attr("height", cellHeight - 2)
+              .attr("rx", 3)
+              .attr("fill", val > 0 ? colorScale(val) : "#E5E7EB")
+              .style("cursor", "pointer")
+              .on("mouseover", (event) => {
+                d3.select(event.target).attr("stroke", "#111827").attr("stroke-width", 2);
+                tooltip.style("opacity", 1)
+                  .style("left", (event.pageX + 15) + "px")
+                  .style("top", (event.pageY - 35) + "px")
+                  .html(`<strong>${jur} — ${year}</strong><br/>Positive Tests: ${d3.format(",.0f")(val)}`);
+              })
+              .on("mousemove", (event) => {
+                tooltip.style("left", (event.pageX + 15) + "px")
+                  .style("top", (event.pageY - 35) + "px");
+              })
+              .on("mouseout", (event) => {
+                d3.select(event.target).attr("stroke", "none");
+                tooltip.style("opacity", 0);
+              });
+
+            // Cell value label
+            if (cellWidth > 35 && cellHeight > 18) {
+              inner.append("text")
+                .attr("class", "cell-label")
+                .attr("x", xi * cellWidth + cellWidth / 2 - 1)
+                .attr("y", yi * cellHeight + cellHeight / 2 + 4)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "10px")
+                .attr("fill", val > maxVal * 0.6 ? "#fff" : "#374151")
+                .text(val > 0 ? d3.format(",")(val) : "–");
+            }
+          });
         });
-      });
 
-      // X axis (years)
+        // X axis
+        inner.selectAll(".axis-x").remove();
+        inner.append("g")
+          .attr("class", "axis-x")
+          .attr("transform", `translate(0,${heatInnerHeight})`)
+          .call(
+            d3.axisBottom(
+              d3.scaleOrdinal()
+                .domain(filteredYears)
+                .range(filteredYears.map((_, i) => i * cellWidth + cellWidth / 2))
+            ).tickFormat(d3.format("d"))
+          )
+          .call(g => g.select(".domain").remove());
+
+        // Y axis
+        inner.selectAll(".axis-y").remove();
+        inner.append("g")
+          .attr("class", "axis-y")
+          .call(
+            d3.axisLeft(
+              d3.scaleOrdinal()
+                .domain(jurisdictions)
+                .range(jurisdictions.map((_, i) => i * cellHeight + cellHeight / 2))
+            )
+          )
+          .call(g => g.select(".domain").remove());
+      }
+
+      // Initial draw
+      const maxVal = d3.max(rawData, d => d.Positive_drug_tests);
+      const cellWidth = heatInnerWidth / years.length;
+      const cellHeight = heatInnerHeight / jurisdictions.length;
+
+      const colorScale = d3.scaleSequential()
+        .domain([0, maxVal])
+        .interpolator(d3.interpolateOranges);
+
+      // Initial axes
       inner.append("g")
+        .attr("class", "axis-x")
         .attr("transform", `translate(0,${heatInnerHeight})`)
         .call(
           d3.axisBottom(
@@ -85,8 +197,8 @@ function renderDrugOutcomePage() {
         )
         .call(g => g.select(".domain").remove());
 
-      // Y axis (jurisdictions)
       inner.append("g")
+        .attr("class", "axis-y")
         .call(
           d3.axisLeft(
             d3.scaleOrdinal()
@@ -125,7 +237,7 @@ function renderDrugOutcomePage() {
         .attr("fill", "#111827")
         .text("Positive Drug Tests by Year & Jurisdiction");
 
-      // Colour legend (vertical gradient bar on the right)
+      // Colour legend
       const legendHeight = heatInnerHeight * 0.7;
       const legendX = heatInnerWidth + 20;
       const legendY = (heatInnerHeight - legendHeight) / 2;
@@ -159,6 +271,16 @@ function renderDrugOutcomePage() {
         .attr("transform", `translate(${legendX + 14}, 0)`)
         .call(d3.axisRight(legendScale).ticks(5).tickFormat(d3.format(",d")))
         .call(g => g.select(".domain").remove());
+
+      // Update chart on filter change
+      yearRange.on("input", function() {
+        const val = +this.value;
+        yearLabel.text(`${minYear} - ${val}`);
+        const filtered = years.filter(y => y <= val);
+        updateChart(filtered);
+      });
+
+      updateChart(years);
     })
     .catch(error => {
       console.error("Failed to render drug outcome chart:", error);

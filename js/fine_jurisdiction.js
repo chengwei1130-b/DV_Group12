@@ -1,11 +1,6 @@
 function renderFineJurisdictionPage() {
   const container = d3.select("#fine-jurisdiction-chart");
   container.selectAll("*").remove();
-  container.text("Fine Jurisdiction chart placeholder. Add chart rendering logic here.");
-}
-function renderFineJurisdictionPage() {
-  const container = d3.select("#fine-jurisdiction-chart");
-  container.selectAll("*").remove();
 
   if (!window.appDataPromise) {
     container.text("Loading data...");
@@ -19,7 +14,6 @@ function renderFineJurisdictionPage() {
         return;
       }
 
-      // Aggregate SpeedingFines by JURISDICTION across all years
       const aggregated = d3.rollups(
         rawData,
         v => d3.sum(v, d => d.SpeedingFines),
@@ -46,7 +40,22 @@ function renderFineJurisdictionPage() {
         .nice()
         .range([innerHeight, 0]);
 
-      // Bars
+      // Tooltip styled like Fine Trend chart
+      const tooltip = container.append("div")
+        .style("position", "fixed")
+        .style("opacity", 0)
+        .style("background", "rgba(0, 0, 0, 0.9)")
+        .style("color", "#fff")
+        .style("padding", "10px 14px")
+        .style("border-radius", "6px")
+        .style("font-size", "13px")
+        .style("font-weight", "500")
+        .style("pointer-events", "none")
+        .style("z-index", "1000")
+        .style("white-space", "nowrap")
+        .style("border-left", "3px solid #F97316");
+
+      // Bars with tooltip events
       inner.selectAll(".bar")
         .data(aggregated)
         .enter()
@@ -57,9 +66,23 @@ function renderFineJurisdictionPage() {
         .attr("width", xScale.bandwidth())
         .attr("height", d => innerHeight - yScale(d.SpeedingFines / 1e6))
         .attr("fill", "#F97316")
-        .attr("rx", 3);
+        .attr("rx", 3)
+        .style("cursor", "pointer")
+        .on("mouseover", (event, d) => {
+          tooltip.style("opacity", 1)
+            .style("left", (event.pageX + 15) + "px")
+            .style("top", (event.pageY - 35) + "px")
+            .html(`<strong>${d.JURISDICTION}</strong><br/>Fines: ${d3.format(",.0f")(d.SpeedingFines)}`);
+        })
+        .on("mousemove", (event) => {
+          tooltip.style("left", (event.pageX + 15) + "px")
+                 .style("top", (event.pageY - 35) + "px");
+        })
+        .on("mouseout", () => {
+          tooltip.style("opacity", 0);
+        });
 
-      // Value labels on top of bars
+      // Value labels
       inner.selectAll(".bar-label")
         .data(aggregated)
         .enter()
@@ -80,7 +103,7 @@ function renderFineJurisdictionPage() {
         .attr("transform", `translate(0,${innerHeight})`)
         .call(d3.axisBottom(xScale));
 
-      // X-axis label
+      // Labels and title
       inner.append("text")
         .attr("x", innerWidth / 2)
         .attr("y", innerHeight + 40)
@@ -89,7 +112,6 @@ function renderFineJurisdictionPage() {
         .attr("fill", "#374151")
         .text("Jurisdiction");
 
-      // Y-axis label
       inner.append("text")
         .attr("transform", "rotate(-90)")
         .attr("x", -innerHeight / 2)
@@ -99,7 +121,6 @@ function renderFineJurisdictionPage() {
         .attr("fill", "#374151")
         .text("Speeding Fines (millions)");
 
-      // Chart title
       inner.append("text")
         .attr("x", innerWidth / 2)
         .attr("y", -26)

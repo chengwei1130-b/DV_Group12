@@ -78,12 +78,31 @@ function renderTestingActivityPage() {
         .attr("fill", d => colorScale(d.data.JURISDICTION))
         .attr("stroke", "#fff")
         .attr("stroke-width", 2)
-        .on("mouseover", function(event, d) {
-          d3.select(this).attr("d", arcHover);
-        })
-        .on("mouseout", function(event, d) {
-          d3.select(this).attr("d", arc);
-        });
+      .on("mouseover", function(event, d) {
+        d3.select(this).attr("d", arcHover);
+
+        const percentage =
+          ((d.data.Alcohol_drug_tests / total) * 100).toFixed(1);
+
+        tooltip
+          .style("opacity", 1)
+          .html(`
+            <strong>${d.data.JURISDICTION}</strong><br>
+            Tests: ${d3.format(",")(d.data.Alcohol_drug_tests)}<br>
+            Share: ${percentage}%
+          `);
+      })
+      .on("mousemove", function(event) {
+        tooltip
+          .style("left", (event.pageX + 12) + "px")
+          .style("top", (event.pageY - 28) + "px");
+      })
+      .on("mouseout", function() {
+        d3.select(this).attr("d", arc);
+
+        tooltip
+          .style("opacity", 0);
+      });
 
       // Centre label — total
       arcs.append("text")
@@ -101,35 +120,106 @@ function renderTestingActivityPage() {
         .attr("fill", "#111827")
         .text((total / 1e6).toFixed(1) + "M");
 
-      // Percentage labels on slices (only if slice is large enough)
+      // Percentage labels and leader lines for small slices
+      const THRESHOLD = 4;
+      const pieData = pie(aggregated);
+
+      // Internal labels for large slices
       arcs.selectAll(".slice-label")
-        .data(pie(aggregated))
+        .data(pieData.filter(d => (d.data.Alcohol_drug_tests / total * 100) > THRESHOLD))
         .enter()
         .append("text")
         .attr("class", "slice-label")
         .attr("transform", d => `translate(${arc.centroid(d)})`)
         .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "central")
         .attr("font-size", "11px")
         .attr("fill", "#fff")
         .attr("font-weight", "bold")
-        .text(d => {
-          const pct = (d.data.Alcohol_drug_tests / total * 100);
-          return pct > 4 ? pct.toFixed(1) + "%" : "";
-        });
+        .text(d => (d.data.Alcohol_drug_tests / total * 100).toFixed(1) + "%");
 
-      // Legend below the donut
-      const legendY = cy + outerRadius + 30;
-      const legendItemWidth = 100;
-      const legendsPerRow = Math.floor(donutWidth / legendItemWidth);
+      // External leader lines + labels for small slices
+      const smallSlices = pieData.filter(d => (d.data.Alcohol_drug_tests / total * 100) <= THRESHOLD);
+
+      // Fan label anchors to upper-left — clear of title and legend
+      const labelOffsetsByJurisdiction = {
+        SA:  { tx: -outerRadius - 20, ty: -outerRadius - 50 },
+        NT:  { tx: -outerRadius - 20, ty: -outerRadius - 28 },
+        ACT: { tx: -outerRadius - 20, ty: -outerRadius + 16 },
+        TAS: { tx: -outerRadius - 20, ty: -outerRadius + 38 },
+      };
+
+      smallSlices.forEach((d, i) => {
+        const pct = (d.data.Alcohol_drug_tests / total * 100).toFixed(1);
+        const mid = (d.startAngle + d.endAngle) / 2;
+        const color = colorScale(d.data.JURISDICTION);
+
+        // Point on slice edge
+        const p1x = Math.sin(mid) * (outerRadius + 10);
+        const p1y = -Math.cos(mid) * (outerRadius + 10);
+
+        // Elbow point
+        const elbowR = outerRadius + 38;
+        const p2x = Math.sin(mid) * elbowR;
+        const p2y = -Math.cos(mid) * elbowR;
+
+        // Label anchor
+        const cfg = labelOffsetsByJurisdiction[d.data.JURISDICTION] || { tx: -outerRadius - 20, ty: -outerRadius + 38 + (i - 3) * 22 };
+
+        // Dot on slice
+        arcs.append("circle")
+          .attr("cx", p1x).attr("cy", p1y)
+          .attr("r", 2.5).attr("fill", color);
+
+        // Two-segment polyline: slice → elbow → label
+        arcs.append("polyline")
+          .attr("points", `${p1x},${p1y} ${p2x},${p2y} ${cfg.tx + 55},${cfg.ty}`)
+          .attr("fill", "none")
+          .attr("stroke", color)
+          .attr("stroke-width", 1.3);
+
+        // Label text
+        arcs.append("text")
+          .attr("x", cfg.tx + 53)
+          .attr("y", cfg.ty)
+          .attr("text-anchor", "end")
+          .attr("dominant-baseline", "central")
+          .attr("font-size", "11px")
+          .attr("fill", "#374151")
+          .attr("font-weight", "500")
+          .text(`${d.data.JURISDICTION} — ${pct}%`);
+      });
+
+      // Tooltip
+      const tooltip = d3.select("body")
+        .selectAll(".chart-tooltip")
+        .data([null])
+        .join("div")
+        .attr("class", "chart-tooltip")
+        .style("position", "absolute")
+        .style("background", "rgba(17,24,39,0.95)")
+        .style("color", "#fff")
+        .style("padding", "8px 12px")
+        .style("border-radius", "6px")
+        .style("font-size", "12px")
+        .style("pointer-events", "none")
+        .style("opacity", 0);
+
+
+      // Legend to the right of the donut, vertically centered
+      const legendItemHeight = 22;
+      const legendCols = 1; // single column on the right
+      const legendRows = Math.ceil(aggregated.length / legendCols);
+      const legendX = cx + outerRadius + 20; // 20px gap to the right of the donut
+      const legendY = cy - (legendRows * legendItemHeight) / 2;
 
       const legend = svg.append("g")
-        .attr("transform", `translate(${(donutWidth - legendsPerRow * legendItemWidth) / 2}, ${legendY})`);
+        .attr("transform", `translate(${legendX}, ${legendY})`);
 
       aggregated.forEach((d, i) => {
-        const col = i % legendsPerRow;
-        const row = Math.floor(i / legendsPerRow);
+        const row = i;
         const g = legend.append("g")
-          .attr("transform", `translate(${col * legendItemWidth}, ${row * 22})`);
+          .attr("transform", `translate(0, ${row * legendItemHeight})`);
 
         g.append("rect")
           .attr("width", 12)
