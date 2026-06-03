@@ -61,7 +61,7 @@ function renderFineTrendPage() {
         .style("background-color", "#F3F4F6");
 
       // Tooltip div
-      const tooltip = container.append("div")
+      const tooltip = container.append("div").attr("class","chart-tooltip")
         .style("position", "fixed")
         .style("opacity", 0)
         .style("background", "rgba(0, 0, 0, 0.9)")
