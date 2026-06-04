@@ -117,10 +117,11 @@ function renderFineJurisdictionPage() {
 
       function updateChart(selectedYear, selectedJurisdiction) {
         const aggregated = getAggregatedData(selectedYear, selectedJurisdiction);
+        const sortedAggregated = [...aggregated].sort((a, b) => d3.ascending(a.SpeedingFines, b.SpeedingFines));
         const maxFine = overallMaxFine || 0;
 
         const xScale = d3.scaleBand()
-          .domain(jurisdictions)
+          .domain(sortedAggregated.map(d => d.JURISDICTION))
           .range([0, innerWidth])
           .padding(0.3);
 
@@ -132,7 +133,7 @@ function renderFineJurisdictionPage() {
         inner.selectAll(".axis").remove();
 
         const bars = inner.selectAll(".bar")
-          .data(aggregated, d => d.JURISDICTION);
+          .data(sortedAggregated, d => d.JURISDICTION);
 
         const barEnter = bars.enter()
           .append("rect")
@@ -171,7 +172,7 @@ function renderFineJurisdictionPage() {
           .attr("opacity", 1);
 
         const labels = inner.selectAll(".bar-label")
-          .data(aggregated, d => d.JURISDICTION);
+          .data(sortedAggregated, d => d.JURISDICTION);
 
         const labelEnter = labels.enter()
           .append("text")
