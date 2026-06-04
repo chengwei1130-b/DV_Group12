@@ -14,63 +14,20 @@ function renderTestingActivityPage() {
         return;
       }
 
-      const years = [...new Set(rawData.map(d => d.YEAR))].sort((a, b) => a - b);
-      const jurisdictions = [...new Set(rawData.map(d => d.JURISDICTION))].sort();
-      const minYear = d3.min(years);
-      const maxYear = d3.max(years);
+      // Aggregate Alcohol_drug_tests by JURISDICTION across all years
+      const aggregated = d3.rollups(
+        rawData,
+        v => d3.sum(v, d => d.Alcohol_drug_tests),
+        d => d.JURISDICTION
+      )
+        .map(([jurisdiction, total]) => ({ JURISDICTION: jurisdiction, Alcohol_drug_tests: total }))
+        .sort((a, b) => b.Alcohol_drug_tests - a.Alcohol_drug_tests);
 
-      const filterDiv = container.append("div")
-        .style("margin-bottom", "16px")
-        .style("padding", "12px 20px")
-        .style("background", "#F9FAFB")
-        .style("border-radius", "8px")
-        .style("display", "flex")
-        .style("gap", "16px")
-        .style("align-items", "center")
-        .style("flex-wrap", "wrap")
-        .style("max-width", "780px")
-        .style("margin", "0 auto 16px auto");
+      const total = d3.sum(aggregated, d => d.Alcohol_drug_tests);
 
-      filterDiv.append("label")
-        .style("font-weight", "600")
-        .style("color", "#374151")
-        .text("Jurisdiction:");
-
-      const jurisdictionSelect = filterDiv.append("select")
-        .style("padding", "8px 10px")
-        .style("border-radius", "6px")
-        .style("border", "1px solid #D1D5DB")
-        .style("background", "#fff");
-
-      jurisdictionSelect.append("option")
-        .attr("value", "All")
-        .text("All Jurisdictions");
-
-      jurisdictions.forEach(jurisdiction => {
-        jurisdictionSelect.append("option")
-          .attr("value", jurisdiction)
-          .text(jurisdiction);
-      });
-
-      filterDiv.append("label")
-        .style("font-weight", "600")
-        .style("color", "#374151")
-        .text("Filter by Year:");
-
-      const yearRange = filterDiv.append("input")
-        .attr("type", "range")
-        .attr("min", minYear)
-        .attr("max", maxYear)
-        .attr("value", maxYear)
-        .style("width", "240px");
-
-      const yearLabel = filterDiv.append("span")
-        .style("color", "#6B7280")
-        .style("min-width", "100px")
-        .text(maxYear);
-
+      // Donut dimensions — centre it within the SVG
       const donutWidth = width;
-      const donutHeight = height + 60;
+      const donutHeight = height + 60; // extra height for legend below
       const cx = donutWidth / 2;
       const cy = (height - 40) / 2 + margin.top;
       const outerRadius = Math.min(innerWidth, innerHeight) / 2 - 10;
@@ -78,7 +35,7 @@ function renderTestingActivityPage() {
 
       const colors = ["#F97316", "#3B82F6", "#10B981", "#8B5CF6", "#EF4444", "#F59E0B", "#06B6D4", "#EC4899"];
       const colorScale = d3.scaleOrdinal()
-        .domain(jurisdictions)
+        .domain(aggregated.map(d => d.JURISDICTION))
         .range(colors);
 
       const svg = container.append("svg")
@@ -86,8 +43,8 @@ function renderTestingActivityPage() {
         .attr("height", donutHeight)
         .style("background-color", "#F3F4F6");
 
-      const chartTitle = svg.append("text")
-        .attr("class", "chart-title")
+      // Chart title
+      svg.append("text")
         .attr("x", cx)
         .attr("y", margin.top - 10)
         .attr("text-anchor", "middle")
@@ -111,23 +68,129 @@ function renderTestingActivityPage() {
       const arcs = svg.append("g")
         .attr("transform", `translate(${cx},${cy})`);
 
-      const totalLabel = arcs.append("text")
-        .attr("class", "total-label")
+      // Draw slices
+      arcs.selectAll(".slice")
+        .data(pie(aggregated))
+        .enter()
+        .append("path")
+        .attr("class", "slice")
+        .attr("d", arc)
+        .attr("fill", d => colorScale(d.data.JURISDICTION))
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 2)
+      .on("mouseover", function(event, d) {
+        d3.select(this).attr("d", arcHover);
+
+        const percentage =
+          ((d.data.Alcohol_drug_tests / total) * 100).toFixed(1);
+
+        tooltip
+          .style("opacity", 1)
+          .html(`
+            <strong>${d.data.JURISDICTION}</strong><br>
+            Tests: ${d3.format(",")(d.data.Alcohol_drug_tests)}<br>
+            Share: ${percentage}%
+          `);
+      })
+      .on("mousemove", function(event) {
+        tooltip
+          .style("left", (event.pageX + 12) + "px")
+          .style("top", (event.pageY - 28) + "px");
+      })
+      .on("mouseout", function() {
+        d3.select(this).attr("d", arc);
+
+        tooltip
+          .style("opacity", 0);
+      });
+
+      // Centre label — total
+      arcs.append("text")
         .attr("text-anchor", "middle")
         .attr("dy", "-0.3em")
         .attr("font-size", "13px")
         .attr("fill", "#6B7280")
         .text("Total");
 
-      const totalValue = arcs.append("text")
-        .attr("class", "total-value")
+      arcs.append("text")
         .attr("text-anchor", "middle")
         .attr("dy", "1em")
         .attr("font-size", "15px")
         .attr("font-weight", "bold")
         .attr("fill", "#111827")
-        .text("0M");
+        .text((total / 1e6).toFixed(1) + "M");
 
+      // Percentage labels and leader lines for small slices
+      const THRESHOLD = 4;
+      const pieData = pie(aggregated);
+
+      // Internal labels for large slices
+      arcs.selectAll(".slice-label")
+        .data(pieData.filter(d => (d.data.Alcohol_drug_tests / total * 100) > THRESHOLD))
+        .enter()
+        .append("text")
+        .attr("class", "slice-label")
+        .attr("transform", d => `translate(${arc.centroid(d)})`)
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "central")
+        .attr("font-size", "11px")
+        .attr("fill", "#fff")
+        .attr("font-weight", "bold")
+        .text(d => (d.data.Alcohol_drug_tests / total * 100).toFixed(1) + "%");
+
+      // External leader lines + labels for small slices
+      const smallSlices = pieData.filter(d => (d.data.Alcohol_drug_tests / total * 100) <= THRESHOLD);
+
+      // Fan label anchors to upper-left — clear of title and legend
+      const labelOffsetsByJurisdiction = {
+        SA:  { tx: -outerRadius - 20, ty: -outerRadius - 50 },
+        NT:  { tx: -outerRadius - 20, ty: -outerRadius - 28 },
+        ACT: { tx: -outerRadius - 20, ty: -outerRadius + 16 },
+        TAS: { tx: -outerRadius - 20, ty: -outerRadius + 38 },
+      };
+
+      smallSlices.forEach((d, i) => {
+        const pct = (d.data.Alcohol_drug_tests / total * 100).toFixed(1);
+        const mid = (d.startAngle + d.endAngle) / 2;
+        const color = colorScale(d.data.JURISDICTION);
+
+        // Point on slice edge
+        const p1x = Math.sin(mid) * (outerRadius + 10);
+        const p1y = -Math.cos(mid) * (outerRadius + 10);
+
+        // Elbow point
+        const elbowR = outerRadius + 38;
+        const p2x = Math.sin(mid) * elbowR;
+        const p2y = -Math.cos(mid) * elbowR;
+
+        // Label anchor
+        const cfg = labelOffsetsByJurisdiction[d.data.JURISDICTION] || { tx: -outerRadius - 20, ty: -outerRadius + 38 + (i - 3) * 22 };
+
+        // Dot on slice
+        arcs.append("circle")
+          .attr("cx", p1x).attr("cy", p1y)
+          .attr("r", 2.5).attr("fill", color);
+
+        // Two-segment polyline: slice → elbow → label
+        arcs.append("polyline")
+          .attr("points", `${p1x},${p1y} ${p2x},${p2y} ${cfg.tx + 55},${cfg.ty}`)
+          .attr("fill", "none")
+          .attr("stroke", color)
+          .attr("stroke-width", 1.3);
+
+        // Label text
+        arcs.append("text")
+          .attr("x", cfg.tx + 53)
+          .attr("y", cfg.ty)
+          .attr("text-anchor", "end")
+          .attr("dominant-baseline", "central")
+          .attr("font-size", "11px")
+          .attr("fill", "#374151")
+          .attr("font-weight", "500")
+          .text(`${d.data.JURISDICTION} — ${pct}%`);
+      });
+
+      // Tooltip
       const tooltip = d3.select("body")
         .selectAll(".chart-tooltip")
         .data([null])
@@ -142,191 +205,35 @@ function renderTestingActivityPage() {
         .style("pointer-events", "none")
         .style("opacity", 0);
 
+
+      // Legend to the right of the donut, vertically centered
       const legendItemHeight = 22;
-      const legendCols = 1;
-      const legendRows = jurisdictions.length;
-      const legendX = cx + outerRadius + 20;
+      const legendCols = 1; // single column on the right
+      const legendRows = Math.ceil(aggregated.length / legendCols);
+      const legendX = cx + outerRadius + 20; // 20px gap to the right of the donut
       const legendY = cy - (legendRows * legendItemHeight) / 2;
 
       const legend = svg.append("g")
         .attr("transform", `translate(${legendX}, ${legendY})`);
 
-      jurisdictions.forEach((jurisdiction, i) => {
+      aggregated.forEach((d, i) => {
+        const row = i;
         const g = legend.append("g")
-          .attr("transform", `translate(0, ${i * legendItemHeight})`);
+          .attr("transform", `translate(0, ${row * legendItemHeight})`);
 
         g.append("rect")
           .attr("width", 12)
           .attr("height", 12)
           .attr("rx", 2)
-          .attr("fill", colorScale(jurisdiction));
+          .attr("fill", colorScale(d.JURISDICTION));
 
         g.append("text")
           .attr("x", 18)
           .attr("y", 10)
           .attr("font-size", "12px")
           .attr("fill", "#374151")
-          .text(jurisdiction);
+          .text(d.JURISDICTION);
       });
-
-      function arcTween(d) {
-        const i = d3.interpolate(this._current, d);
-        this._current = i(1);
-        return t => arc(i(t));
-      }
-
-      function updateChart(selectedYear, selectedJurisdiction) {
-        const filteredData = rawData.filter(d => d.YEAR <= selectedYear && (selectedJurisdiction === "All" || d.JURISDICTION === selectedJurisdiction));
-        const aggregated = d3.rollups(
-          filteredData,
-          v => d3.sum(v, d => d.Alcohol_drug_tests),
-          d => d.JURISDICTION
-        )
-          .map(([jurisdiction, total]) => ({ JURISDICTION: jurisdiction, Alcohol_drug_tests: total }))
-          .sort((a, b) => b.Alcohol_drug_tests - a.Alcohol_drug_tests);
-
-        const total = d3.sum(aggregated, d => d.Alcohol_drug_tests);
-        const pieData = pie(aggregated);
-
-        const slice = arcs.selectAll(".slice")
-          .data(pieData, d => d.data.JURISDICTION);
-
-        slice.exit()
-          .transition()
-          .duration(600)
-          .ease(d3.easeCubicOut)
-          .attrTween("d", function(d) {
-            const start = { startAngle: d.startAngle, endAngle: d.endAngle };
-            const end = { startAngle: d.endAngle, endAngle: d.endAngle };
-            const i = d3.interpolate(start, end);
-            return t => arc(i(t));
-          })
-          .style("opacity", 0)
-          .remove();
-
-        const merged = slice.enter()
-          .append("path")
-          .attr("class", "slice")
-          .attr("fill", d => colorScale(d.data.JURISDICTION))
-          .attr("stroke", "#fff")
-          .attr("stroke-width", 2)
-          .each(function(d) {
-            this._current = { startAngle: d.startAngle, endAngle: d.startAngle };
-          })
-          .on("mouseover", function(event, d) {
-            d3.select(this).attr("d", arcHover);
-
-            const percentage = ((d.data.Alcohol_drug_tests / total) * 100).toFixed(1);
-            tooltip
-              .style("opacity", 1)
-              .html(`
-                <strong>${d.data.JURISDICTION}</strong><br>
-                Tests: ${d3.format(",")(d.data.Alcohol_drug_tests)}<br>
-                Share: ${percentage}%
-              `);
-          })
-          .on("mousemove", function(event) {
-            tooltip
-              .style("left", (event.pageX + 12) + "px")
-              .style("top", (event.pageY - 28) + "px");
-          })
-          .on("mouseout", function() {
-            d3.select(this).attr("d", arc);
-            tooltip.style("opacity", 0);
-          })
-          .merge(slice);
-
-        merged.transition()
-          .duration(800)
-          .ease(d3.easeCubicOut)
-          .attrTween("d", arcTween);
-
-        totalValue.text((total / 1e6).toFixed(1) + "M");
-        chartTitle.text(`Alcohol & Drug Tests by Jurisdiction (Up to ${selectedYear}${selectedJurisdiction !== "All" ? ` · ${selectedJurisdiction}` : ""})`);
-
-        arcs.selectAll(".slice-label, .slice-dot, .slice-line, .slice-text").remove();
-
-        const THRESHOLD = 4;
-        const visiblePie = pieData;
-
-        arcs.selectAll(".slice-label")
-          .data(visiblePie.filter(d => (d.data.Alcohol_drug_tests / total * 100) > THRESHOLD))
-          .enter()
-          .append("text")
-          .attr("class", "slice-label")
-          .attr("transform", d => `translate(${arc.centroid(d)})`)
-          .attr("text-anchor", "middle")
-          .attr("dominant-baseline", "central")
-          .attr("font-size", "11px")
-          .attr("fill", "#fff")
-          .attr("font-weight", "bold")
-          .text(d => (d.data.Alcohol_drug_tests / total * 100).toFixed(1) + "%");
-
-        const smallSlices = visiblePie.filter(d => (d.data.Alcohol_drug_tests / total * 100) <= THRESHOLD);
-        const labelOffsetsByJurisdiction = {
-          SA:  { tx: -outerRadius - 20, ty: -outerRadius - 50 },
-          NT:  { tx: -outerRadius - 20, ty: -outerRadius - 28 },
-          ACT: { tx: -outerRadius - 20, ty: -outerRadius + 16 },
-          TAS: { tx: -outerRadius - 20, ty: -outerRadius + 38 },
-        };
-
-        smallSlices.forEach((d, i) => {
-          const pct = (d.data.Alcohol_drug_tests / total * 100).toFixed(1);
-          const mid = (d.startAngle + d.endAngle) / 2;
-          const color = colorScale(d.data.JURISDICTION);
-          const p1x = Math.sin(mid) * (outerRadius + 10);
-          const p1y = -Math.cos(mid) * (outerRadius + 10);
-          const elbowR = outerRadius + 38;
-          const p2x = Math.sin(mid) * elbowR;
-          const p2y = -Math.cos(mid) * elbowR;
-          const cfg = labelOffsetsByJurisdiction[d.data.JURISDICTION] || { tx: -outerRadius - 20, ty: -outerRadius + 38 + (i - 3) * 22 };
-
-          arcs.append("circle")
-            .attr("class", "slice-dot")
-            .attr("cx", p1x).attr("cy", p1y)
-            .attr("r", 2.5)
-            .attr("fill", color);
-
-          arcs.append("polyline")
-            .attr("class", "slice-line")
-            .attr("points", `${p1x},${p1y} ${p2x},${p2y} ${cfg.tx + 55},${cfg.ty}`)
-            .attr("fill", "none")
-            .attr("stroke", color)
-            .attr("stroke-width", 1.3);
-
-          arcs.append("text")
-            .attr("class", "slice-text")
-            .attr("x", cfg.tx + 53)
-            .attr("y", cfg.ty)
-            .attr("text-anchor", "end")
-            .attr("dominant-baseline", "central")
-            .attr("font-size", "11px")
-            .attr("fill", "#374151")
-            .attr("font-weight", "500")
-            .text(`${d.data.JURISDICTION} — ${pct}%`);
-        });
-      }
-
-      function getCurrentFilters() {
-        return {
-          year: +yearRange.property("value"),
-          jurisdiction: jurisdictionSelect.property("value")
-        };
-      }
-
-      yearRange.on("input", function() {
-        const val = +this.value;
-        yearLabel.text(val);
-        const filters = getCurrentFilters();
-        updateChart(filters.year, filters.jurisdiction);
-      });
-
-      jurisdictionSelect.on("change", function() {
-        const filters = getCurrentFilters();
-        updateChart(filters.year, filters.jurisdiction);
-      });
-
-      updateChart(maxYear, "All");
     })
     .catch(error => {
       console.error("Failed to render testing activity chart:", error);
