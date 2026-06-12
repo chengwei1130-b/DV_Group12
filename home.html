@@ -1,27 +1,50 @@
-<section id="home" class="page">
-  <h1>Dashboard</h1>
-  <div class="home-content">
-    <div class="pic-description">
-      <img src="img/speeding_enforcement.png" alt="Speeding enforcement illustration" class="home-image">
-      <div class="home-description">
+<section id="home" class="page home-page">
+  <section class="page-heading">
+    <p class="section-kicker">Australian Road Safety Insights</p>
+    <span class="heading-rule" aria-hidden="true"></span>
+    <h1>Dashboard</h1>
+    <p class="section-subtitle">Explore speeding enforcement insights across Australia.</p>
+  </section>
+
+  <section class="home-showcase-grid">
+    <article class="feature-panel">
+      <div class="feature-image-shell">
+        <img src="img/speeding_enforcement.png" alt="Speeding enforcement illustration" class="home-image">
+      </div>
+
+      <div class="feature-copy-panel">
+        <div class="feature-mini-badge" aria-hidden="true">
+          <span class="ui-icon ui-icon-insights"></span>
+        </div>
         <h2>Australian Road Safety Insights</h2>
         <p>
           This website presents a data story about speeding enforcement patterns in Australia.
-          The dashboard focuses on how speeding fines changed from 2020 to 2024 and how the pattern differs by jurisdiction.
+          The dashboard focuses on how speeding fines changed from 2020 to 2024 and how the
+          pattern differs by jurisdiction.
         </p>
       </div>
-    </div>
+    </article>
 
-    <div class="dashboard-button home-dashboard-cards">
-      <a href="fine_trend.html" class="dashboard-link">
+    <div class="home-card-stack">
+      <a href="fine_trend.html" class="dashboard-link premium-link-card">
+        <div class="link-card-icon" aria-hidden="true">
+          <span class="ui-icon ui-icon-dashboard"></span>
+        </div>
         <h3>Speeding Enforcement Dashboard</h3>
+        <div class="preview-card-rule"></div>
         <p>Explore KPI cards, yearly trend, jurisdiction comparison, and year-by-jurisdiction heatmap.</p>
+        <span class="link-card-button">Go to Dashboard <span aria-hidden="true">→</span></span>
       </a>
 
-      <a href="about_us.html" class="dashboard-link">
+      <a href="about_us.html" class="dashboard-link premium-link-card premium-link-card-outline">
+        <div class="link-card-icon" aria-hidden="true">
+          <span class="ui-icon ui-icon-team"></span>
+        </div>
         <h3>About Us</h3>
+        <div class="preview-card-rule"></div>
         <p>View the group members and read a short summary of the project purpose.</p>
+        <span class="link-card-button ghost-button">Learn More <span aria-hidden="true">→</span></span>
       </a>
     </div>
-  </div>
+  </section>
 </section>

@@ -1,10 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
   const contentContainer = document.getElementById("content-container");
-  const navLinks = document.querySelectorAll(".nav-links a");
+  const navLinks = document.querySelectorAll(".nav-menu a");
 
+  // Add new page renderers here when more dashboard/story pages are added.
   const pageRenderers = {
     "fine_trend.html": renderFineTrendPage
   };
+
+  function getPageFromQuery() {
+    const params = new URLSearchParams(location.search);
+    return params.get("page") || "home.html";
+  }
 
   function setActiveLink(url) {
     navLinks.forEach(link => {
@@ -12,34 +18,28 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function getPageFromQuery() {
-    const params = new URLSearchParams(location.search);
-    return params.get("page") || "home.html";
-  }
-
   function loadPageContent(url, pushToHistory = true) {
     fetch(url)
-      .then(res => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        return res.text();
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.text();
       })
       .then(html => {
         const temp = document.createElement("div");
         temp.innerHTML = html;
 
+        // Every page file is a fragment. Only the <section class="page"> is injected.
         const section = temp.querySelector("section.page");
         if (!section) {
           contentContainer.innerHTML = `<p>Error: No section.page found in ${url}</p>`;
           return;
         }
 
-        contentContainer.innerHTML = "";
-        contentContainer.appendChild(section.cloneNode(true));
+        contentContainer.replaceChildren(section.cloneNode(true));
 
+        // Render D3 charts only after the fragment is available in the DOM.
         const renderer = pageRenderers[url];
-        if (typeof renderer === "function") {
-          renderer();
-        }
+        if (typeof renderer === "function") renderer();
 
         attachNavigationHandlers(contentContainer);
 
@@ -50,32 +50,38 @@ document.addEventListener("DOMContentLoaded", () => {
         setActiveLink(url);
         window.scrollTo(0, 0);
       })
-      .catch(err => {
-        console.error("Error loading page:", err);
-        contentContainer.innerHTML = `<p>Error loading page: ${err.message}</p>`;
+      .catch(error => {
+        console.error("Error loading page:", error);
+        contentContainer.innerHTML = `<p>Error loading page: ${error.message}</p>`;
       });
   }
 
-  window.addEventListener("popstate", e => {
-    const url = e.state?.url ?? getPageFromQuery() ?? "home.html";
-    loadPageContent(url, false);
-  });
-
   function attachNavigationHandlers(container = document) {
-    const links = container.querySelectorAll(".nav-links a, .dashboard-link, .home-return-link");
+    const links = container.querySelectorAll(".nav-menu a, .site-brand, .dashboard-link, .floating-home");
+
     links.forEach(link => {
-      link.addEventListener("click", e => {
-        e.preventDefault();
+      link.addEventListener("click", event => {
+        event.preventDefault();
+
         const url = link.getAttribute("href");
         if (!url) return;
 
-        const activeNav = document.querySelector(".nav-links a.active");
+        const activeNav = document.querySelector(".nav-menu a.active");
         if (activeNav && activeNav.getAttribute("href") === url) return;
 
         loadPageContent(url);
       });
     });
   }
+
+  window.addEventListener("popstate", event => {
+    const url = event.state?.url ?? getPageFromQuery();
+    loadPageContent(url, false);
+  });
+
+  document.querySelector(".floating-top")?.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
 
   attachNavigationHandlers();
 

@@ -1,27 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speeding Enforcement and Road Safety Trends in Australia</title>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Australian Road Safety Insights</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-    <header>
-        <nav class="nav-links">
-            <a href="home.html">Home</a>
-            <a href="fine_trend.html">Dashboard</a>
-            <a href="about_us.html">About Us</a>
-        </nav>
-    </header>
+  <header class="site-header">
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="home.html" class="site-brand" aria-label="Go to home page">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-copy">
+          <strong>Australian Road Safety</strong>
+          <small>Insights</small>
+        </span>
+      </a>
 
-    <main>
-        <section id="content-container"></section>
-    </main>
+      <div class="nav-menu">
+        <a href="home.html">
+          <span class="nav-icon nav-home-icon" aria-hidden="true"></span>
+          <span class="nav-label">Home</span>
+        </a>
+        <a href="fine_trend.html">
+          <span class="nav-icon nav-dashboard-icon" aria-hidden="true"></span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="about_us.html">
+          <span class="nav-icon nav-about-icon" aria-hidden="true"></span>
+          <span class="nav-label">About Us</span>
+        </a>
+      </div>
 
-    <script src="js/script.js"></script>
-    <script src="js/fine_trend.js"></script>
-    <script src="js/accessibility.js"></script>
+      <div class="nav-spacer" aria-hidden="true"></div>
+    </nav>
+  </header>
+
+  <!-- Single-page application placeholder.
+       js/script.js fetches section.page from each HTML fragment and injects it here. -->
+  <main>
+    <section id="content-container"></section>
+  </main>
+
+  <div class="floating-actions" aria-label="Quick navigation">
+    <a href="home.html" class="float-action floating-home" aria-label="Back to homepage" data-tooltip="Back to homepage">
+      <span class="float-icon" aria-hidden="true"></span>
+    </a>
+    <button type="button" class="float-action floating-top" aria-label="Back to top" data-tooltip="Back to top">
+      <span class="float-icon" aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <script src="js/script.js"></script>
+  <script src="js/load_data.js"></script>
+  <script src="js/fine_trend.js"></script>
+  <script src="js/accessibility.js"></script>
 </body>
 </html>

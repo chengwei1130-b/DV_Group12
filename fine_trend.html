@@ -1,18 +1,12 @@
 <section id="fine-trend" class="page speeding-dashboard-page">
-  <a href="home.html" class="home-return-link">
-    <img src="img/return.png" alt="Home">
-  </a>
-
   <div class="story-dashboard">
-    <section class="story-hero no-hero-visual">
-      <div>
-        <p class="eyebrow">Australian Road Safety Insights</p>
-        <h1>Speeding Enforcement Dashboard</h1>
-        <p class="story-lede">
-          A guided data story showing how speeding fines changed from 2020 to 2024,
-          where fine records were concentrated, and how the pattern differed by jurisdiction.
-        </p>
-      </div>
+    <section class="page-heading dashboard-heading">
+      <p class="section-kicker">Australian Road Safety Insights</p>
+      <span class="heading-rule" aria-hidden="true"></span>
+      <h1>Speeding Enforcement Story</h1>
+      <p class="section-subtitle story-lede">
+        A guided data story showing how speeding fines changed from 2020 to 2024 across Australian jurisdictions.
+      </p>
     </section>
 
     <section class="filter-panel" aria-label="Dashboard filters">
@@ -35,8 +29,8 @@
     </section>
 
     <section class="kpi-grid" aria-label="Key speeding enforcement summary">
-      <article class="kpi-card kpi-orange">
-        <div class="kpi-icon">💰</div>
+      <article class="kpi-card">
+        <div class="kpi-icon" aria-hidden="true">💰</div>
         <div>
           <p>Total speeding fines</p>
           <h2 id="kpiTotalFines">--</h2>
@@ -44,8 +38,8 @@
         </div>
       </article>
 
-      <article class="kpi-card kpi-green">
-        <div class="kpi-icon">📈</div>
+      <article class="kpi-card">
+        <div class="kpi-icon" aria-hidden="true">📈</div>
         <div>
           <p>Peak year</p>
           <h2 id="kpiPeakYear">--</h2>
@@ -53,8 +47,8 @@
         </div>
       </article>
 
-      <article class="kpi-card kpi-purple">
-        <div class="kpi-icon">🗺️</div>
+      <article class="kpi-card">
+        <div class="kpi-icon" aria-hidden="true">🗺️</div>
         <div>
           <p>Highest jurisdiction</p>
           <h2 id="kpiTopJurisdiction">--</h2>
@@ -62,8 +56,8 @@
         </div>
       </article>
 
-      <article class="kpi-card kpi-red">
-        <div class="kpi-icon">↘</div>
+      <article class="kpi-card">
+        <div class="kpi-icon" aria-hidden="true">↘</div>
         <div>
           <p>Change since peak</p>
           <h2 id="kpiChange">--</h2>
@@ -85,7 +79,7 @@
         <svg id="lineChart" width="760" height="430" viewBox="0 0 760 430" role="img" aria-label="Speeding fines over time line chart"></svg>
 
         <div class="insight-box">
-          <span>↗</span>
+          <span aria-hidden="true">↗</span>
           <p id="lineInsight">Loading insight...</p>
         </div>
       </article>
@@ -102,7 +96,7 @@
         <svg id="lollipopChart" width="760" height="430" viewBox="0 0 760 430" role="img" aria-label="Speeding fines by jurisdiction lollipop chart"></svg>
 
         <div class="insight-box">
-          <span>👥</span>
+          <span aria-hidden="true">👥</span>
           <p id="jurisdictionInsight">Loading insight...</p>
         </div>
       </article>
@@ -117,75 +111,18 @@
         <button class="info-dot" type="button" aria-label="Heatmap information" data-info="Heatmap combines the time trend and jurisdiction comparison in one view.">i</button>
       </div>
 
-      <div id="heatmapChart" class="html-heatmap" role="img" aria-label="Year by jurisdiction speeding fines heatmap">
-        <div class="heatmap-table" style="grid-template-columns: 92px repeat(5, minmax(86px, 1fr));">
-        <div class="heatmap-corner">Jurisdiction</div>
-        <div class="heatmap-year">2020</div>
-        <div class="heatmap-year">2021</div>
-        <div class="heatmap-year">2022</div>
-        <div class="heatmap-year">2023</div>
-        <div class="heatmap-year">2024</div>
-        <div class="heatmap-jurisdiction">VIC</div>
-        <div class="heatmap-cell" style="background-color:#F69061;color:#ffffff;"><strong>0.94M</strong></div>
-        <div class="heatmap-cell" style="background-color:#F3713E;color:#ffffff;"><strong>1.23M</strong></div>
-        <div class="heatmap-cell" style="background-color:#F2622D;color:#ffffff;"><strong>1.38M</strong></div>
-        <div class="heatmap-cell" style="background-color:#F26A36;color:#ffffff;"><strong>1.3M</strong></div>
-        <div class="heatmap-cell" style="background-color:#F8A275;color:#222222;"><strong>0.77M</strong></div>
-        <div class="heatmap-jurisdiction">NSW</div>
-        <div class="heatmap-cell" style="background-color:#F69364;color:#ffffff;"><strong>0.92M</strong></div>
-        <div class="heatmap-cell" style="background-color:#F15A24;color:#ffffff;"><strong>1.45M</strong></div>
-        <div class="heatmap-cell" style="background-color:#F37340;color:#ffffff;"><strong>1.22M</strong></div>
-        <div class="heatmap-cell" style="background-color:#F79668;color:#ffffff;"><strong>0.88M</strong></div>
-        <div class="heatmap-cell" style="background-color:#F69465;color:#ffffff;"><strong>0.91M</strong></div>
-        <div class="heatmap-jurisdiction">QLD</div>
-        <div class="heatmap-cell" style="background-color:#F69365;color:#ffffff;"><strong>0.91M</strong></div>
-        <div class="heatmap-cell" style="background-color:#F68C5C;color:#ffffff;"><strong>0.98M</strong></div>
-        <div class="heatmap-cell" style="background-color:#F79A6C;color:#ffffff;"><strong>0.85M</strong></div>
-        <div class="heatmap-cell" style="background-color:#F7986B;color:#ffffff;"><strong>0.86M</strong></div>
-        <div class="heatmap-cell" style="background-color:#F79F72;color:#222222;"><strong>0.79M</strong></div>
-        <div class="heatmap-jurisdiction">WA</div>
-        <div class="heatmap-cell" style="background-color:#F8AA7E;color:#222222;"><strong>0.7M</strong></div>
-        <div class="heatmap-cell" style="background-color:#F79E71;color:#ffffff;"><strong>0.81M</strong></div>
-        <div class="heatmap-cell" style="background-color:#F79A6D;color:#ffffff;"><strong>0.84M</strong></div>
-        <div class="heatmap-cell" style="background-color:#F79E71;color:#ffffff;"><strong>0.81M</strong></div>
-        <div class="heatmap-cell" style="background-color:#FAC199;color:#222222;"><strong>0.47M</strong></div>
-        <div class="heatmap-jurisdiction">SA</div>
-        <div class="heatmap-cell" style="background-color:#FDE1BC;color:#222222;"><strong>0.18M</strong></div>
-        <div class="heatmap-cell" style="background-color:#FDDEB9;color:#222222;"><strong>0.2M</strong></div>
-        <div class="heatmap-cell" style="background-color:#FDDFBB;color:#222222;"><strong>0.19M</strong></div>
-        <div class="heatmap-cell" style="background-color:#FDDEB9;color:#222222;"><strong>0.2M</strong></div>
-        <div class="heatmap-cell" style="background-color:#FDE0BB;color:#222222;"><strong>0.18M</strong></div>
-        <div class="heatmap-jurisdiction">ACT</div>
-        <div class="heatmap-cell" style="background-color:#FEEDCA;color:#222222;"><strong>0.06M</strong></div>
-        <div class="heatmap-cell" style="background-color:#FEE7C3;color:#222222;"><strong>0.11M</strong></div>
-        <div class="heatmap-cell heatmap-missing">N/A</div>
-        <div class="heatmap-cell" style="background-color:#FEEBC8;color:#222222;"><strong>0.07M</strong></div>
-        <div class="heatmap-cell" style="background-color:#FEECC9;color:#222222;"><strong>0.07M</strong></div>
-        <div class="heatmap-jurisdiction">TAS</div>
-        <div class="heatmap-cell" style="background-color:#FFEFCC;color:#222222;"><strong>0.04M</strong></div>
-        <div class="heatmap-cell" style="background-color:#FFEFCC;color:#222222;"><strong>0.04M</strong></div>
-        <div class="heatmap-cell" style="background-color:#FFEECC;color:#222222;"><strong>0.04M</strong></div>
-        <div class="heatmap-cell" style="background-color:#FEECC9;color:#222222;"><strong>0.07M</strong></div>
-        <div class="heatmap-cell" style="background-color:#FEEBC8;color:#222222;"><strong>0.07M</strong></div>
-        <div class="heatmap-jurisdiction">NT</div>
-        <div class="heatmap-cell" style="background-color:#FFEFCC;color:#222222;"><strong>0.04M</strong></div>
-        <div class="heatmap-cell" style="background-color:#FFEFCC;color:#222222;"><strong>0.04M</strong></div>
-        <div class="heatmap-cell" style="background-color:#FFEFCD;color:#222222;"><strong>0.03M</strong></div>
-        <div class="heatmap-cell" style="background-color:#FFEECC;color:#222222;"><strong>0.04M</strong></div>
-        <div class="heatmap-cell" style="background-color:#FFEECB;color:#222222;"><strong>0.05M</strong></div>
-        </div>
-        <div class="heatmap-legend"><span>Lower</span><div class="heatmap-legend-bar"></div><span>Higher</span></div>
-      </div>
+      <!-- Heatmap placeholder. The ID is kept from the original drug outcome chart pattern, but the D3 logic now lives in js/fine_trend.js. -->
+      <div id="drug-outcome-chart" class="fine-trend-heatmap-svg" role="img" aria-label="Year by jurisdiction speeding fines heatmap"></div>
 
       <div class="insight-box">
-        <span>▦</span>
+        <span aria-hidden="true">▦</span>
         <p id="heatmapInsight">Loading insight...</p>
       </div>
     </section>
 
     <section class="story-summary">
       <div class="summary-title">
-        <div class="summary-icon">💡</div>
+        <div class="summary-icon" aria-hidden="true">💡</div>
         <div>
           <h2>Story summary</h2>
           <p>Key takeaways from the speeding enforcement data</p>
@@ -204,10 +141,7 @@
         <strong>Note:</strong> Data shows recorded enforcement activity, not direct proof of actual driver behaviour.
         Higher values may reflect enforcement intensity, population size, reporting practices, or testing activity.
       </p>
-
-      <p>
-        <strong>Source:</strong> Australian road safety enforcement data, final processed dataset (2020–2024).
-      </p>
+      <p><strong>Source:</strong> Australian road safety enforcement data, final processed dataset (2020–2024).</p>
     </footer>
   </div>
 
