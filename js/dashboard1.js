@@ -16,22 +16,50 @@ const formatPercent   = value => `${value >= 0 ? "+" : ""}${d3.format(".1f")(val
 let speedingTooltip = null;
 
 function getTooltip() {
-  if (!speedingTooltip || speedingTooltip.empty()) {
-    speedingTooltip = d3.select("#speedingTooltip");
+  // Use a body-level tooltip so it is not affected by dashboard card layout,
+  // SVG stacking, or any hidden tooltip element inside the injected section.
+  let tooltip = d3.select("#globalChartTooltip");
+
+  if (tooltip.empty()) {
+    tooltip = d3.select("body")
+      .append("div")
+      .attr("id", "globalChartTooltip")
+      .attr("class", "global-chart-tooltip");
   }
-  return speedingTooltip;
+
+  speedingTooltip = tooltip;
+  return tooltip;
 }
 
 function showTooltip(event, html) {
   getTooltip()
+    .classed("info-tooltip", false)
+    .style("display", "block")
     .style("opacity", 1)
     .html(html)
-    .style("left", `${event.clientX + 14}px`)
-    .style("top",  `${event.clientY - 28}px`);
+    .style("left", `${event.clientX + 16}px`)
+    .style("top",  `${event.clientY - 32}px`);
 }
 
 function hideTooltip() {
-  getTooltip().style("opacity", 0);
+  getTooltip()
+    .classed("info-tooltip", false)
+    .style("opacity", 0)
+    .style("display", "none");
+}
+
+function showInfoTooltip(button, message) {
+  if (!message) return;
+
+  const rect = button.getBoundingClientRect();
+
+  getTooltip()
+    .classed("info-tooltip", true)
+    .style("display", "block")
+    .style("opacity", 1)
+    .html(message)
+    .style("left", `${rect.left + rect.width / 2}px`)
+    .style("top", `${rect.top - 12}px`);
 }
 
 function sumBy(data, groupKey, valueKey) {
@@ -168,7 +196,7 @@ function drawLineChart(data) {
     .attr("fill", "none").attr("stroke", "#F15A24").attr("stroke-width", 3).transition(t).attr("d", line);
 
   const points = root.selectAll("circle.line-point").data(values, d => d.year);
-  points.enter().append("circle").attr("class", "line-point").attr("r", 0)
+  points.enter().append("circle").attr("class", "line-point chart-hover-target").attr("r", 0)
     .attr("fill", "#F7931E").attr("stroke", "#ffffff").attr("stroke-width", 2)
     .on("mousemove", (event, d) => showTooltip(event, `<strong>${d.year}</strong><br>Speeding fines: ${formatNumber(d.value)}<br>${formatMillions(d.value)}`))
     .on("mouseleave", hideTooltip)
@@ -181,6 +209,36 @@ function drawLineChart(data) {
     .merge(labels).text(d => formatMillions(d.value)).transition(t).delay((_, i) => i * CHART_STAGGER_DELAY)
     .attr("x", d => x(d.year)).attr("y", d => y(d.value) - 16).style("opacity", 1);
   labels.exit().transition(t).style("opacity", 0).remove();
+
+  // Tooltip hover zones: wider invisible areas make the line chart tooltip easy to trigger.
+  // This is interaction-only; data, scales, filters, and calculations are unchanged.
+  const lineHoverWidth = Math.max(44, width / Math.max(1, values.length));
+  root.selectAll("rect.line-hover-zone").data(values, d => d.year).join(
+    enter => enter.append("rect")
+      .attr("class", "line-hover-zone chart-hover-target")
+      .attr("x", d => x(d.year) - lineHoverWidth / 2)
+      .attr("y", 0)
+      .attr("width", lineHoverWidth)
+      .attr("height", height)
+      .attr("fill", "#000").attr("fill-opacity", 0.001)
+      .style("pointer-events", "all")
+      .style("cursor", "pointer")
+      .on("mousemove", (event, d) => {
+        showTooltip(event, `<strong>Year: ${d.year}</strong><br>Fines: ${formatNumber(d.value)}<br>${formatMillions(d.value)}`);
+      })
+      .on("mouseleave", hideTooltip),
+    update => update
+      .on("mousemove", (event, d) => {
+        showTooltip(event, `<strong>Year: ${d.year}</strong><br>Fines: ${formatNumber(d.value)}<br>${formatMillions(d.value)}`);
+      })
+      .on("mouseleave", hideTooltip)
+      .call(update => update.transition(t)
+        .attr("x", d => x(d.year) - lineHoverWidth / 2)
+        .attr("width", lineHoverWidth)
+        .attr("height", height)),
+    exit => exit.remove()
+  );
+
 }
 
 function drawLollipopChart(data) {
@@ -229,7 +287,7 @@ function drawLollipopChart(data) {
   stems.exit().transition(t).attr("y2", height).style("opacity", 0).remove();
 
   const dots = root.selectAll("circle.lollipop-dot").data(values, d => d.jurisdiction);
-  dots.enter().append("circle").attr("class", "lollipop-dot").attr("r", 0)
+  dots.enter().append("circle").attr("class", "lollipop-dot chart-hover-target").attr("r", 0)
     .attr("fill", "#F7931E").attr("stroke", "#ffffff").attr("stroke-width", 2)
     .on("mousemove", (event, d) => showTooltip(event, `<strong>${d.jurisdiction}</strong><br>Speeding fines: ${formatNumber(d.value)}<br>${formatMillions(d.value)}`))
     .on("mouseleave", hideTooltip)
@@ -242,11 +300,43 @@ function drawLollipopChart(data) {
     .merge(labels).text(d => formatMillions(d.value)).transition(t).delay((_, i) => i * CHART_STAGGER_DELAY)
     .attr("x", d => x(d.jurisdiction) + x.bandwidth() / 2).attr("y", d => y(d.value) - 14).style("opacity", 1);
   labels.exit().transition(t).style("opacity", 0).remove();
+
+  // Tooltip hover zones: wider invisible bands make each jurisdiction easy to inspect.
+  // This is interaction-only; data, scales, filters, and calculations are unchanged.
+  root.selectAll("rect.lollipop-hover-zone").data(values, d => d.jurisdiction).join(
+    enter => enter.append("rect")
+      .attr("class", "lollipop-hover-zone chart-hover-target")
+      .attr("x", d => x(d.jurisdiction))
+      .attr("y", 0)
+      .attr("width", x.bandwidth())
+      .attr("height", height)
+      .attr("fill", "#000").attr("fill-opacity", 0.001)
+      .style("pointer-events", "all")
+      .style("cursor", "pointer")
+      .on("mousemove", (event, d) => {
+        showTooltip(event, `<strong>${d.jurisdiction}</strong><br>Fines: ${formatNumber(d.value)}<br>${formatMillions(d.value)}`);
+      })
+      .on("mouseleave", hideTooltip),
+    update => update
+      .on("mousemove", (event, d) => {
+        showTooltip(event, `<strong>${d.jurisdiction}</strong><br>Fines: ${formatNumber(d.value)}<br>${formatMillions(d.value)}`);
+      })
+      .on("mouseleave", hideTooltip)
+      .call(update => update.transition(t)
+        .attr("x", d => x(d.jurisdiction))
+        .attr("width", x.bandwidth())
+        .attr("height", height)),
+    exit => exit.remove()
+  );
+
 }
+
+
 
 function drawHeatmap(data, allData) {
   const dash = d3.select("#dashboard1");
   if (dash.empty()) return;
+
 
   let container = dash.select("#d1-heatmap-chart");
 
@@ -319,7 +409,7 @@ function drawHeatmap(data, allData) {
   const rects = inner.selectAll(".heatmap-cell").data(cells, d => `${d.year}-${d.jurisdiction}`);
   
   rects.join(
-    enter => enter.append("rect").attr("class", "heatmap-cell")
+    enter => enter.append("rect").attr("class", "heatmap-cell chart-hover-target")
       .attr("x", d => d.xi * cellWidth).attr("y", d => d.yi * cellHeight)
       .attr("width", Math.max(0, cellWidth - 3)).attr("height", Math.max(0, cellHeight - 3))
       .attr("rx", 8).style("cursor", "pointer").attr("fill", "#E5E7EB").attr("opacity", 0)
@@ -332,11 +422,13 @@ function drawHeatmap(data, allData) {
   .on("mouseover", (event, d) => {
     d3.select(event.currentTarget).attr("stroke", "#111827").attr("stroke-width", 2);
     const displayValue = d.active ? `${formatNumber(d.value)} (${formatMillions(d.value)})` : "No record";
-    tooltip.style("opacity", 1).style("left", `${event.clientX + 14}px`).style("top", `${event.clientY - 28}px`)
-      .html(`<strong>${d.jurisdiction} — ${d.year}</strong><br>Speeding fines: ${displayValue}`);
+    showTooltip(event, `<strong>${d.jurisdiction} — ${d.year}</strong><br>Speeding fines: ${displayValue}`);
   })
-  .on("mousemove", event => tooltip.style("left", `${event.clientX + 14}px`).style("top", `${event.clientY - 28}px`))
-  .on("mouseout", event => { d3.select(event.currentTarget).attr("stroke", "none"); tooltip.style("opacity", 0); });
+  .on("mousemove", (event, d) => {
+    const displayValue = d.active ? `${formatNumber(d.value)} (${formatMillions(d.value)})` : "No record";
+    showTooltip(event, `<strong>${d.jurisdiction} — ${d.year}</strong><br>Speeding fines: ${displayValue}`);
+  })
+  .on("mouseout", event => { d3.select(event.currentTarget).attr("stroke", "none"); hideTooltip(); });
 
   inner.selectAll(".cell-label").data(cells, d => `${d.year}-${d.jurisdiction}`).join(
     enter => enter.append("text").attr("class", "cell-label")
@@ -376,12 +468,123 @@ function drawHeatmap(data, allData) {
   d3.select("#heatmapInsight").text(maxCell ? `${maxCell.jurisdiction} in ${maxCell.year} shows the highest fine total in the selected view.` : "No insight.");
 }
 
+
+function getD1HoveredDatum(event, selector) {
+  const nodes = document.querySelectorAll(selector);
+
+  for (const node of nodes) {
+    const rect = node.getBoundingClientRect();
+
+    if (
+      event.clientX >= rect.left &&
+      event.clientX <= rect.right &&
+      event.clientY >= rect.top &&
+      event.clientY <= rect.bottom
+    ) {
+      return node.__data__ || null;
+    }
+  }
+
+  return null;
+}
+
+function isInsideElement(event, selector) {
+  const element = document.querySelector(selector);
+  if (!element) return false;
+
+  const rect = element.getBoundingClientRect();
+
+  return (
+    event.clientX >= rect.left &&
+    event.clientX <= rect.right &&
+    event.clientY >= rect.top &&
+    event.clientY <= rect.bottom
+  );
+}
+
+
+function initD1InfoTooltipFallback() {
+  if (window.__d1InfoTooltipFallbackReady) return;
+  window.__d1InfoTooltipFallbackReady = true;
+
+  document.addEventListener("mouseover", event => {
+    const button = event.target.closest("#dashboard1 .info-dot");
+    if (!button) return;
+
+    showInfoTooltip(button, button.getAttribute("data-info"));
+  });
+
+  document.addEventListener("mousemove", event => {
+    const button = event.target.closest("#dashboard1 .info-dot");
+    if (!button) return;
+
+    showInfoTooltip(button, button.getAttribute("data-info"));
+  }, { passive: true });
+
+  document.addEventListener("mouseout", event => {
+    const button = event.target.closest("#dashboard1 .info-dot");
+    if (!button) return;
+
+    hideTooltip();
+  });
+}
+
+
+function initD1ChartTooltipFallback() {
+  if (window.__d1ChartTooltipFallbackReady) return;
+  window.__d1ChartTooltipFallbackReady = true;
+
+  document.addEventListener("mousemove", event => {
+    const dashboard = document.querySelector("#dashboard1");
+    if (!dashboard) return;
+
+    // Let the dedicated info-icon tooltip handler control the info buttons.
+    if (event.target.closest("#dashboard1 .info-dot")) return;
+
+    const lineDatum = getD1HoveredDatum(event, "#dashboard1 .line-hover-zone, #dashboard1 .line-point");
+
+    if (lineDatum) {
+      showTooltip(event, `<strong>Year: ${lineDatum.year}</strong><br>Fines: ${formatNumber(lineDatum.value)}<br>${formatMillions(lineDatum.value)}`);
+      return;
+    }
+
+    const lollipopDatum = getD1HoveredDatum(event, "#dashboard1 .lollipop-hover-zone, #dashboard1 .lollipop-dot");
+
+    if (lollipopDatum) {
+      showTooltip(event, `<strong>${lollipopDatum.jurisdiction}</strong><br>Fines: ${formatNumber(lollipopDatum.value)}<br>${formatMillions(lollipopDatum.value)}`);
+      return;
+    }
+
+    const heatmapDatum = getD1HoveredDatum(event, "#dashboard1 .heatmap-cell");
+
+    if (heatmapDatum) {
+      const displayValue = heatmapDatum.active
+        ? `${formatNumber(heatmapDatum.value)} (${formatMillions(heatmapDatum.value)})`
+        : "No record";
+
+      showTooltip(event, `<strong>${heatmapDatum.jurisdiction} — ${heatmapDatum.year}</strong><br>Speeding fines: ${displayValue}`);
+      return;
+    }
+
+    if (
+      isInsideElement(event, "#dashboard1 #lineChart") ||
+      isInsideElement(event, "#dashboard1 #lollipopChart") ||
+      isInsideElement(event, "#dashboard1 #d1-heatmap-chart")
+    ) {
+      hideTooltip();
+    }
+  }, { passive: true });
+}
+
+
 function updateDashboard(allData) {
   const filtered = getFilteredData(allData);
   updateKpis(filtered);
   drawLineChart(filtered);
   drawLollipopChart(filtered);
   drawHeatmap(filtered, allData);
+  initD1ChartTooltipFallback();
+  initD1InfoTooltipFallback();
 }
 
 function initFilters(allData) {
@@ -414,9 +617,19 @@ function initFilters(allData) {
 }
 
 function initInfoTooltips() {
-  d3.selectAll(".info-dot")
-    .on("mousemove", function (event) { showTooltip(event, d3.select(this).attr("data-info")); })
-    .on("mouseleave", hideTooltip);
+  d3.selectAll("#dashboard1 .info-dot")
+    .attr("tabindex", 0)
+    .each(function () {
+      const message = d3.select(this).attr("data-info");
+      if (message) d3.select(this).attr("title", message);
+    })
+    .on("mouseenter focus", function () {
+      showInfoTooltip(this, d3.select(this).attr("data-info"));
+    })
+    .on("mousemove", function () {
+      showInfoTooltip(this, d3.select(this).attr("data-info"));
+    })
+    .on("mouseleave blur", hideTooltip);
 }
 
 function initSpeedingOverview() {

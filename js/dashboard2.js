@@ -22,19 +22,49 @@ const d2FormatPct    = v => `${d3.format(".2f")(v)}%`;
 let d2Tooltip = null;
 
 function d2GetTooltip() {
-  if (!d2Tooltip || d2Tooltip.empty()) {
-    d2Tooltip = d3.select("#d2Tooltip");
+  // Use the same body-level tooltip as Dashboard 1 for consistent behaviour.
+  let tooltip = d3.select("#globalChartTooltip");
+
+  if (tooltip.empty()) {
+    tooltip = d3.select("body")
+      .append("div")
+      .attr("id", "globalChartTooltip")
+      .attr("class", "global-chart-tooltip");
   }
-  return d2Tooltip;
+
+  d2Tooltip = tooltip;
+  return tooltip;
 }
 
 function d2ShowTooltip(event, html) {
-  d2GetTooltip().style("opacity", 1).html(html)
-    .style("left", `${event.clientX + 14}px`).style("top",  `${event.clientY - 28}px`);
+  d2GetTooltip()
+    .classed("info-tooltip", false)
+    .style("display", "block")
+    .style("opacity", 1)
+    .html(html)
+    .style("left", `${event.clientX + 16}px`)
+    .style("top",  `${event.clientY - 32}px`);
 }
 
 function d2HideTooltip() {
-  d2GetTooltip().style("opacity", 0);
+  d2GetTooltip()
+    .classed("info-tooltip", false)
+    .style("opacity", 0)
+    .style("display", "none");
+}
+
+function d2ShowInfoTooltip(button, message) {
+  if (!message) return;
+
+  const rect = button.getBoundingClientRect();
+
+  d2GetTooltip()
+    .classed("info-tooltip", true)
+    .style("display", "block")
+    .style("opacity", 1)
+    .html(message)
+    .style("left", `${rect.left + rect.width / 2}px`)
+    .style("top", `${rect.top - 12}px`);
 }
 
 function d2GetFiltered(allData) {
@@ -107,7 +137,7 @@ function d2DrawGroupedBar(data) {
   }
 
   const series = ["fines", "tests"];
-  const seriesLabels = { fines: "Speeding Fines", tests: "Drug Tests" };
+  const seriesLabels = { fines: "Speeding fines", tests: "Drug tests" };
   const seriesColors = { fines: "#F15A24", tests: "#2196F3" };
 
   const x0 = d3.scaleBand().domain(agg.map(d => d.jurisdiction)).range([0, W]).paddingInner(0.28).paddingOuter(0.1);
@@ -135,7 +165,7 @@ function d2DrawGroupedBar(data) {
     const g = d3.select(this);
     series.forEach((key, si) => {
       const bars = g.selectAll(`rect.d2-bar-${key}`).data([gd]);
-      bars.enter().append("rect").attr("class", `d2-bar-${key}`).attr("x", x1(key)).attr("width", x1.bandwidth()).attr("y", H).attr("height", 0)
+      bars.enter().append("rect").attr("class", `d2-bar-${key} chart-hover-target`).attr("x", x1(key)).attr("width", x1.bandwidth()).attr("y", H).attr("height", 0)
         .attr("fill", seriesColors[key]).attr("rx", 4)
         .on("mousemove", (event, d) => d2ShowTooltip(event, `<strong>${d.jurisdiction}</strong><br>${seriesLabels[key]}: ${d2FormatNum(d[key])}<br>(${d2FormatM(d[key])})`))
         .on("mouseleave", d2HideTooltip)
@@ -143,13 +173,41 @@ function d2DrawGroupedBar(data) {
     });
   });
 
-  root.selectAll("g.d2-bar-legend").data([null]).join("g").attr("class", "d2-bar-legend").attr("transform", `translate(${W - 160},-24)`)
+  // Tooltip hover zones: wider invisible bands make each jurisdiction easy to inspect.
+  // This is interaction-only; data, scales, filters, and calculations are unchanged.
+  root.selectAll("rect.d2-bar-hover-zone").data(agg, d => d.jurisdiction).join(
+    enter => enter.append("rect")
+      .attr("class", "d2-bar-hover-zone chart-hover-target")
+      .attr("x", d => x0(d.jurisdiction))
+      .attr("y", 0)
+      .attr("width", x0.bandwidth())
+      .attr("height", H)
+      .attr("fill", "#000").attr("fill-opacity", 0.001)
+      .style("pointer-events", "all")
+      .style("cursor", "pointer")
+      .on("mousemove", (event, d) => {
+        d2ShowTooltip(event, `<strong>${d.jurisdiction}</strong><br>Speeding fines: ${d2FormatNum(d.fines)} (${d2FormatM(d.fines)})<br>Drug tests: ${d2FormatNum(d.tests)} (${d2FormatM(d.tests)})`);
+      })
+      .on("mouseleave", d2HideTooltip),
+    update => update
+      .on("mousemove", (event, d) => {
+        d2ShowTooltip(event, `<strong>${d.jurisdiction}</strong><br>Speeding fines: ${d2FormatNum(d.fines)} (${d2FormatM(d.fines)})<br>Drug tests: ${d2FormatNum(d.tests)} (${d2FormatM(d.tests)})`);
+      })
+      .on("mouseleave", d2HideTooltip)
+      .call(update => update.transition(t)
+        .attr("x", d => x0(d.jurisdiction))
+        .attr("width", x0.bandwidth())
+        .attr("height", H)),
+    exit => exit.remove()
+  );
+
+  root.selectAll("g.d2-bar-legend").data([null]).join("g").attr("class", "d2-bar-legend").attr("transform", `translate(${W - 220},-24)`)
     .call(lg => {
       lg.selectAll("*").remove();
       series.forEach((key, i) => {
-        const lItem = lg.append("g").attr("transform", `translate(${i * 82},0)`);
+        const lItem = lg.append("g").attr("transform", `translate(${i * 118},0)`);
         lItem.append("rect").attr("width", 14).attr("height", 14).attr("rx", 3).attr("fill", seriesColors[key]);
-        lItem.append("text").attr("x", 18).attr("y", 11).attr("font-size", 11).attr("fill", "#374151").text(seriesLabels[key]);
+        lItem.append("text").attr("x", 18).attr("y", 11).attr("font-size", 11).attr("font-weight", 700).attr("fill", "#374151").text(seriesLabels[key]);
       });
     });
 }
@@ -220,8 +278,8 @@ function d2DrawAreaChart(data) {
     exit => exit.remove()
   );
 
-  root.selectAll("rect.d2-area-hover").data(years).join("rect").attr("class", "d2-area-hover")
-    .attr("x", yr => (x(yr) ?? 0) - x.step() / 2).attr("y", 0).attr("width", x.step()).attr("height", H).attr("fill", "transparent").style("cursor", "crosshair")
+  root.selectAll("rect.d2-area-hover").data(years).join("rect").attr("class", "d2-area-hover chart-hover-target")
+    .attr("x", yr => (x(yr) ?? 0) - x.step() / 2).attr("y", 0).attr("width", x.step()).attr("height", H).attr("fill", "#000").attr("fill-opacity", 0.001).style("pointer-events", "all").style("cursor", "crosshair")
     .on("mousemove", (event, yr) => {
       const parts = jurisdictions.map(j => { const v = lookup.get(`${yr}-${j}`) ?? 0; return `<span style="color:${D2_JURISDICTION_COLORS[j] || '#999'}">${j}: ${d2FormatNum(v)}</span>`; }).join("<br>");
       d2ShowTooltip(event, `<strong>${yr}</strong><br>${parts}`);
@@ -237,9 +295,12 @@ function d2DrawAreaChart(data) {
   });
 }
 
+
+
 function d2DrawHeatmap(data, allData) {
   const dash = d3.select("#drug-dashboard");
   if (dash.empty()) return;
+
 
   let container = dash.select("#d2-heatmap-chart");
 
@@ -306,7 +367,7 @@ function d2DrawHeatmap(data, allData) {
   });
 
   inner.selectAll(".heatmap-cell").data(cells, d => `${d.year}-${d.jur}`).join(
-    enter => enter.append("rect").attr("class", "heatmap-cell")
+    enter => enter.append("rect").attr("class", "heatmap-cell chart-hover-target")
       .attr("x", d => d.xi * cellWidth).attr("y", d => d.yi * cellHeight)
       .attr("width", Math.max(0, cellWidth - 3)).attr("height", Math.max(0, cellHeight - 3))
       .attr("rx", 8).style("cursor", "pointer").attr("fill", "#E5E7EB").attr("opacity", 0)
@@ -364,12 +425,41 @@ function d2DrawHeatmap(data, allData) {
   d3.select("#d2HeatmapInsight").text(maxCell ? `${maxCell.jur} in ${maxCell.year} had the highest positive drug test count (${d3.format(",")(maxCell.val)}).` : "No insight.");
 }
 
+
+function d2InitInfoTooltipFallback() {
+  if (window.__d2InfoTooltipFallbackReady) return;
+  window.__d2InfoTooltipFallbackReady = true;
+
+  document.addEventListener("mouseover", event => {
+    const button = event.target.closest("#drug-dashboard .info-dot");
+    if (!button) return;
+
+    d2ShowInfoTooltip(button, button.getAttribute("data-info"));
+  });
+
+  document.addEventListener("mousemove", event => {
+    const button = event.target.closest("#drug-dashboard .info-dot");
+    if (!button) return;
+
+    d2ShowInfoTooltip(button, button.getAttribute("data-info"));
+  }, { passive: true });
+
+  document.addEventListener("mouseout", event => {
+    const button = event.target.closest("#drug-dashboard .info-dot");
+    if (!button) return;
+
+    d2HideTooltip();
+  });
+}
+
+
 function d2UpdateDashboard(allData) {
   const filtered = d2GetFiltered(allData);
   d2UpdateKpis(filtered);
   d2DrawGroupedBar(filtered);
   d2DrawAreaChart(filtered);
   d2DrawHeatmap(filtered, allData);
+  d2InitInfoTooltipFallback();
 }
 
 function d2InitFilters(allData) {
@@ -392,7 +482,19 @@ function d2InitFilters(allData) {
 }
 
 function d2InitInfoTooltips() {
-  d3.selectAll(".info-dot").on("mousemove", function (event) { d2ShowTooltip(event, d3.select(this).attr("data-info")); }).on("mouseleave", d2HideTooltip);
+  d3.selectAll("#drug-dashboard .info-dot")
+    .attr("tabindex", 0)
+    .each(function () {
+      const message = d3.select(this).attr("data-info");
+      if (message) d3.select(this).attr("title", message);
+    })
+    .on("mouseenter focus", function () {
+      d2ShowInfoTooltip(this, d3.select(this).attr("data-info"));
+    })
+    .on("mousemove", function () {
+      d2ShowInfoTooltip(this, d3.select(this).attr("data-info"));
+    })
+    .on("mouseleave blur", d2HideTooltip);
 }
 
 function initDrugDashboard() {

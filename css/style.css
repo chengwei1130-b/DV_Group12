@@ -1196,3 +1196,881 @@ a {
   font-size: 13px;
   line-height: 1.45;
 }
+
+
+/* ==========================================================
+   Final small UI fixes
+   - Prevent html2canvas magnifier from rendering masked floating icons as black squares.
+   - Add clearer info tooltip behavior and homepage card hover polish.
+   - Match the About Us mission icon to the road-safety insight visual style.
+   ========================================================== */
+
+/* Use text-based floating button icons instead of CSS masks so the magnifier captures them correctly. */
+.floating-home .float-icon,
+.floating-top .float-icon {
+  background: transparent;
+  -webkit-mask-image: none;
+  mask-image: none;
+  -webkit-mask-size: auto;
+  mask-size: auto;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+
+.floating-home .float-icon::before {
+  content: "⌂";
+  font-size: 21px;
+  font-weight: 900;
+  color: currentColor;
+}
+
+.floating-top .float-icon::before {
+  content: "↑";
+  font-size: 22px;
+  font-weight: 900;
+  color: currentColor;
+}
+
+/* Keep info buttons easy to target and make their hover state more obvious. */
+.info-dot {
+  display: grid;
+  place-items: center;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.info-dot:hover,
+.info-dot:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(241, 90, 36, 0.55);
+  box-shadow: 0 8px 18px rgba(102, 69, 0, 0.16);
+  outline: none;
+}
+
+/* Homepage cards now feel clickable without changing their structure. */
+.premium-link-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.premium-link-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 50% 0%, rgba(255, 199, 54, 0.18), transparent 58%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.premium-link-card:hover::before,
+.premium-link-card:focus-visible::before {
+  opacity: 1;
+}
+
+.premium-link-card:hover .link-card-icon,
+.premium-link-card:focus-visible .link-card-icon {
+  transform: translateY(-4px) scale(1.04);
+}
+
+.link-card-icon {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.link-card-button {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.premium-link-card:hover .link-card-button,
+.premium-link-card:focus-visible .link-card-button {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(241, 90, 36, 0.22);
+}
+
+.premium-link-card:hover .link-card-button span,
+.premium-link-card:focus-visible .link-card-button span {
+  transform: translateX(4px);
+}
+
+.link-card-button span {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.mission-icon {
+  color: var(--orange-deep);
+}
+
+.mission-icon .ui-icon {
+  width: 52px;
+  height: 52px;
+  -webkit-mask-size: 48px 48px;
+  mask-size: 48px 48px;
+}
+
+
+/* ==========================================================
+   Final tooltip and magnifier polish
+   - Pure CSS floating icons render more accurately inside html2canvas magnifier.
+   - Stronger homepage card hover feedback.
+   ========================================================== */
+
+.floating-home .float-icon,
+.floating-top .float-icon {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  background: transparent !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  -webkit-mask-size: auto !important;
+  mask-size: auto !important;
+}
+
+.floating-home .float-icon::before,
+.floating-home .float-icon::after,
+.floating-top .float-icon::before,
+.floating-top .float-icon::after {
+  content: "";
+  position: absolute;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* Draw the home icon with borders instead of font glyphs/masks, preventing black-square capture artifacts. */
+.floating-home .float-icon::before {
+  left: 5px;
+  top: 9px;
+  width: 12px;
+  height: 9px;
+  border: 2px solid currentColor;
+  border-top: 0;
+  border-radius: 1px;
+}
+
+.floating-home .float-icon::after {
+  left: 4px;
+  top: 4px;
+  width: 14px;
+  height: 14px;
+  border-left: 2px solid currentColor;
+  border-top: 2px solid currentColor;
+  transform: rotate(45deg);
+  border-radius: 1px 0 0 0;
+}
+
+/* Draw the up arrow with CSS borders for consistent magnifier capture. */
+.floating-top .float-icon::before {
+  left: 10px;
+  top: 5px;
+  width: 2px;
+  height: 13px;
+  background: currentColor;
+  border-radius: 999px;
+}
+
+.floating-top .float-icon::after {
+  left: 6px;
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  border-left: 2px solid currentColor;
+  border-top: 2px solid currentColor;
+  transform: rotate(45deg);
+  border-radius: 1px;
+}
+
+/* Stronger visual confirmation when users hover the homepage navigation cards. */
+.premium-link-card:hover,
+.premium-link-card:focus-visible {
+  border-color: rgba(241, 90, 36, 0.55);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 199, 54, 0.28), transparent 58%),
+    rgba(255, 253, 245, 0.98);
+}
+
+.premium-link-card:hover h3,
+.premium-link-card:focus-visible h3 {
+  color: var(--orange-deep);
+}
+
+.premium-link-card:hover .link-card-icon,
+.premium-link-card:focus-visible .link-card-icon {
+  color: #fff;
+  background: linear-gradient(180deg, var(--orange), var(--orange-deep));
+  box-shadow: 0 14px 28px rgba(241, 90, 36, 0.24);
+}
+
+.premium-link-card:hover .preview-card-rule,
+.premium-link-card:focus-visible .preview-card-rule {
+  width: 76px;
+}
+
+.preview-card-rule {
+  transition: width 0.22s ease, background 0.22s ease;
+}
+
+.premium-link-card:hover .ghost-button,
+.premium-link-card:focus-visible .ghost-button {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(90deg, var(--orange), var(--orange-deep));
+}
+
+
+/* ==========================================================
+   Homepage interaction polish
+   - CSS-only animations for homepage cards, buttons, pills, and story guide.
+   - No HTML structure or JavaScript logic changed.
+   ========================================================== */
+
+.premium-link-card {
+  transition:
+    transform 0.28s cubic-bezier(.2, .8, .2, 1),
+    box-shadow 0.28s cubic-bezier(.2, .8, .2, 1),
+    border-color 0.24s ease,
+    background 0.24s ease;
+}
+
+.premium-link-card:hover,
+.premium-link-card:focus-visible {
+  transform: translateY(-7px);
+  box-shadow: 0 24px 44px rgba(102, 69, 0, 0.20);
+}
+
+.premium-link-card .link-card-button {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(241, 90, 36, 0.45);
+  transition:
+    transform 0.24s cubic-bezier(.2, .8, .2, 1),
+    box-shadow 0.24s ease,
+    color 0.24s ease,
+    border-color 0.24s ease,
+    background 0.24s ease;
+}
+
+.premium-link-card .link-card-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--orange), var(--orange-deep));
+  opacity: 0;
+  z-index: 0;
+  transition: opacity 0.24s ease;
+}
+
+.premium-link-card .link-card-button > * ,
+.premium-link-card .link-card-button {
+  isolation: isolate;
+}
+
+.premium-link-card:hover .link-card-button,
+.premium-link-card:focus-visible .link-card-button {
+  color: #fff;
+  border-color: transparent;
+  transform: translateY(-3px);
+  box-shadow: 0 14px 26px rgba(241, 90, 36, 0.28);
+}
+
+.premium-link-card:hover .link-card-button::before,
+.premium-link-card:focus-visible .link-card-button::before {
+  opacity: 1;
+}
+
+.premium-link-card:hover .link-card-button span,
+.premium-link-card:focus-visible .link-card-button span {
+  transform: translateX(7px);
+}
+
+/* Filled dashboard buttons get a brighter active state instead of staying visually static. */
+.premium-link-card:not(.premium-link-card-outline):hover .link-card-button,
+.premium-link-card:not(.premium-link-card-outline):focus-visible .link-card-button {
+  background: linear-gradient(90deg, #ff9a1f, var(--orange-deep));
+}
+
+/* Outline card button also fills smoothly on hover. */
+.premium-link-card-outline:hover .link-card-button,
+.premium-link-card-outline:focus-visible .link-card-button {
+  background: linear-gradient(90deg, var(--orange), var(--orange-deep));
+}
+
+/* Highlight pills now respond softly instead of staying static. */
+.feature-pill {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.22s cubic-bezier(.2, .8, .2, 1),
+    color 0.22s ease,
+    border-color 0.22s ease,
+    background 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.feature-pill:hover {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(90deg, var(--orange), var(--orange-deep));
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(241, 90, 36, 0.18);
+}
+
+/* Story path blocks gain a subtle lift and color fade when hovered. */
+.story-path-item {
+  transition:
+    transform 0.24s cubic-bezier(.2, .8, .2, 1),
+    border-color 0.24s ease,
+    background 0.24s ease,
+    box-shadow 0.24s ease;
+}
+
+.story-path-item:hover {
+  transform: translateX(5px);
+  border-color: rgba(241, 90, 36, 0.30);
+  background: rgba(255, 246, 218, 0.92);
+  box-shadow: 0 10px 24px rgba(102, 69, 0, 0.10);
+}
+
+.story-path-number {
+  transition:
+    transform 0.24s cubic-bezier(.2, .8, .2, 1),
+    box-shadow 0.24s ease,
+    background 0.24s ease;
+}
+
+.story-path-item:hover .story-path-number {
+  transform: scale(1.08) rotate(-3deg);
+  background: linear-gradient(180deg, #ff9a1f, var(--orange-deep));
+  box-shadow: 0 8px 18px rgba(241, 90, 36, 0.22);
+}
+
+.story-path-item strong {
+  transition: color 0.22s ease;
+}
+
+.story-path-item:hover strong {
+  color: var(--orange-deep);
+}
+
+/* The main left feature panel feels alive without moving the page layout too much. */
+.feature-panel {
+  transition:
+    transform 0.28s cubic-bezier(.2, .8, .2, 1),
+    box-shadow 0.28s ease,
+    border-color 0.24s ease;
+}
+
+.feature-panel:hover {
+  transform: translateY(-3px);
+  border-color: rgba(247, 147, 30, 0.34);
+  box-shadow: 0 24px 46px rgba(102, 69, 0, 0.15);
+}
+
+.feature-image-shell,
+.feature-mini-badge {
+  transition:
+    transform 0.28s cubic-bezier(.2, .8, .2, 1),
+    box-shadow 0.28s ease,
+    border-color 0.24s ease;
+}
+
+.feature-panel:hover .feature-image-shell {
+  border-color: rgba(241, 90, 36, 0.58);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+}
+
+.feature-panel:hover .feature-mini-badge {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 12px 24px rgba(241, 90, 36, 0.22);
+}
+
+
+/* ==========================================================
+   Homepage card button correction and smoother card motion
+   - Fixes button text disappearing under the previous pseudo-overlay.
+   - Uses CSS background transitions instead of overlay layers.
+   - CSS-only; no HTML or JavaScript structure changed.
+   ========================================================== */
+
+/* The previous button overlay could cover direct text nodes in some browser states.
+   Disable it and use animated gradients directly on the button instead. */
+.premium-link-card .link-card-button::before {
+  display: none !important;
+}
+
+.premium-link-card .link-card-button {
+  z-index: 1;
+  color: #fff;
+  background: linear-gradient(90deg, var(--orange), var(--orange-deep), #ff9d1f);
+  background-size: 220% 100%;
+  background-position: 0% 50%;
+  border-color: transparent;
+  transition:
+    transform 0.32s cubic-bezier(.16, 1, .3, 1),
+    box-shadow 0.32s ease,
+    color 0.24s ease,
+    border-color 0.24s ease,
+    background-position 0.46s cubic-bezier(.16, 1, .3, 1),
+    letter-spacing 0.28s ease;
+}
+
+/* Outline card starts lighter, then fills smoothly on hover. */
+.premium-link-card-outline .link-card-button {
+  color: var(--orange-deep);
+  border-color: rgba(241, 90, 36, 0.45);
+  background: linear-gradient(90deg, rgba(255, 253, 245, 0.96), rgba(255, 244, 208, 0.96), var(--orange-deep));
+  background-size: 260% 100%;
+  background-position: 0% 50%;
+}
+
+.premium-link-card:hover .link-card-button,
+.premium-link-card:focus-visible .link-card-button {
+  color: #fff;
+  background-position: 100% 50%;
+  transform: translateY(-4px) scale(1.015);
+  box-shadow: 0 16px 30px rgba(241, 90, 36, 0.30);
+  letter-spacing: 0.2px;
+}
+
+/* Smooth card movement with stronger visual state change, not a sudden static switch. */
+.premium-link-card {
+  will-change: transform;
+  transition:
+    transform 0.36s cubic-bezier(.16, 1, .3, 1),
+    box-shadow 0.36s cubic-bezier(.16, 1, .3, 1),
+    border-color 0.30s ease,
+    background 0.36s ease;
+}
+
+.premium-link-card:hover,
+.premium-link-card:focus-visible {
+  transform: translateY(-9px) scale(1.012);
+  border-color: rgba(241, 90, 36, 0.58);
+  box-shadow: 0 26px 52px rgba(102, 69, 0, 0.22);
+}
+
+.premium-link-card h3,
+.premium-link-card p {
+  transition:
+    color 0.28s ease,
+    transform 0.32s cubic-bezier(.16, 1, .3, 1);
+}
+
+.premium-link-card:hover h3,
+.premium-link-card:focus-visible h3 {
+  color: var(--orange-deep);
+  transform: translateY(-1px);
+}
+
+.premium-link-card:hover p,
+.premium-link-card:focus-visible p {
+  color: #1f2937;
+}
+
+.link-card-icon {
+  transition:
+    transform 0.36s cubic-bezier(.16, 1, .3, 1),
+    box-shadow 0.34s ease,
+    color 0.30s ease,
+    background 0.30s ease;
+}
+
+.premium-link-card:hover .link-card-icon,
+.premium-link-card:focus-visible .link-card-icon {
+  transform: translateY(-6px) scale(1.08);
+  color: #fff;
+  background: linear-gradient(180deg, var(--orange), var(--orange-deep));
+  box-shadow: 0 16px 30px rgba(241, 90, 36, 0.28);
+}
+
+/* Smooth underline expansion gives a clearer "active" feeling. */
+.preview-card-rule {
+  transform-origin: center;
+  transition:
+    width 0.34s cubic-bezier(.16, 1, .3, 1),
+    background 0.28s ease,
+    box-shadow 0.28s ease;
+}
+
+.premium-link-card:hover .preview-card-rule,
+.premium-link-card:focus-visible .preview-card-rule {
+  width: 86px;
+  background: linear-gradient(90deg, var(--orange), var(--orange-deep));
+  box-shadow: 0 4px 12px rgba(241, 90, 36, 0.20);
+}
+
+/* Arrow animation stays visible and smooth for all three buttons. */
+.link-card-button span {
+  display: inline-block;
+  transition: transform 0.32s cubic-bezier(.16, 1, .3, 1);
+}
+
+.premium-link-card:hover .link-card-button span,
+.premium-link-card:focus-visible .link-card-button span {
+  transform: translateX(8px);
+}
+
+
+/* ==========================================================
+   Chart information tooltip polish
+   - Keeps all chart info icons visible, including heatmap cards.
+   - Uses the existing .chart-tooltip element; no chart data logic changed.
+   ========================================================== */
+
+.chart-heading {
+  align-items: flex-start;
+}
+
+.chart-heading .info-dot {
+  flex: 0 0 32px;
+  display: grid !important;
+  place-items: center;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 5;
+}
+
+.heatmap-card .chart-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 32px;
+  align-items: start;
+  column-gap: 16px;
+}
+
+.heatmap-card .chart-heading .info-dot {
+  justify-self: end;
+}
+
+/* Info tooltips are anchored above the info button, while chart data tooltips still follow the cursor. */
+.chart-tooltip.info-tooltip {
+  max-width: min(320px, calc(100vw - 36px));
+  transform: translate(-50%, -100%);
+  text-align: left;
+  white-space: normal;
+}
+
+.chart-tooltip.info-tooltip::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  transform: translateX(-50%);
+  border-width: 7px 7px 0 7px;
+  border-style: solid;
+  border-color: rgba(17, 24, 39, 0.96) transparent transparent transparent;
+}
+
+/* Make chart info buttons feel intentionally interactive. */
+.info-dot {
+  color: var(--ink);
+  user-select: none;
+}
+
+.info-dot:hover,
+.info-dot:focus-visible {
+  color: var(--orange-deep);
+  background: #fff8e6;
+}
+
+
+/* ==========================================================
+   Real chart hover tooltip support
+   - Invisible hover zones make chart tooltips easier to trigger.
+   - No chart calculations, scales, filters, or data grouping changed.
+   ========================================================== */
+
+.chart-hover-target {
+  pointer-events: all;
+}
+
+.line-label,
+.lollipop-label,
+.cell-label {
+  pointer-events: none;
+}
+
+.chart-tooltip {
+  display: block;
+  min-width: max-content;
+  max-width: min(360px, calc(100vw - 40px));
+  z-index: 12000;
+}
+
+.chart-tooltip:not(.info-tooltip) {
+  text-align: left;
+  white-space: nowrap;
+}
+
+
+/* ==========================================================
+   Guaranteed body-level chart tooltip
+   - Used by dashboard chart marks and info icons.
+   - Independent from injected page layout, so it reliably appears above all charts.
+   ========================================================== */
+
+.global-chart-tooltip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: none;
+  z-index: 999999;
+  pointer-events: none;
+  padding: 11px 14px;
+  border-radius: 10px;
+  color: #fff;
+  background: rgba(17, 24, 39, 0.96);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.38;
+  text-align: left;
+  white-space: nowrap;
+  transform: translate(0, -50%);
+}
+
+.global-chart-tooltip.info-tooltip {
+  max-width: min(320px, calc(100vw - 36px));
+  white-space: normal;
+  transform: translate(-50%, -100%);
+}
+
+.global-chart-tooltip.info-tooltip::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  transform: translateX(-50%);
+  border-width: 7px 7px 0 7px;
+  border-style: solid;
+  border-color: rgba(17, 24, 39, 0.96) transparent transparent transparent;
+}
+
+/* Ensure SVG hover zones and marks are actually clickable/hoverable. */
+.chart-hover-target,
+.line-hover-zone,
+.lollipop-hover-zone,
+.d2-bar-hover-zone,
+.d2-area-hover,
+.heatmap-cell {
+  pointer-events: all;
+}
+
+.line-label,
+.lollipop-label,
+.cell-label {
+  pointer-events: none;
+}
+
+
+/* ==========================================================
+   Magnifier-safe UI icons
+   - CSS mask icons can appear as colored squares inside html2canvas magnifier.
+   - These overrides keep the same structure but render icons as normal text,
+     which the magnifier captures reliably.
+   ========================================================== */
+
+.feature-mini-badge .ui-icon,
+.link-card-icon .ui-icon,
+.mission-icon .ui-icon {
+  width: auto !important;
+  height: auto !important;
+  background: transparent !important;
+  color: currentColor !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  -webkit-mask-size: auto !important;
+  mask-size: auto !important;
+  -webkit-mask-repeat: no-repeat !important;
+  mask-repeat: no-repeat !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+.feature-mini-badge .ui-icon::before,
+.link-card-icon .ui-icon::before,
+.mission-icon .ui-icon::before {
+  display: block;
+  font-size: 28px;
+  line-height: 1;
+  color: currentColor;
+}
+
+.feature-mini-badge .ui-icon-insights::before,
+.mission-icon .ui-icon-insights::before {
+  content: "▥";
+}
+
+.link-card-icon .ui-icon-dashboard::before {
+  content: "◔";
+}
+
+.link-card-icon .ui-icon-team::before {
+  content: "👥";
+}
+
+.mission-icon .ui-icon::before {
+  font-size: 46px;
+}
+
+.feature-mini-badge .ui-icon::before {
+  font-size: 26px;
+}
+
+
+/* ==========================================================
+   Heatmap info icon visibility + magnifier-safe home icon
+   - Keeps existing HTML/JS structure.
+   - Only improves visible icon placement and hover reliability.
+   ========================================================== */
+
+.heatmap-card {
+  position: relative;
+}
+
+.heatmap-card .chart-heading {
+  position: relative;
+  padding-right: 54px;
+}
+
+.heatmap-card .chart-heading .heatmap-info-dot,
+.heatmap-card .chart-heading .info-dot {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 20 !important;
+  pointer-events: auto !important;
+}
+
+/* Replace the previous CSS-drawn floating home icon because it looked rough
+   inside the magnifier. A normal text glyph is captured much more cleanly. */
+.floating-home .float-icon,
+.floating-top .float-icon {
+  width: 24px !important;
+  height: 24px !important;
+  display: grid !important;
+  place-items: center !important;
+  background: transparent !important;
+  color: currentColor !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+.floating-home .float-icon::before {
+  content: "⌂" !important;
+  position: static !important;
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  border: 0 !important;
+  background: transparent !important;
+  transform: none !important;
+  font-size: 19px !important;
+  color: currentColor !important;
+}
+
+.floating-home .float-icon::after {
+  display: none !important;
+}
+
+.floating-top .float-icon::before {
+  content: "↑" !important;
+  position: static !important;
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  border: 0 !important;
+  background: transparent !important;
+  transform: none !important;
+  font-size: 21px !important;
+  color: currentColor !important;
+}
+
+.floating-top .float-icon::after {
+  display: none !important;
+}
+
+
+/* Clean magnifier-safe floating controls. */
+.floating-home .float-icon,
+.floating-top .float-icon {
+  width: 22px !important;
+  height: 22px !important;
+  display: block !important;
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: 19px 19px !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+}
+
+.floating-home .float-icon {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23111827' d='M12 4.2 4.8 10.55v8.15c0 .61.49 1.1 1.1 1.1h4.1v-5.5h4v5.5h4.1c.61 0 1.1-.49 1.1-1.1v-8.15L12 4.2Zm0-2.35c.31 0 .62.11.87.33l8.75 7.72a1.15 1.15 0 0 1-1.52 1.72l-.5-.44v7.52a3.4 3.4 0 0 1-3.4 3.4h-4.45v-5.5h-1.5v5.5H5.9a3.4 3.4 0 0 1-3.4-3.4v-7.52l-.5.44A1.15 1.15 0 1 1 .48 9.9l8.75-7.72c.25-.22.56-.33.87-.33Z'/%3E%3C/svg%3E") !important;
+}
+
+.floating-top .float-icon {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='white' d='M12 4.3 5.2 11.1a1.1 1.1 0 1 0 1.56 1.56l4.14-4.14V19a1.1 1.1 0 1 0 2.2 0V8.52l4.14 4.14a1.1 1.1 0 0 0 1.56-1.56L12 4.3Z'/%3E%3C/svg%3E") !important;
+}
+
+.floating-home .float-icon::before,
+.floating-home .float-icon::after,
+.floating-top .float-icon::before,
+.floating-top .float-icon::after {
+  display: none !important;
+  content: none !important;
+}
+
+
+/* ==========================================================
+   Strict-structure heatmap info icon
+   - Uses the existing heatmap info button already in the HTML heading.
+   - No runtime button injection / no extra DOM structure.
+   ========================================================== */
+
+.heatmap-card .chart-heading {
+  position: relative;
+  padding-right: 56px;
+}
+
+.heatmap-card .chart-heading .heatmap-info-dot {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 80 !important;
+  pointer-events: auto !important;
+  color: #111827 !important;
+  background: #fff !important;
+  border: 1px solid rgba(23, 32, 51, 0.22) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10) !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+.heatmap-card .chart-heading .heatmap-info-dot:hover,
+.heatmap-card .chart-heading .heatmap-info-dot:focus-visible {
+  color: var(--orange-deep) !important;
+  background: #fff8e6 !important;
+  outline: none !important;
+}
