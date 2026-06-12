@@ -126,8 +126,8 @@ function d2DrawGroupedBar(data) {
   root.selectAll("g.d2-bar-y").data([null]).join("g").attr("class", "axis y-axis d2-bar-y")
     .transition(t).call(d3.axisLeft(y).ticks(5).tickFormat(d => `${d / 1_000_000}M`));
 
-  root.selectAll("text.d2-bar-ylabel").data([null]).join("text").attr("class", "chart-title-label d2-bar-ylabel")
-    .attr("x", -H / 2).attr("y", -68).attr("transform", "rotate(-90)").attr("text-anchor", "middle").text("Count");
+  root.selectAll("text.d2-bar-ylabel").data([null]).join("text").attr("class", "chart-title-label horizontal-axis-label d2-bar-ylabel")
+    .attr("x", 0).attr("y", -14).attr("transform", null).attr("text-anchor", "start").text("Count");
 
   const groups = root.selectAll("g.d2-bar-group").data(agg, d => d.jurisdiction).join("g").attr("class", "d2-bar-group").attr("transform", d => `translate(${x0(d.jurisdiction)},0)`);
 
@@ -202,8 +202,8 @@ function d2DrawAreaChart(data) {
   root.selectAll("g.d2-area-y").data([null]).join("g").attr("class", "axis y-axis d2-area-y")
     .transition(t).call(d3.axisLeft(y).ticks(5).tickFormat(d2FormatK));
 
-  root.selectAll("text.d2-area-ylabel").data([null]).join("text").attr("class", "chart-title-label d2-area-ylabel")
-    .attr("x", -H / 2).attr("y", -56).attr("transform", "rotate(-90)").attr("text-anchor", "middle").text("Positive tests");
+  root.selectAll("text.d2-area-ylabel").data([null]).join("text").attr("class", "chart-title-label horizontal-axis-label d2-area-ylabel")
+    .attr("x", 0).attr("y", -14).attr("transform", null).attr("text-anchor", "start").text("Positive tests");
 
   const areaGen = d3.area().x(d => x(d.data.year)).y0(d => y(d[0])).y1(d => y(d[1])).curve(d3.curveMonotoneX);
   const lineGen = d3.line().x(d => x(d.data.year)).y(d => y(d[1])).curve(d3.curveMonotoneX);
@@ -347,7 +347,7 @@ function d2DrawHeatmap(data, allData) {
   inner.append("g").attr("class", "axis-y").call(d3.axisLeft(yScale)).call(g => g.select(".domain").remove());
 
   inner.append("text").attr("x", innerWidth / 2).attr("y", innerHeight + 48).attr("text-anchor", "middle").attr("font-size", "13px").attr("font-weight", "800").attr("fill", "#111827").text("Year");
-  inner.append("text").attr("transform", "rotate(-90)").attr("x", -innerHeight / 2).attr("y", -68).attr("text-anchor", "middle").attr("font-size", "13px").attr("font-weight", "800").attr("fill", "#111827").text("Jurisdiction");
+  inner.append("text").attr("class", "chart-title-label horizontal-axis-label").attr("x", 0).attr("y", -22).attr("transform", null).attr("text-anchor", "start").attr("font-size", "13px").attr("font-weight", "800").attr("fill", "#111827").text("Jurisdiction");
 
   const defs = svg.append("defs");
   const linearGrad = defs.append("linearGradient").attr("id", "d2-heatmap-gradient").attr("x1", "0%").attr("x2", "100%");

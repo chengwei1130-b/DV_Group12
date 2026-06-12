@@ -147,6 +147,7 @@
     .a11y-pd{font-size:10px;color:#888;display:block;margin-top:1px}
     #a11y-lens{position:fixed;width:190px;height:190px;border-radius:50%;border:3px solid #F7931E;box-shadow:0 6px 28px rgba(0,0,0,.45),inset 0 0 0 2px rgba(255,255,255,.3);pointer-events:none;z-index:99999;overflow:hidden;display:none;background:#fff}
     #a11y-lens::after{content:'';position:absolute;inset:0;border-radius:50%;z-index:10;background:radial-gradient(ellipse at 32% 30%,rgba(255,255,255,.28) 0%,rgba(255,255,255,.05) 45%,transparent 65%);pointer-events:none}
+    .a11y-mag svg,.a11y-mag svg *{pointer-events:none!important}
     #a11y-lens-inner{position:absolute;top:0;left:0;transform-origin:top left;pointer-events:none}
     body.a11y-mag #a11y-fab,body.a11y-mag #a11y-fab *{cursor:pointer!important}
     body.a11y-mag *:not(#a11y-fab):not(#a11y-fab *):not(#a11y-lens):not(#a11y-lens *){pointer-events:none!important}
@@ -233,6 +234,10 @@
     document.body.style.zoom = currentZoom;
     document.getElementById("a11y-zpct").textContent = Math.round(currentZoom * 100) + "%";
     localStorage.setItem("a11y_zoom", currentZoom);
+
+    if (magnifierOn) {
+      scheduleMagnifierCapture(120);
+    }
   }
 
   document.getElementById("a11y-zi").addEventListener("click", () => setZoom(currentZoom + 0.1));
@@ -247,6 +252,20 @@
   let lastCapture = 0;
   let capturing = false;
 
+  // Performance patch: move the lens with requestAnimationFrame and avoid
+  // expensive html2canvas captures on every mousemove.
+  let magFrame = null;
+  let magRecaptureTimer = null;
+  let magPeriodicRefresh = null;
+  let magZoneCaptureTimer = null;
+  let magScrollHandler = null;
+  let magCurrentZone = "";
+  let magMouseX = 0;
+  let magMouseY = 0;
+  let magOverFab = false;
+  let lastMouseMove = 0;
+  let lastCaptureRequest = 0;
+
   function hideChartTooltips() {
     document.querySelectorAll(".chart-tooltip").forEach(el => {
       el.style.opacity = "0";
@@ -260,6 +279,48 @@
       el.style.opacity = "0";
     });
   }
+
+  function getMagnifierZone(x, y) {
+    const zones = document.querySelectorAll(
+      ".story-chart-card, .chart-grid, .filter-panel, .kpi-grid, .story-summary, .data-note, .home-showcase-grid, .about-us-content, .mission-panel"
+    );
+
+    for (let i = 0; i < zones.length; i++) {
+      const rect = zones[i].getBoundingClientRect();
+
+      if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+        const heading = zones[i].querySelector("h1, h2, h3");
+        return zones[i].id || (heading ? heading.textContent.trim() : zones[i].className + "-" + i);
+      }
+    }
+
+    // Fallback zone changes when the viewport scrolls to a new screen area.
+    return "viewport-" + Math.round(window.scrollY / Math.max(1, window.innerHeight / 2));
+  }
+
+  function scheduleZoneCapture(delay = 110) {
+    if (!magnifierOn || !magCanvas) return;
+
+    clearTimeout(magZoneCaptureTimer);
+    magZoneCaptureTimer = setTimeout(() => {
+      if (magnifierOn && magCanvas && !capturing) {
+        scheduleMagnifierCapture(0, true);
+      }
+    }, delay);
+  }
+
+  function scheduleScrollCapture() {
+    if (!magnifierOn || !magCanvas) return;
+
+    clearTimeout(magRecaptureTimer);
+    magRecaptureTimer = setTimeout(() => {
+      if (magnifierOn && magCanvas && !capturing) {
+        magCurrentZone = getMagnifierZone(magMouseX, magMouseY);
+        scheduleMagnifierCapture(0, true);
+      }
+    }, 160);
+  }
+
 
   async function captureToCanvas(canvas) {
     if (capturing) return;
@@ -333,10 +394,65 @@
 
     capturing = false;
     lastCapture = Date.now();
+
+    // Keep the lens aligned with the fresh screenshot immediately after recapture.
+    requestMagnifierPositionUpdate();
+  }
+
+  function scheduleMagnifierCapture(delay = 180, force = false) {
+    if (!magnifierOn || !magCanvas) return;
+
+    // Event listeners pass an Event object as the first argument.
+    // Convert that case back into a safe numeric delay.
+    if (typeof delay !== "number") delay = 180;
+
+    const now = Date.now();
+
+    // html2canvas is expensive, so refresh the cached screenshot at a controlled pace.
+    // This keeps the lens accurate without re-capturing on every mouse movement.
+    if (!force && (capturing || now - lastCapture < 1200 || now - lastCaptureRequest < 360)) return;
+
+    if (capturing) return;
+
+    lastCaptureRequest = now;
+    clearTimeout(magRecaptureTimer);
+
+    magRecaptureTimer = setTimeout(() => {
+      if (magnifierOn && magCanvas) captureToCanvas(magCanvas);
+    }, delay);
+  }
+
+  function renderMagnifierPosition() {
+    magFrame = null;
+
+    if (!magnifierOn || !magCanvas) return;
+
+    if (magOverFab) {
+      lens.style.display = "none";
+      return;
+    }
+
+    lens.style.display = "block";
+
+    // transform is smoother than constantly changing left/top during mousemove.
+    lens.style.transform = "translate(" + (magMouseX - LHALF) + "px," + (magMouseY - LHALF) + "px)";
+
+    const tx = LHALF - magMouseX * MAG;
+    const ty = LHALF - magMouseY * MAG;
+    magCanvas.style.transform = "translate(" + tx + "px," + ty + "px) scale(" + MAG + ")";
+  }
+
+  function requestMagnifierPositionUpdate() {
+    if (!magFrame) {
+      magFrame = requestAnimationFrame(renderMagnifierPosition);
+    }
   }
 
   function startMag() {
     lens.style.display = "block";
+    lens.style.left = "0";
+    lens.style.top = "0";
+    lens.style.transform = "translate(-9999px,-9999px)";
     document.body.classList.add("a11y-mag");
     hideChartTooltips();
 
@@ -347,44 +463,68 @@
       top: "0",
       left: "0",
       transformOrigin: "0 0",
-      pointerEvents: "none"
+      pointerEvents: "none",
+      willChange: "transform"
     });
 
     lensInner.innerHTML = "";
     lensInner.appendChild(magCanvas);
 
+    // Capture once when the magnifier is enabled.
+    // Later refreshes are throttled so the lens stays accurate without heavy lag.
+    magCurrentZone = getMagnifierZone(magMouseX, magMouseY);
     captureToCanvas(magCanvas);
 
+    magPeriodicRefresh = setInterval(() => {
+      const mouseIsIdle = Date.now() - lastMouseMove > 900;
+      const captureIsOld = Date.now() - lastCapture > 1800;
+
+      // Refresh only while idle. This avoids visible stutter while hovering charts.
+      if (magnifierOn && magCanvas && mouseIsIdle && captureIsOld && !capturing) {
+        scheduleMagnifierCapture(0, true);
+      }
+    }, 900);
+
     magHandler = function(e) {
-      const mx = e.clientX;
-      const my = e.clientY;
+      magMouseX = e.clientX;
+      magMouseY = e.clientY;
+      magOverFab = fab.contains(e.target);
+      lastMouseMove = Date.now();
 
-      hideChartTooltips();
+      requestMagnifierPositionUpdate();
 
-      if (fab.contains(e.target)) {
-        lens.style.display = "none";
-        return;
+      const nextZone = getMagnifierZone(magMouseX, magMouseY);
+
+      // If the cursor enters a different chart/card area, refresh once.
+      // This fixes stale lens content, such as still seeing the line chart on the heatmap.
+      if (nextZone !== magCurrentZone) {
+        magCurrentZone = nextZone;
+
+        if (Date.now() - lastCapture > 360) {
+          scheduleZoneCapture(110);
+        }
       }
 
-      lens.style.display = "block";
-      lens.style.left = (mx - LHALF) + "px";
-      lens.style.top = (my - LHALF) + "px";
-
-      if (Date.now() - lastCapture > 150) {
-        captureToCanvas(magCanvas);
-      }
-
-      const tx = LHALF - mx * MAG;
-      const ty = LHALF - my * MAG;
-
-      magCanvas.style.transform = "translate(" + tx + "px," + ty + "px) scale(" + MAG + ")";
+      // Do not run html2canvas continuously while the mouse is actively moving.
+      // Movement stays smooth; the screenshot refresh happens after the cursor pauses.
+      clearTimeout(magRecaptureTimer);
+      magRecaptureTimer = setTimeout(() => {
+        if (magnifierOn && magCanvas && Date.now() - lastMouseMove >= 420) {
+          scheduleMagnifierCapture(0, true);
+        }
+      }, 520);
     };
 
-    document.addEventListener("mousemove", magHandler);
+    magScrollHandler = scheduleScrollCapture;
+
+    document.addEventListener("mousemove", magHandler, { passive: true });
+    window.addEventListener("scroll", magScrollHandler, { passive: true });
+    window.addEventListener("resize", magScrollHandler);
   }
 
   function stopMag() {
     lens.style.display = "none";
+    lens.style.transform = "translate(-9999px,-9999px)";
     lensInner.innerHTML = "";
     magCanvas = null;
     document.body.classList.remove("a11y-mag");
@@ -395,8 +535,31 @@
       enableChartTooltipsAgain();
     }, 80);
 
+    clearTimeout(magRecaptureTimer);
+    magRecaptureTimer = null;
+
+    clearTimeout(magZoneCaptureTimer);
+    magZoneCaptureTimer = null;
+
+    clearInterval(magPeriodicRefresh);
+    magPeriodicRefresh = null;
+
+    magCurrentZone = "";
+
+    if (magFrame) {
+      cancelAnimationFrame(magFrame);
+      magFrame = null;
+    }
+
     if (magHandler) {
       document.removeEventListener("mousemove", magHandler);
+
+      if (magScrollHandler) {
+        window.removeEventListener("scroll", magScrollHandler);
+        window.removeEventListener("resize", magScrollHandler);
+        magScrollHandler = null;
+      }
+
       magHandler = null;
     }
   }

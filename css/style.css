@@ -276,19 +276,27 @@ a {
 }
 
 .feature-image-shell {
-  padding: 10px;
+  min-height: 220px;
+  padding: 12px;
   border: 2px solid rgba(247, 147, 30, 0.55);
   border-radius: 24px;
   overflow: hidden;
-  background: linear-gradient(180deg, #FFF6D7, #FFE9A7);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.38), transparent 58%),
+    linear-gradient(180deg, #FFF6D7, #FFE9A7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .home-image {
   display: block;
-  width: 100%;
-  aspect-ratio: 16 / 8.8;
+  width: min(78%, 430px);
+  aspect-ratio: 1 / 1;
   object-fit: contain;
-  border-radius: 16px;
+  object-position: center;
+  border-radius: 18px;
+  mix-blend-mode: multiply;
 }
 
 .feature-copy-panel {
@@ -1062,4 +1070,129 @@ a {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+
+/* ==========================================================
+   Final visual bug fixes
+   - Keep SVG axis titles horizontal so they stay crisp when zoomed out.
+   - Align About Us heading with the same structure as the dashboard titles.
+   ========================================================== */
+
+/* Horizontal SVG axis titles avoid the distorted look caused by rotated text
+   when the browser is zoomed out or rendered on different displays. */
+.horizontal-axis-label {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  text-rendering: geometricPrecision;
+  dominant-baseline: middle;
+  paint-order: stroke;
+  stroke: rgba(255, 253, 245, 0.75);
+  stroke-width: 2px;
+  stroke-linejoin: round;
+}
+
+/* about_us.html uses .section-heading, while other pages use .page-heading.
+   This keeps the existing HTML structure but makes both headings visually match. */
+.section-heading {
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+.section-heading h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(48px, 7vw, 82px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -1px;
+}
+
+.about-heading .section-kicker {
+  text-align: center;
+}
+
+.about-heading .heading-rule {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+/* Homepage story guide added to use the left panel space without repeating the navigation cards. */
+.feature-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.feature-pill {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(241, 90, 36, 0.32);
+  background: rgba(255, 243, 209, 0.92);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.story-path-panel {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(247, 147, 30, 0.24);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.36), rgba(255, 243, 209, 0.28));
+}
+
+.story-path-panel h3 {
+  margin: 0 0 12px;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.story-path-list {
+  display: grid;
+  gap: 10px;
+}
+
+.story-path-item {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 11px 12px;
+  border-radius: 14px;
+  background: rgba(255, 253, 245, 0.72);
+  border: 1px solid rgba(247, 147, 30, 0.16);
+}
+
+.story-path-number {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(180deg, var(--orange), var(--orange-deep));
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.story-path-item strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.story-path-item p {
+  margin: 0;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.45;
 }

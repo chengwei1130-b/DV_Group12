@@ -159,8 +159,8 @@ function drawLineChart(data) {
   root.selectAll("g.y-axis").data([null]).join("g").attr("class", "axis y-axis")
     .transition(t).call(d3.axisLeft(y).ticks(5).tickFormat(d => `${d / 1_000_000}M`));
 
-  root.selectAll("text.y-axis-label").data([null]).join("text").attr("class", "chart-title-label y-axis-label")
-    .attr("x", -height / 2).attr("y", -56).attr("transform", "rotate(-90)").attr("text-anchor", "middle").text("Fines");
+  root.selectAll("text.y-axis-label").data([null]).join("text").attr("class", "chart-title-label horizontal-axis-label y-axis-label")
+    .attr("x", 0).attr("y", -14).attr("transform", null).attr("text-anchor", "start").text("Fines");
 
   const line = d3.line().x(d => x(d.year)).y(d => y(d.value)).curve(d3.curveMonotoneX);
 
@@ -218,8 +218,8 @@ function drawLollipopChart(data) {
   root.selectAll("g.y-axis").data([null]).join("g").attr("class", "axis y-axis")
     .transition(t).call(d3.axisLeft(y).ticks(5).tickFormat(d => `${d / 1_000_000}M`));
 
-  root.selectAll("text.y-axis-label").data([null]).join("text").attr("class", "chart-title-label y-axis-label")
-    .attr("x", -height / 2).attr("y", -56).attr("transform", "rotate(-90)").attr("text-anchor", "middle").text("Fines");
+  root.selectAll("text.y-axis-label").data([null]).join("text").attr("class", "chart-title-label horizontal-axis-label y-axis-label")
+    .attr("x", 0).attr("y", -14).attr("transform", null).attr("text-anchor", "start").text("Fines");
 
   const stems = root.selectAll("line.lollipop-line").data(values, d => d.jurisdiction);
   stems.enter().append("line").attr("class", "lollipop-line").attr("stroke", "#202020").attr("stroke-width", 2).attr("opacity", 0.75)
@@ -359,7 +359,7 @@ function drawHeatmap(data, allData) {
   inner.append("g").attr("class", "axis-y").call(d3.axisLeft(yScale)).call(g => g.select(".domain").remove());
 
   inner.append("text").attr("class", "chart-title-label").attr("x", innerWidth / 2).attr("y", innerHeight + 48).attr("text-anchor", "middle").text("Year");
-  inner.append("text").attr("class", "chart-title-label").attr("transform", "rotate(-90)").attr("x", -innerHeight / 2).attr("y", -68).attr("text-anchor", "middle").text("Jurisdiction");
+  inner.append("text").attr("class", "chart-title-label horizontal-axis-label").attr("x", 0).attr("y", -22).attr("transform", null).attr("text-anchor", "start").text("Jurisdiction");
 
   const defs = svg.append("defs");
   const gradient = defs.append("linearGradient").attr("id", "speeding-heatmap-gradient").attr("x1", "0%").attr("x2", "100%");
