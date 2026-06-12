@@ -1,0 +1,143 @@
+<section id="drug-dashboard" class="page speeding-dashboard-page">
+  <div class="story-dashboard">
+    <section class="page-heading dashboard-heading">
+      <p class="section-kicker">Australian Road Safety Insights</p>
+      <span class="heading-rule" aria-hidden="true"></span>
+      <h1>Drug Testing &amp; Enforcement Story</h1>
+      <p class="section-subtitle story-lede">
+        Exploring the relationship between speeding enforcement, alcohol/drug testing volumes,
+        and positive drug test outcomes across Australian jurisdictions from 2020 to 2024.
+      </p>
+    </section>
+
+    <section class="filter-panel" aria-label="Dashboard 2 filters">
+      <label>
+        <span>Start year</span>
+        <select id="d2StartYear"></select>
+      </label>
+      <label>
+        <span>End year</span>
+        <select id="d2EndYear"></select>
+      </label>
+      <label>
+        <span>Jurisdiction</span>
+        <select id="d2JurisdictionSelect"></select>
+      </label>
+      <button id="d2ResetFilters" type="button">↻ Reset view</button>
+    </section>
+
+    <section class="kpi-grid" aria-label="Key drug testing summary">
+      <article class="kpi-card">
+        <div class="kpi-icon" aria-hidden="true">🧪</div>
+        <div>
+          <p>Total drug tests</p>
+          <h2 id="d2KpiTests">--</h2>
+          <span id="d2KpiTestsNote">Selected period</span>
+        </div>
+      </article>
+      <article class="kpi-card">
+        <div class="kpi-icon" aria-hidden="true">⚠️</div>
+        <div>
+          <p>Total positive tests</p>
+          <h2 id="d2KpiPositive">--</h2>
+          <span id="d2KpiPositiveNote">Selected period</span>
+        </div>
+      </article>
+      <article class="kpi-card">
+        <div class="kpi-icon" aria-hidden="true">📊</div>
+        <div>
+          <p>Positivity rate</p>
+          <h2 id="d2KpiRate">--</h2>
+          <span id="d2KpiRateNote">Positive / tests</span>
+        </div>
+      </article>
+      <article class="kpi-card">
+        <div class="kpi-icon" aria-hidden="true">🗺️</div>
+        <div>
+          <p>Highest positive rate</p>
+          <h2 id="d2KpiTopJurisdiction">--</h2>
+          <span id="d2KpiTopNote">Selected period</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="chart-grid">
+      <article class="story-chart-card">
+        <div class="chart-heading">
+          <div>
+            <h2>1. Speeding fines vs drug tests by jurisdiction</h2>
+            <p>How do enforcement volumes compare across jurisdictions?</p>
+          </div>
+          <button class="info-dot" type="button" aria-label="Grouped bar chart information"
+            data-info="Grouped bar chart comparing total speeding fines against total alcohol/drug tests per jurisdiction.">i</button>
+        </div>
+        <svg id="d2GroupedBar" width="760" height="430" viewBox="0 0 760 430"
+          role="img" aria-label="Speeding fines vs drug tests grouped bar chart"></svg>
+        <div class="insight-box">
+          <span aria-hidden="true">📊</span>
+          <p id="d2BarInsight">Loading insight...</p>
+        </div>
+      </article>
+
+      <article class="story-chart-card">
+        <div class="chart-heading">
+          <div>
+            <h2>2. Positive drug tests over time</h2>
+            <p>How have confirmed positive drug tests trended year by year?</p>
+          </div>
+          <button class="info-dot" type="button" aria-label="Area chart information"
+            data-info="Stacked area chart showing positive drug tests per jurisdiction across the selected years.">i</button>
+        </div>
+        <svg id="d2AreaChart" width="760" height="430" viewBox="0 0 760 430"
+          role="img" aria-label="Positive drug tests over time area chart"></svg>
+        <div class="insight-box">
+          <span aria-hidden="true">📈</span>
+          <p id="d2AreaInsight">Loading insight...</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="story-chart-card heatmap-card">
+      <div class="chart-heading">
+        <div>
+          <h2>3. Positive drug test heatmap</h2>
+          <p>Where and when were positive drug tests most concentrated?</p>
+        </div>
+        <button class="info-dot" type="button" aria-label="Drug heatmap information"
+          data-info="Heatmap of positive drug test counts across jurisdictions and years.">i</button>
+      </div>
+      
+      <div id="d2-heatmap-chart" class="drug-outcome-content"></div>
+      
+      <div class="insight-box">
+        <span aria-hidden="true">▦</span>
+        <p id="d2HeatmapInsight">Loading insight...</p>
+      </div>
+    </section>
+
+    <section class="story-summary">
+      <div class="summary-title">
+        <div class="summary-icon" aria-hidden="true">💡</div>
+        <div>
+          <h2>Story summary</h2>
+          <p>Key takeaways from the drug testing enforcement data</p>
+        </div>
+      </div>
+      <ol>
+        <li id="d2SummaryOne">Drug testing volumes vary significantly across jurisdictions.</li>
+        <li id="d2SummaryTwo">Positive drug test trends show meaningful year-to-year changes.</li>
+        <li id="d2SummaryThree">The heatmap reveals concentration hotspots by jurisdiction and year.</li>
+      </ol>
+    </section>
+
+    <footer class="data-note">
+      <p>
+        <strong>Note:</strong> Data shows recorded enforcement activity, not direct proof of actual driver behaviour.
+        Higher values may reflect enforcement intensity, population size, reporting practices, or testing activity.
+      </p>
+      <p><strong>Source:</strong> Australian road safety enforcement data, final processed dataset (2020–2024).</p>
+    </footer>
+  </div>
+
+  <div id="d2Tooltip" class="chart-tooltip"></div>
+</section>

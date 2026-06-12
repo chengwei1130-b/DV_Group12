@@ -2,9 +2,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const contentContainer = document.getElementById("content-container");
   const navLinks = document.querySelectorAll(".nav-menu a");
 
-  // Add new page renderers here when more dashboard/story pages are added.
+  // Register a renderer function for each page fragment.
   const pageRenderers = {
-    "fine_trend.html": renderFineTrendPage
+    "dashboard1.html": renderDashboard1Page,
+    "dashboard2.html": renderDashboard2Page
   };
 
   function getPageFromQuery() {
@@ -19,16 +20,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function loadPageContent(url, pushToHistory = true) {
-    fetch(url)
+    // CACHE BUSTER: Forces the browser to bypass memory and grab the newest HTML
+    const cacheBusterUrl = `${url}?t=${Date.now()}`;
+
+    fetch(cacheBusterUrl, { cache: "no-store" })
       .then(response => {
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status} loading ${url}`);
         return response.text();
       })
       .then(html => {
         const temp = document.createElement("div");
         temp.innerHTML = html;
 
-        // Every page file is a fragment. Only the <section class="page"> is injected.
         const section = temp.querySelector("section.page");
         if (!section) {
           contentContainer.innerHTML = `<p>Error: No section.page found in ${url}</p>`;
@@ -37,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         contentContainer.replaceChildren(section.cloneNode(true));
 
-        // Render D3 charts only after the fragment is available in the DOM.
+        // Run the D3 renderer only after the fragment is live in the DOM.
         const renderer = pageRenderers[url];
         if (typeof renderer === "function") renderer();
 
@@ -57,7 +60,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function attachNavigationHandlers(container = document) {
-    const links = container.querySelectorAll(".nav-menu a, .site-brand, .dashboard-link, .floating-home");
+    const links = container.querySelectorAll(
+      ".nav-menu a, .site-brand, .dashboard-link, .floating-home"
+    );
 
     links.forEach(link => {
       link.addEventListener("click", event => {
