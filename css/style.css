@@ -539,3 +539,1884 @@ h1 {
         padding: 20px;
     }
 }
+
+/* ==========================================================
+   Speeding Enforcement Dashboard styles
+   Scoped to Page 1 only
+   ========================================================== */
+.speeding-dashboard-page {
+    max-width: 1400px;
+    padding: 46px 48px 90px;
+    background: radial-gradient(circle at top left, #FFF3B0 0, #FFD84D 42%, #FFD84D 100%);
+    text-align: left;
+}
+
+.speeding-dashboard-page .story-dashboard {
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.speeding-dashboard-page .story-hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: 32px;
+    margin-bottom: 28px;
+}
+
+.speeding-dashboard-page .hero-visual {
+    display: none;
+}
+
+.speeding-dashboard-page .eyebrow {
+    color: #F15A24;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 3px;
+    margin: 0 0 12px;
+}
+
+.speeding-dashboard-page h1 {
+    font-size: clamp(44px, 6vw, 72px);
+    line-height: 1.08;
+    letter-spacing: 8px;
+    margin: 0 0 20px;
+    color: #191919;
+}
+
+.speeding-dashboard-page .story-lede {
+    max-width: 760px;
+    font-size: 18px;
+    line-height: 1.7;
+    color: #1f1f1f;
+    margin: 0;
+}
+
+.speeding-dashboard-page .filter-panel {
+    background: #FFFDF4;
+    border-radius: 22px;
+    padding: 20px 22px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.4fr auto;
+    gap: 16px;
+    align-items: end;
+    box-shadow: 0 16px 36px rgba(119, 76, 0, 0.12);
+    margin-bottom: 22px;
+}
+
+.speeding-dashboard-page .filter-panel label {
+    display: grid;
+    gap: 8px;
+    color: #4d5568;
+    font-weight: 800;
+    font-size: 15px;
+}
+
+.speeding-dashboard-page .filter-panel select {
+    height: 50px;
+    border: 1px solid #D6D6D6;
+    border-radius: 10px;
+    padding: 0 16px;
+    font-size: 16px;
+    background: #ffffff;
+}
+
+.speeding-dashboard-page #resetFilters {
+    height: 50px;
+    padding: 0 24px;
+    border: 2px solid #F15A24;
+    border-radius: 10px;
+    background: #FFFDF4;
+    color: #F15A24;
+    font-weight: 900;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.speeding-dashboard-page #resetFilters:hover {
+    background: #F15A24;
+    color: #ffffff;
+}
+
+.speeding-dashboard-page .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.speeding-dashboard-page .kpi-card {
+    background: #FFFDF4;
+    border-radius: 22px;
+    padding: 28px 24px;
+    min-height: 118px;
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    align-items: center;
+    gap: 18px;
+    box-shadow: 0 14px 30px rgba(119, 76, 0, 0.10);
+    border-left: 4px solid #F7931E;
+}
+
+.speeding-dashboard-page .kpi-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    background: #FFF0C2;
+    border: 1px solid rgba(247, 147, 30, 0.35);
+}
+
+.speeding-dashboard-page .kpi-card p {
+    margin: 0 0 6px;
+    color: #4b5568;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 14px;
+}
+
+.speeding-dashboard-page .kpi-card h2 {
+    margin: 0 0 4px;
+    color: #071426;
+    font-size: 34px;
+    letter-spacing: 2px;
+}
+
+.speeding-dashboard-page .kpi-card span {
+    font-size: 14px;
+    color: #222222;
+}
+
+.speeding-dashboard-page .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    margin-bottom: 22px;
+}
+
+.speeding-dashboard-page .story-chart-card {
+    background: #FFFDF4;
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 0 16px 36px rgba(119, 76, 0, 0.10);
+    box-sizing: border-box;
+}
+
+.speeding-dashboard-page .chart-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 10px;
+}
+
+.speeding-dashboard-page .chart-heading h2 {
+    margin: 0 0 8px;
+    color: #111111;
+    font-size: 23px;
+    letter-spacing: 1.5px;
+}
+
+.speeding-dashboard-page .chart-heading p {
+    margin: 0;
+    color: #111111;
+    font-size: 15px;
+}
+
+.speeding-dashboard-page .info-dot {
+    flex: 0 0 auto;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid #9CA3AF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    color: #111827;
+}
+
+.speeding-dashboard-page svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.speeding-dashboard-page .axis text {
+    font-size: 11px;
+    fill: #111111;
+}
+
+.speeding-dashboard-page .axis path,
+.speeding-dashboard-page .axis line {
+    stroke: #B5B5B5;
+}
+
+.speeding-dashboard-page .grid line {
+    stroke: #E9DFC3;
+    stroke-dasharray: 2 4;
+}
+
+.speeding-dashboard-page .chart-title-label {
+    font-size: 12px;
+    font-weight: 900;
+    fill: #111111;
+}
+
+.speeding-dashboard-page .insight-box {
+    margin-top: 18px;
+    background: #FFF4D7;
+    color: #F15A24;
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 12px;
+    align-items: center;
+    font-weight: 900;
+}
+
+.speeding-dashboard-page .insight-box p {
+    margin: 0;
+    line-height: 1.45;
+}
+
+.speeding-dashboard-page .heatmap-card {
+    width: 100%;
+    margin-bottom: 22px;
+}
+
+.speeding-dashboard-page .html-heatmap {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 22px;
+    padding: 2px 0 12px;
+}
+
+.speeding-dashboard-page .heatmap-loading,
+.speeding-dashboard-page .heatmap-empty {
+    margin: 0;
+    padding: 18px;
+    background: #FFF4D7;
+    border-radius: 12px;
+    font-weight: 800;
+}
+
+.speeding-dashboard-page .heatmap-table {
+    display: grid;
+    gap: 8px;
+    min-width: 760px;
+    align-items: stretch;
+}
+
+.speeding-dashboard-page .heatmap-corner,
+.speeding-dashboard-page .heatmap-year,
+.speeding-dashboard-page .heatmap-jurisdiction,
+.speeding-dashboard-page .heatmap-cell {
+    border-radius: 10px;
+    padding: 14px 10px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.speeding-dashboard-page .heatmap-corner,
+.speeding-dashboard-page .heatmap-year,
+.speeding-dashboard-page .heatmap-jurisdiction {
+    background: #FFEBC0;
+    color: #222222;
+    font-weight: 900;
+}
+
+.speeding-dashboard-page .heatmap-jurisdiction {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.speeding-dashboard-page .heatmap-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+    border: 2px solid #ffffff;
+    font-weight: 900;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.speeding-dashboard-page .heatmap-cell:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
+}
+
+.speeding-dashboard-page .heatmap-missing {
+    color: #555555 !important;
+}
+
+.speeding-dashboard-page .heatmap-legend {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #333333;
+}
+
+.speeding-dashboard-page .heatmap-legend-bar {
+    width: 180px;
+    height: 14px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #FFF3D1, #F15A24);
+    border: 1px solid rgba(0, 0, 0, 0.10);
+}
+
+.speeding-dashboard-page .story-summary,
+.speeding-dashboard-page .data-note {
+    background: #FFFDF4;
+    border-radius: 22px;
+    padding: 26px 30px;
+    box-shadow: 0 16px 36px rgba(119, 76, 0, 0.10);
+    margin-bottom: 22px;
+}
+
+.speeding-dashboard-page .summary-title {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.speeding-dashboard-page .summary-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    background: #FFF4D7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.speeding-dashboard-page .summary-title h2 {
+    margin: 0 0 4px;
+    font-size: 26px;
+}
+
+.speeding-dashboard-page .summary-title p {
+    margin: 0;
+    color: #555555;
+}
+
+.speeding-dashboard-page .story-summary ol {
+    margin: 16px 0 0 22px;
+    padding: 0;
+}
+
+.speeding-dashboard-page .story-summary li {
+    margin-bottom: 10px;
+    line-height: 1.55;
+    font-size: 16px;
+}
+
+.speeding-dashboard-page .data-note p {
+    margin: 0 0 10px;
+    line-height: 1.6;
+}
+
+.speeding-dashboard-page .chart-tooltip {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0;
+    background: rgba(17, 24, 39, 0.95);
+    color: #ffffff;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.45;
+    transform: translate(12px, 12px);
+    z-index: 9999;
+    max-width: 260px;
+}
+
+.speeding-dashboard-page .single-dashboard-button {
+    max-width: 480px;
+}
+
+@media (max-width: 1100px) {
+    .speeding-dashboard-page .filter-panel,
+    .speeding-dashboard-page .kpi-grid,
+    .speeding-dashboard-page .chart-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .speeding-dashboard-page {
+        padding: 28px 18px 70px;
+    }
+
+    .speeding-dashboard-page h1 {
+        font-size: 42px;
+        letter-spacing: 4px;
+    }
+
+    .speeding-dashboard-page .filter-panel,
+    .speeding-dashboard-page .kpi-grid,
+    .speeding-dashboard-page .chart-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .speeding-dashboard-page .kpi-card {
+        grid-template-columns: 64px 1fr;
+    }
+}
+
+
+/* ==========================================================
+   Final compact layout adjustments for v5
+   Keeps About Us accessible and makes the heatmap fit better
+   ========================================================== */
+.nav-links a[href="about_us.html"] {
+    display: inline-block;
+}
+
+.home-dashboard-cards {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    max-width: 620px;
+    gap: 24px;
+}
+
+.speeding-dashboard-page {
+    padding: 34px 36px 70px;
+}
+
+.speeding-dashboard-page .story-dashboard {
+    max-width: 1080px;
+}
+
+.speeding-dashboard-page h1 {
+    font-size: clamp(38px, 5vw, 58px);
+    letter-spacing: 5px;
+    margin-bottom: 16px;
+}
+
+.speeding-dashboard-page .story-lede {
+    max-width: 720px;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.speeding-dashboard-page .filter-panel {
+    padding: 16px 18px;
+    gap: 14px;
+}
+
+.speeding-dashboard-page .filter-panel select,
+.speeding-dashboard-page #resetFilters {
+    height: 44px;
+    font-size: 15px;
+}
+
+.speeding-dashboard-page .kpi-grid {
+    gap: 14px;
+}
+
+.speeding-dashboard-page .kpi-card {
+    padding: 20px 18px;
+    min-height: 102px;
+    grid-template-columns: 58px 1fr;
+    gap: 14px;
+}
+
+.speeding-dashboard-page .kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    font-size: 21px;
+}
+
+.speeding-dashboard-page .kpi-card p {
+    font-size: 12px;
+    letter-spacing: 1.2px;
+}
+
+.speeding-dashboard-page .kpi-card h2 {
+    font-size: 30px;
+}
+
+.speeding-dashboard-page .chart-grid {
+    gap: 18px;
+}
+
+.speeding-dashboard-page .story-chart-card {
+    padding: 18px;
+}
+
+.speeding-dashboard-page .chart-heading {
+    margin-bottom: 6px;
+}
+
+.speeding-dashboard-page .chart-heading h2 {
+    font-size: 20px;
+    letter-spacing: 1.2px;
+}
+
+.speeding-dashboard-page .chart-heading p {
+    font-size: 14px;
+}
+
+.speeding-dashboard-page .insight-box {
+    margin-top: 12px;
+    padding: 13px 15px;
+    font-size: 14px;
+}
+
+.speeding-dashboard-page .html-heatmap {
+    margin-top: 14px;
+    padding-bottom: 6px;
+}
+
+.speeding-dashboard-page .heatmap-table {
+    gap: 6px;
+    min-width: 620px;
+}
+
+.speeding-dashboard-page .heatmap-corner,
+.speeding-dashboard-page .heatmap-year,
+.speeding-dashboard-page .heatmap-jurisdiction,
+.speeding-dashboard-page .heatmap-cell {
+    border-radius: 8px;
+    padding: 8px 7px;
+    font-size: 12px;
+}
+
+.speeding-dashboard-page .heatmap-cell {
+    min-height: 38px;
+}
+
+.speeding-dashboard-page .heatmap-legend {
+    margin-top: 8px;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.speeding-dashboard-page .heatmap-legend-bar {
+    width: 130px;
+    height: 10px;
+}
+
+.speeding-dashboard-page .story-summary,
+.speeding-dashboard-page .data-note {
+    padding: 20px 24px;
+}
+
+@media (max-width: 900px) {
+    .home-dashboard-cards {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+    }
+}
+
+
+/* Custom polished info tooltip - replaces browser default title tooltip */
+.speeding-dashboard-page .info-dot {
+    position: relative;
+    cursor: help;
+    background: #FFFDF4;
+    border: 1px solid #9CA3AF;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+}
+
+.speeding-dashboard-page .info-dot::after {
+    content: attr(data-info);
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: max-content;
+    max-width: 300px;
+    background: #202020;
+    color: #ffffff;
+    padding: 12px 14px;
+    border-radius: 12px;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.22);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.45;
+    letter-spacing: 0;
+    text-align: left;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+    z-index: 50;
+    pointer-events: none;
+}
+
+.speeding-dashboard-page .info-dot::before {
+    content: "";
+    position: absolute;
+    top: calc(100% + 5px);
+    right: 8px;
+    border-width: 0 7px 7px 7px;
+    border-style: solid;
+    border-color: transparent transparent #202020 transparent;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.18s ease, visibility 0.18s ease;
+    z-index: 51;
+    pointer-events: none;
+}
+
+.speeding-dashboard-page .info-dot:hover::after,
+.speeding-dashboard-page .info-dot:focus-visible::after,
+.speeding-dashboard-page .info-dot:hover::before,
+.speeding-dashboard-page .info-dot:focus-visible::before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.speeding-dashboard-page .info-dot:focus-visible {
+    outline: 3px solid rgba(241, 90, 36, 0.35);
+    outline-offset: 3px;
+}
+
+/* Slight compact polish so the dashboard fits better on laptop screens */
+.speeding-dashboard-page .story-dashboard {
+    max-width: 1240px;
+}
+
+.speeding-dashboard-page .story-chart-card {
+    padding: 22px;
+}
+
+.speeding-dashboard-page .html-heatmap {
+    margin-top: 14px;
+}
+
+.speeding-dashboard-page .heatmap-cell,
+.speeding-dashboard-page .heatmap-corner,
+.speeding-dashboard-page .heatmap-year,
+.speeding-dashboard-page .heatmap-jurisdiction {
+    padding: 10px 8px;
+    min-height: 40px;
+}
+body {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: #FFD84D;
+    font-family: Arial, sans-serif;
+}
+
+nav{
+    background-color: #F7931E;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 12px;
+}
+
+nav a{
+    color: #000000;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 8px 16px;
+    border-radius: 24px;
+    transition: background 0.3s;
+}
+
+nav a:hover{
+    background-color: #F15A24;
+    color: #FFFFFF;
+}
+
+nav a.active{
+    background-color: #F15A24;
+    color: #FFFFFF;
+}
+.page {
+    position: relative;
+}
+.home-return-link {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 66px;
+    height: 66px;
+    display: inline-flex;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.14);
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    margin-right: 180px;
+    margin-top: 40px;
+}
+.home-return-link img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+h1 {
+    color: #333333;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.question-structure {
+    margin: 24px 0 28px;
+    background: #F9FAFB;
+    border: 8px solid #ffae00b9;
+    border-radius: 36px;
+    padding: 32px 24px;
+    margin: 0 auto;
+    max-width: 1400px;
+    margin-bottom: 96px;
+}
+
+.storyboard-title {
+    font-size: 28px;
+    margin-top: 64px;
+    margin-bottom: 4px;
+    color: #222;
+}
+
+.storyboard-subtitle {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 18px;
+}
+
+.story-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.story-card-large {
+    border: 1px solid #cfcfcf;
+    border-radius: 14px;
+    background: #FFD84D;
+    min-height: 160px;
+    padding: 32px 16px 16px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    align-items: center;
+    gap: 18px;
+}
+
+.story-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #F7931E;
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 12px 0 12px 0;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.story-icon {
+    font-size: 40px;
+    text-align: center;
+    line-height: 1;
+    color: #222;
+    filter: grayscale(100%);
+}
+
+.story-card-large p {
+    font-size: 16px;
+    color: #333;
+    line-height: 1.55;
+}
+
+.home-image {
+    width: 260px;
+    height: 260px;
+    object-fit: cover;
+    border-radius: 24px;
+    display: block;
+    margin: 0 auto 20px;
+}
+
+.home-description {
+    max-width: 400px;
+    line-height: 1.8;
+    border-radius: 24px;
+    border: 8px solid #F7931E;
+    padding: 20px;            
+    background-color: #FFD84D;  
+    text-align: left;
+}
+
+.home-content {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 70px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 40px 70px;
+}
+
+.pic-description {
+    width: 360px;
+    border-radius: 24px;
+    padding: 24px;
+    background-color: #F9FAFB;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.home-description {
+    width: 100%;
+    line-height: 1.7;
+    border-radius: 24px;
+    border: 6px solid #F7931E;
+    padding: 24px;
+    background-color: #FFD84D;
+    text-align: left;
+    box-sizing: border-box;
+}
+
+.home-description h2 {
+    font-size: 26px;
+    margin-top: 0;
+}
+
+.home-description p {
+    font-size: 15px;
+    margin-bottom: 0;
+}
+
+.dashboard-button {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 42px;
+    text-align: left;
+    max-width: 760px;
+    margin-top: 40px;
+}
+
+.dashboard-link {
+    display: block;
+    min-height: 140px;
+    background-color: #F9FAFB;
+    color: #000;
+    padding: 26px;
+    border-radius: 14px;
+    text-decoration: none;
+    line-height: 1.5;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+}
+
+.dashboard-link h3,
+.dashboard-link p {
+    margin: 0;
+    text-decoration: none;
+}
+
+.dashboard-link h3 {
+    font-size: 20px;
+    padding-bottom: 8px;
+}
+
+.dashboard-link:hover {
+    background-color: #F7931E;
+    color: #fff;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#about-us {
+    text-align: center;
+    padding: 30px 40px 80px;
+}
+
+#about-us h1 {
+    font-size: 32px;
+    margin-top: 20px;
+    margin-bottom: 34px;
+}
+
+.about-us-content {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 60px;
+    flex-wrap: wrap;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.about-us-member {
+    width: 340px;
+    background-color: #F9FAFB;
+    border-radius: 24px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+}
+
+.team-member-image {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto 18px;
+}
+
+.about-us-member h2 {
+    font-size: 21px;
+    margin: 10px 0 14px;
+}
+
+.about-us-member p {
+    font-size: 15px;
+    line-height: 1.6;
+    text-align: left;
+    margin: 0;
+}
+
+.about-us-description {
+    max-width: 760px;
+    border-radius: 24px;
+    padding: 36px 46px;
+    background-color: #F9FAFB;
+    margin: 50px auto 0;
+    text-align: left;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+}
+
+.about-us-description h2 {
+    font-size: 24px;
+    margin-top: 0;
+    margin-bottom: 14px;
+}
+
+.about-us-description p {
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.home-image-placeholder {
+  width: 260px;
+  height: 220px;
+  background: #f5f5f5;
+  border-radius: 18px;
+  border: 3px dashed #ff8c00;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  padding: 24px;
+}
+
+.home-image-placeholder h2 {
+  font-size: 22px;
+  margin: 0;
+}
+
+.home-image-placeholder p {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.speeding-visual-card {
+    width: 260px;
+    height: 220px;
+    background: linear-gradient(135deg, #fff7d6, #ffe08a);
+    border: 5px solid #ff8c00;
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.speed-camera-icon {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    font-size: 32px;
+}
+
+.speedometer {
+    width: 120px;
+    height: 60px;
+    border: 8px solid #222;
+    border-bottom: none;
+    border-radius: 120px 120px 0 0;
+    position: relative;
+    margin-top: 20px;
+}
+
+.needle {
+    width: 55px;
+    height: 5px;
+    background: #ff4b2b;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform-origin: left center;
+    transform: rotate(-35deg);
+    border-radius: 5px;
+}
+
+.road-lines {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.road-lines span {
+    width: 40px;
+    height: 8px;
+    background: #222;
+    border-radius: 8px;
+}
+
+.speeding-visual-card p {
+    font-weight: bold;
+    font-size: 17px;
+    margin: 8px 0 0;
+}
+
+.page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 40px 80px;
+    box-sizing: border-box;
+}
+
+.page h1 {
+    font-size: 34px;
+    margin: 20px 0 34px;
+    color: #333333;
+}
+
+.home-return-link {
+    position: absolute;
+    top: 28px;
+    right: 40px;
+    width: 56px;
+    height: 56px;
+    margin: 0;
+    display: inline-flex;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+    background: #ffffff;
+}
+
+.home-return-link img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.fine-trend-content,
+.fine-jurisdiction-content,
+.testing-activity-content,
+.drug-outcome-content,
+.drug-trend-content {
+    max-width: 1050px;
+    min-height: 460px;
+    margin: 0 auto 60px;
+    background: #F9FAFB;
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+}
+
+.fine-trend-content svg,
+.fine-jurisdiction-content svg,
+.testing-activity-content svg,
+.drug-outcome-content svg,
+.drug-trend-content svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.storyboard-title {
+    font-size: 30px;
+    margin: 20px 0 6px;
+    color: #333333;
+}
+
+.storyboard-subtitle {
+    font-size: 18px;
+    color: #555555;
+    margin-bottom: 22px;
+}
+
+.question-structure {
+    max-width: 1150px;
+    background: #F9FAFB;
+    border: none;
+    border-radius: 28px;
+    padding: 32px;
+    margin: 0 auto 70px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+}
+
+.story-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    max-width: 100%;
+}
+
+.story-card-large {
+    background: #FFD84D;
+    border: 3px solid #F7931E;
+    border-radius: 18px;
+    min-height: 165px;
+    padding: 52px 18px 20px;
+    display: block;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.story-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #F7931E;
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 14px 0 14px 0;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.story-icon {
+    display: none;
+}
+
+.story-card-large p {
+    font-size: 15px;
+    color: #222222;
+    line-height: 1.55;
+    margin: 0;
+    text-align: left;
+}
+
+@media (max-width: 1000px) {
+    .story-card-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .home-return-link {
+        right: 24px;
+    }
+}
+
+@media (max-width: 700px) {
+    .story-card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page {
+        padding: 20px;
+    }
+}
+
+/* ==========================================================
+   Speeding Enforcement Dashboard styles
+   Scoped to Page 1 only
+   ========================================================== */
+.speeding-dashboard-page {
+    max-width: 1400px;
+    padding: 46px 48px 90px;
+    background: radial-gradient(circle at top left, #FFF3B0 0, #FFD84D 42%, #FFD84D 100%);
+    text-align: left;
+}
+
+.speeding-dashboard-page .story-dashboard {
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.speeding-dashboard-page .story-hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: 32px;
+    margin-bottom: 28px;
+}
+
+.speeding-dashboard-page .hero-visual {
+    display: none;
+}
+
+.speeding-dashboard-page .eyebrow {
+    color: #F15A24;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 3px;
+    margin: 0 0 12px;
+}
+
+.speeding-dashboard-page h1 {
+    font-size: clamp(44px, 6vw, 72px);
+    line-height: 1.08;
+    letter-spacing: 8px;
+    margin: 0 0 20px;
+    color: #191919;
+}
+
+.speeding-dashboard-page .story-lede {
+    max-width: 760px;
+    font-size: 18px;
+    line-height: 1.7;
+    color: #1f1f1f;
+    margin: 0;
+}
+
+.speeding-dashboard-page .filter-panel {
+    background: #FFFDF4;
+    border-radius: 22px;
+    padding: 20px 22px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.4fr auto;
+    gap: 16px;
+    align-items: end;
+    box-shadow: 0 16px 36px rgba(119, 76, 0, 0.12);
+    margin-bottom: 22px;
+}
+
+.speeding-dashboard-page .filter-panel label {
+    display: grid;
+    gap: 8px;
+    color: #4d5568;
+    font-weight: 800;
+    font-size: 15px;
+}
+
+.speeding-dashboard-page .filter-panel select {
+    height: 50px;
+    border: 1px solid #D6D6D6;
+    border-radius: 10px;
+    padding: 0 16px;
+    font-size: 16px;
+    background: #ffffff;
+}
+
+.speeding-dashboard-page #resetFilters {
+    height: 50px;
+    padding: 0 24px;
+    border: 2px solid #F15A24;
+    border-radius: 10px;
+    background: #FFFDF4;
+    color: #F15A24;
+    font-weight: 900;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.speeding-dashboard-page #resetFilters:hover {
+    background: #F15A24;
+    color: #ffffff;
+}
+
+.speeding-dashboard-page .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.speeding-dashboard-page .kpi-card {
+    background: #FFFDF4;
+    border-radius: 22px;
+    padding: 28px 24px;
+    min-height: 118px;
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    align-items: center;
+    gap: 18px;
+    box-shadow: 0 14px 30px rgba(119, 76, 0, 0.10);
+    border-left: 4px solid #F7931E;
+}
+
+.speeding-dashboard-page .kpi-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    background: #FFF0C2;
+    border: 1px solid rgba(247, 147, 30, 0.35);
+}
+
+.speeding-dashboard-page .kpi-card p {
+    margin: 0 0 6px;
+    color: #4b5568;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 14px;
+}
+
+.speeding-dashboard-page .kpi-card h2 {
+    margin: 0 0 4px;
+    color: #071426;
+    font-size: 34px;
+    letter-spacing: 2px;
+}
+
+.speeding-dashboard-page .kpi-card span {
+    font-size: 14px;
+    color: #222222;
+}
+
+.speeding-dashboard-page .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    margin-bottom: 22px;
+}
+
+.speeding-dashboard-page .story-chart-card {
+    background: #FFFDF4;
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 0 16px 36px rgba(119, 76, 0, 0.10);
+    box-sizing: border-box;
+}
+
+.speeding-dashboard-page .chart-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 10px;
+}
+
+.speeding-dashboard-page .chart-heading h2 {
+    margin: 0 0 8px;
+    color: #111111;
+    font-size: 23px;
+    letter-spacing: 1.5px;
+}
+
+.speeding-dashboard-page .chart-heading p {
+    margin: 0;
+    color: #111111;
+    font-size: 15px;
+}
+
+.speeding-dashboard-page .info-dot {
+    flex: 0 0 auto;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid #9CA3AF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    color: #111827;
+}
+
+.speeding-dashboard-page svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.speeding-dashboard-page .axis text {
+    font-size: 11px;
+    fill: #111111;
+}
+
+.speeding-dashboard-page .axis path,
+.speeding-dashboard-page .axis line {
+    stroke: #B5B5B5;
+}
+
+.speeding-dashboard-page .grid line {
+    stroke: #E9DFC3;
+    stroke-dasharray: 2 4;
+}
+
+.speeding-dashboard-page .chart-title-label {
+    font-size: 12px;
+    font-weight: 900;
+    fill: #111111;
+}
+
+.speeding-dashboard-page .insight-box {
+    margin-top: 18px;
+    background: #FFF4D7;
+    color: #F15A24;
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 12px;
+    align-items: center;
+    font-weight: 900;
+}
+
+.speeding-dashboard-page .insight-box p {
+    margin: 0;
+    line-height: 1.45;
+}
+
+.speeding-dashboard-page .heatmap-card {
+    width: 100%;
+    margin-bottom: 22px;
+}
+
+.speeding-dashboard-page .html-heatmap {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 22px;
+    padding: 2px 0 12px;
+}
+
+.speeding-dashboard-page .heatmap-loading,
+.speeding-dashboard-page .heatmap-empty {
+    margin: 0;
+    padding: 18px;
+    background: #FFF4D7;
+    border-radius: 12px;
+    font-weight: 800;
+}
+
+.speeding-dashboard-page .heatmap-table {
+    display: grid;
+    gap: 8px;
+    min-width: 760px;
+    align-items: stretch;
+}
+
+.speeding-dashboard-page .heatmap-corner,
+.speeding-dashboard-page .heatmap-year,
+.speeding-dashboard-page .heatmap-jurisdiction,
+.speeding-dashboard-page .heatmap-cell {
+    border-radius: 10px;
+    padding: 14px 10px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.speeding-dashboard-page .heatmap-corner,
+.speeding-dashboard-page .heatmap-year,
+.speeding-dashboard-page .heatmap-jurisdiction {
+    background: #FFEBC0;
+    color: #222222;
+    font-weight: 900;
+}
+
+.speeding-dashboard-page .heatmap-jurisdiction {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.speeding-dashboard-page .heatmap-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+    border: 2px solid #ffffff;
+    font-weight: 900;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.speeding-dashboard-page .heatmap-cell:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
+}
+
+.speeding-dashboard-page .heatmap-missing {
+    color: #555555 !important;
+}
+
+.speeding-dashboard-page .heatmap-legend {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #333333;
+}
+
+.speeding-dashboard-page .heatmap-legend-bar {
+    width: 180px;
+    height: 14px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #FFF3D1, #F15A24);
+    border: 1px solid rgba(0, 0, 0, 0.10);
+}
+
+.speeding-dashboard-page .story-summary,
+.speeding-dashboard-page .data-note {
+    background: #FFFDF4;
+    border-radius: 22px;
+    padding: 26px 30px;
+    box-shadow: 0 16px 36px rgba(119, 76, 0, 0.10);
+    margin-bottom: 22px;
+}
+
+.speeding-dashboard-page .summary-title {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.speeding-dashboard-page .summary-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    background: #FFF4D7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.speeding-dashboard-page .summary-title h2 {
+    margin: 0 0 4px;
+    font-size: 26px;
+}
+
+.speeding-dashboard-page .summary-title p {
+    margin: 0;
+    color: #555555;
+}
+
+.speeding-dashboard-page .story-summary ol {
+    margin: 16px 0 0 22px;
+    padding: 0;
+}
+
+.speeding-dashboard-page .story-summary li {
+    margin-bottom: 10px;
+    line-height: 1.55;
+    font-size: 16px;
+}
+
+.speeding-dashboard-page .data-note p {
+    margin: 0 0 10px;
+    line-height: 1.6;
+}
+
+.speeding-dashboard-page .chart-tooltip {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0;
+    background: rgba(17, 24, 39, 0.95);
+    color: #ffffff;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.45;
+    transform: translate(12px, 12px);
+    z-index: 9999;
+    max-width: 260px;
+}
+
+.speeding-dashboard-page .single-dashboard-button {
+    max-width: 480px;
+}
+
+@media (max-width: 1100px) {
+    .speeding-dashboard-page .filter-panel,
+    .speeding-dashboard-page .kpi-grid,
+    .speeding-dashboard-page .chart-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .speeding-dashboard-page {
+        padding: 28px 18px 70px;
+    }
+
+    .speeding-dashboard-page h1 {
+        font-size: 42px;
+        letter-spacing: 4px;
+    }
+
+    .speeding-dashboard-page .filter-panel,
+    .speeding-dashboard-page .kpi-grid,
+    .speeding-dashboard-page .chart-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .speeding-dashboard-page .kpi-card {
+        grid-template-columns: 64px 1fr;
+    }
+}
+
+
+/* ==========================================================
+   Final compact layout adjustments for v5
+   Keeps About Us accessible and makes the heatmap fit better
+   ========================================================== */
+.nav-links a[href="about_us.html"] {
+    display: inline-block;
+}
+
+.home-dashboard-cards {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    max-width: 620px;
+    gap: 24px;
+}
+
+.speeding-dashboard-page {
+    padding: 34px 36px 70px;
+}
+
+.speeding-dashboard-page .story-dashboard {
+    max-width: 1080px;
+}
+
+.speeding-dashboard-page h1 {
+    font-size: clamp(38px, 5vw, 58px);
+    letter-spacing: 5px;
+    margin-bottom: 16px;
+}
+
+.speeding-dashboard-page .story-lede {
+    max-width: 720px;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.speeding-dashboard-page .filter-panel {
+    padding: 16px 18px;
+    gap: 14px;
+}
+
+.speeding-dashboard-page .filter-panel select,
+.speeding-dashboard-page #resetFilters {
+    height: 44px;
+    font-size: 15px;
+}
+
+.speeding-dashboard-page .kpi-grid {
+    gap: 14px;
+}
+
+.speeding-dashboard-page .kpi-card {
+    padding: 20px 18px;
+    min-height: 102px;
+    grid-template-columns: 58px 1fr;
+    gap: 14px;
+}
+
+.speeding-dashboard-page .kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    font-size: 21px;
+}
+
+.speeding-dashboard-page .kpi-card p {
+    font-size: 12px;
+    letter-spacing: 1.2px;
+}
+
+.speeding-dashboard-page .kpi-card h2 {
+    font-size: 30px;
+}
+
+.speeding-dashboard-page .chart-grid {
+    gap: 18px;
+}
+
+.speeding-dashboard-page .story-chart-card {
+    padding: 18px;
+}
+
+.speeding-dashboard-page .chart-heading {
+    margin-bottom: 6px;
+}
+
+.speeding-dashboard-page .chart-heading h2 {
+    font-size: 20px;
+    letter-spacing: 1.2px;
+}
+
+.speeding-dashboard-page .chart-heading p {
+    font-size: 14px;
+}
+
+.speeding-dashboard-page .insight-box {
+    margin-top: 12px;
+    padding: 13px 15px;
+    font-size: 14px;
+}
+
+.speeding-dashboard-page .html-heatmap {
+    margin-top: 14px;
+    padding-bottom: 6px;
+}
+
+.speeding-dashboard-page .heatmap-table {
+    gap: 6px;
+    min-width: 620px;
+}
+
+.speeding-dashboard-page .heatmap-corner,
+.speeding-dashboard-page .heatmap-year,
+.speeding-dashboard-page .heatmap-jurisdiction,
+.speeding-dashboard-page .heatmap-cell {
+    border-radius: 8px;
+    padding: 8px 7px;
+    font-size: 12px;
+}
+
+.speeding-dashboard-page .heatmap-cell {
+    min-height: 38px;
+}
+
+.speeding-dashboard-page .heatmap-legend {
+    margin-top: 8px;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.speeding-dashboard-page .heatmap-legend-bar {
+    width: 130px;
+    height: 10px;
+}
+
+.speeding-dashboard-page .story-summary,
+.speeding-dashboard-page .data-note {
+    padding: 20px 24px;
+}
+
+@media (max-width: 900px) {
+    .home-dashboard-cards {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+    }
+}
+
+
+/* Custom polished info tooltip - replaces browser default title tooltip */
+.speeding-dashboard-page .info-dot {
+    position: relative;
+    cursor: help;
+    background: #FFFDF4;
+    border: 1px solid #9CA3AF;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+}
+
+.speeding-dashboard-page .info-dot::after {
+    content: attr(data-info);
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: max-content;
+    max-width: 300px;
+    background: #202020;
+    color: #ffffff;
+    padding: 12px 14px;
+    border-radius: 12px;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.22);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.45;
+    letter-spacing: 0;
+    text-align: left;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+    z-index: 50;
+    pointer-events: none;
+}
+
+.speeding-dashboard-page .info-dot::before {
+    content: "";
+    position: absolute;
+    top: calc(100% + 5px);
+    right: 8px;
+    border-width: 0 7px 7px 7px;
+    border-style: solid;
+    border-color: transparent transparent #202020 transparent;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.18s ease, visibility 0.18s ease;
+    z-index: 51;
+    pointer-events: none;
+}
+
+.speeding-dashboard-page .info-dot:hover::after,
+.speeding-dashboard-page .info-dot:focus-visible::after,
+.speeding-dashboard-page .info-dot:hover::before,
+.speeding-dashboard-page .info-dot:focus-visible::before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.speeding-dashboard-page .info-dot:focus-visible {
+    outline: 3px solid rgba(241, 90, 36, 0.35);
+    outline-offset: 3px;
+}
+
+/* Slight compact polish so the dashboard fits better on laptop screens */
+.speeding-dashboard-page .story-dashboard {
+    max-width: 1240px;
+}
+
+.speeding-dashboard-page .story-chart-card {
+    padding: 22px;
+}
+
+.speeding-dashboard-page .html-heatmap {
+    margin-top: 14px;
+}
+
+.speeding-dashboard-page .heatmap-cell,
+.speeding-dashboard-page .heatmap-corner,
+.speeding-dashboard-page .heatmap-year,
+.speeding-dashboard-page .heatmap-jurisdiction {
+    padding: 10px 8px;
+    min-height: 40px;
+}
