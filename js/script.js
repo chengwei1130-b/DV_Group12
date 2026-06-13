@@ -19,8 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function loadPageContent(url, pushToHistory = true) {
-    // CACHE BUSTER: Forces the browser to bypass memory and grab the newest HTML
+function loadPageContent(url, pushToHistory = true) {
     const cacheBusterUrl = `${url}?t=${Date.now()}`;
 
     fetch(cacheBusterUrl, { cache: "no-store" })
@@ -40,7 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         contentContainer.replaceChildren(section.cloneNode(true));
 
-        // Run the D3 renderer only after the fragment is live in the DOM.
         const renderer = pageRenderers[url];
         if (typeof renderer === "function") renderer();
 
@@ -52,6 +50,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
         setActiveLink(url);
         window.scrollTo(0, 0);
+
+        // ==========================================
+        // NEW CODE: Hide floating home button on home page
+        // ==========================================
+        const floatingHomeBtn = document.querySelector(".floating-home");
+        if (floatingHomeBtn) {
+          if (url === "home.html" || url === "") {
+            floatingHomeBtn.style.display = "none";
+          } else {
+            // Restore it using 'grid' because your CSS sets .float-action to display: grid
+            floatingHomeBtn.style.display = "grid"; 
+          }
+        }
+        // ==========================================
+
       })
       .catch(error => {
         console.error("Error loading page:", error);

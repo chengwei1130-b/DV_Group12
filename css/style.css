@@ -227,7 +227,7 @@ a {
 .page-heading h1 {
   margin: 0;
   color: var(--ink);
-  font-size: clamp(48px, 7vw, 82px);
+  font-size: clamp(48px, 7vw, 42px);
   font-weight: 900;
   line-height: 1.05;
   letter-spacing: -1px;
@@ -885,7 +885,7 @@ a {
 .floating-home {
   position: fixed;
   top: 116px;
-  right: max(28px, calc((100vw - 1180px) / 2 + 28px));
+  right: 64px;
   color: #111827;
   background: var(--cream);
   border: 0;
@@ -1104,7 +1104,7 @@ a {
 .section-heading h1 {
   margin: 0;
   color: var(--ink);
-  font-size: clamp(48px, 7vw, 82px);
+  font-size: clamp(48px, 7vw, 42px);
   font-weight: 900;
   line-height: 1.05;
   letter-spacing: -1px;
