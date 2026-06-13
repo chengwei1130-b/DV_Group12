@@ -1,3 +1,45 @@
+
+function d2EnsureHeatmapContent(text) {
+  const card = document.querySelector('#drug-dashboard .heatmap-card');
+  if (!card) return;
+
+  const chartContainer = card.querySelector('#d2-heatmap-chart');
+  let insightBox = card.querySelector(':scope > .insight-box') || card.querySelector('.insight-box');
+
+  // Use the existing heatmap insight box from dashboard2.html. If it is missing,
+  // create the same structure as a fallback so the content under the heatmap is always visible.
+  if (!insightBox) {
+    insightBox = document.createElement('div');
+    insightBox.className = 'insight-box heatmap-inline-insight';
+    insightBox.innerHTML = '<span aria-hidden="true">▦</span><p id="d2HeatmapInsight"></p>';
+  }
+
+  insightBox.classList.add('heatmap-inline-insight');
+
+  if (chartContainer && insightBox.previousElementSibling !== chartContainer) {
+    chartContainer.insertAdjacentElement('afterend', insightBox);
+  }
+
+  const textTarget = insightBox.querySelector('p') || document.querySelector('#d2HeatmapInsight');
+  if (textTarget) textTarget.textContent = text;
+
+  insightBox.style.display = 'flex';
+  insightBox.style.visibility = 'visible';
+  insightBox.style.opacity = '1';
+
+  d3.selectAll('#d2HeatmapInsight').text(text);
+  d3.selectAll('#d2SummaryThree, #d2Summary3').text(text);
+
+  const dashboard = document.querySelector('#drug-dashboard .story-dashboard');
+  if (dashboard) {
+    dashboard.querySelectorAll('.story-summary, .data-note').forEach(element => {
+      element.style.display = 'block';
+      element.style.visibility = 'visible';
+      element.style.opacity = '1';
+    });
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // js/d2_heatmap.js
 // ─────────────────────────────────────────────────────────────────────────────
@@ -25,7 +67,9 @@ function d2DrawHeatmap(data, allData) {
   container.selectAll("*").interrupt().remove();
 
   if (!data || data.length === 0) {
-    container.append("p").attr("class", "heatmap-empty").style("padding", "24px").style("text-align", "center").text("No data available.");
+    const message = "No heatmap data available for the selected filters.";
+    container.append("p").attr("class", "heatmap-empty").style("padding", "24px").style("text-align", "center").text(message);
+    d2EnsureHeatmapContent(message);
     return;
   }
 
@@ -117,5 +161,9 @@ function d2DrawHeatmap(data, allData) {
   legend.append("text").attr("x", 130).attr("y", 30).attr("font-size", 10).attr("text-anchor", "end").attr("fill", "#374151").text("High");
 
   const maxCell = d3.greatest(cells.filter(d => d.active), d => d.val);
-  d3.select("#d2HeatmapInsight").text(maxCell ? `${maxCell.jur} in ${maxCell.year} had the highest positive drug test count (${d3.format(",")(maxCell.val)}).` : "No insight.");
+  const heatmapMessage = maxCell
+    ? `${maxCell.jur} in ${maxCell.year} had the highest positive drug test count (${d3.format(",")(maxCell.val)}).`
+    : "No heatmap insight available for the selected filters.";
+
+  d2EnsureHeatmapContent(heatmapMessage);
 }

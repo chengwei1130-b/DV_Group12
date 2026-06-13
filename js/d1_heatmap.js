@@ -1,3 +1,45 @@
+
+function ensureD1HeatmapContent(text) {
+  const card = document.querySelector('#dashboard1 .heatmap-card');
+  if (!card) return;
+
+  const chartContainer = card.querySelector('#d1-heatmap-chart');
+  let insightBox = card.querySelector(':scope > .insight-box') || card.querySelector('.insight-box');
+
+  // Use the existing heatmap insight box from dashboard1.html. If it is missing,
+  // create the same structure as a fallback so the content under the heatmap is always visible.
+  if (!insightBox) {
+    insightBox = document.createElement('div');
+    insightBox.className = 'insight-box heatmap-inline-insight';
+    insightBox.innerHTML = '<span aria-hidden="true">▦</span><p id="heatmapInsight"></p>';
+  }
+
+  insightBox.classList.add('heatmap-inline-insight');
+
+  if (chartContainer && insightBox.previousElementSibling !== chartContainer) {
+    chartContainer.insertAdjacentElement('afterend', insightBox);
+  }
+
+  const textTarget = insightBox.querySelector('p') || document.querySelector('#heatmapInsight');
+  if (textTarget) textTarget.textContent = text;
+
+  insightBox.style.display = 'flex';
+  insightBox.style.visibility = 'visible';
+  insightBox.style.opacity = '1';
+
+  d3.selectAll('#heatmapInsight').text(text);
+  d3.selectAll('#summaryThree, #d1SummaryThree, #d1Summary3').text(text);
+
+  const dashboard = document.querySelector('#dashboard1 .story-dashboard');
+  if (dashboard) {
+    dashboard.querySelectorAll('.story-summary, .data-note').forEach(element => {
+      element.style.display = 'block';
+      element.style.visibility = 'visible';
+      element.style.opacity = '1';
+    });
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // js/d1_heatmap.js
 // ─────────────────────────────────────────────────────────────────────────────
@@ -36,7 +78,9 @@ function drawHeatmap(data, allData) {
     : [selectedJurisdiction];
 
   if (!years.length || !jurisdictions.length) {
-    container.append("p").attr("class", "heatmap-empty").text("No heatmap data available.");
+    const message = "No heatmap data available for the selected filters.";
+    container.append("p").attr("class", "heatmap-empty").text(message);
+    ensureD1HeatmapContent(message);
     return;
   }
 
@@ -113,19 +157,9 @@ function drawHeatmap(data, allData) {
   legend.append("text").attr("x", 130).attr("y", 30).attr("font-size", 10).attr("text-anchor", "end").attr("fill", "#374151").text("High");
 
   const maxCell = d3.greatest(cells.filter(d => d.active), d => d.value);
-// =========================================================================
-  // CRITICAL FIX: Safe Insight Generation for Dashboard 1 Heatmap
-  // =========================================================================
-  try {
-    const activeCells = cells.filter(d => d.active);
-    if (activeCells.length > 0) {
-      const maxCell = activeCells.reduce((prev, curr) => (prev.value > curr.value) ? prev : curr);
-      d3.select("#heatmapInsight").text(`${maxCell.jurisdiction} in ${maxCell.year} shows the highest fine total in the selected view.`);
-    } else {
-      d3.select("#heatmapInsight").text("No insight.");
-    }
-  } catch (error) {
-    console.error("Failed to generate D1 Heatmap insight:", error);
-    d3.select("#heatmapInsight").text("No insight available.");
-  }
-} // <-- This is the final closing bracket of the drawHeatmap function
+  const heatmapMessage = maxCell
+    ? `${maxCell.jurisdiction} in ${maxCell.year} shows the highest fine total in the selected view.`
+    : "No heatmap insight available for the selected filters.";
+
+  ensureD1HeatmapContent(heatmapMessage);
+}

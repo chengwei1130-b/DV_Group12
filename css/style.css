@@ -2074,3 +2074,43 @@ a {
   background: #fff8e6 !important;
   outline: none !important;
 }
+
+
+/* ==========================================================
+   Heatmap content visibility fix
+   - Keeps heatmap horizontal scrolling inside the chart container only.
+   - Forces the existing insight box, story summary, and data note below heatmaps
+     to remain visible after SVG rendering.
+   ========================================================== */
+.heatmap-card {
+  overflow: visible !important;
+}
+
+.heatmap-card #d1-heatmap-chart,
+.heatmap-card #d2-heatmap-chart,
+.fine-trend-heatmap-svg,
+.drug-outcome-content {
+  width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  display: block !important;
+}
+
+.heatmap-card .insight-box,
+.heatmap-inline-insight {
+  margin-top: 18px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  clear: both !important;
+}
+
+.story-dashboard > .story-summary,
+.story-dashboard > .data-note {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  clear: both !important;
+}
