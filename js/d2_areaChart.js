@@ -49,14 +49,14 @@ function d2DrawAreaChart(data) {
   const lineGen = d3.line().x(d => x(d.data.year)).y(d => y(d[1])).curve(d3.curveMonotoneX);
 
   root.selectAll("path.d2-area").data(stacked, d => d.key).join(
-    enter => enter.append("path").attr("class", "d2-area").attr("fill", d => D2_JURISDICTION_COLORS[d.key] || "#999").attr("fill-opacity", 0.35).attr("d", d => areaGen(d.map(p => ({ ...p, data: { ...p.data, year: p.data.year } })))),
-    update => update.transition(t).attr("fill", d => D2_JURISDICTION_COLORS[d.key] || "#999").attr("d", areaGen),
+    enter => enter.append("path").attr("class", "d2-area").attr("data-jurisdiction", d => d.key).attr("fill", d => D2_JURISDICTION_COLORS[d.key] || "#999").attr("fill-opacity", 0.35).attr("d", d => areaGen(d.map(p => ({ ...p, data: { ...p.data, year: p.data.year } })))),
+    update => update.attr("data-jurisdiction", d => d.key).transition(t).attr("fill", d => D2_JURISDICTION_COLORS[d.key] || "#999").attr("d", areaGen),
     exit => exit.remove()
   );
 
   root.selectAll("path.d2-area-line").data(stacked, d => d.key).join(
-    enter => enter.append("path").attr("class", "d2-area-line").attr("fill", "none").attr("stroke", d => D2_JURISDICTION_COLORS[d.key] || "#999").attr("stroke-width", 2).attr("d", lineGen),
-    update => update.transition(t).attr("stroke", d => D2_JURISDICTION_COLORS[d.key] || "#999").attr("d", lineGen),
+    enter => enter.append("path").attr("class", "d2-area-line").attr("data-jurisdiction", d => d.key).attr("fill", "none").attr("stroke", d => D2_JURISDICTION_COLORS[d.key] || "#999").attr("stroke-width", 2).attr("d", lineGen),
+    update => update.attr("data-jurisdiction", d => d.key).transition(t).attr("stroke", d => D2_JURISDICTION_COLORS[d.key] || "#999").attr("d", lineGen),
     exit => exit.remove()
   );
 

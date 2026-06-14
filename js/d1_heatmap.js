@@ -1,6 +1,3 @@
-
-
-
 function ensureD1DirectVisibleSummary(card, heatmapText) {
   if (!card) return;
 
@@ -287,8 +284,10 @@ function drawHeatmap(data, allData) {
       .attr("x", d => d.xi * cellWidth).attr("y", d => d.yi * cellHeight)
       .attr("width", Math.max(0, cellWidth - 3)).attr("height", Math.max(0, cellHeight - 3))
       .attr("rx", 8).style("cursor", "pointer").attr("fill", "#E5E7EB").attr("opacity", 0)
+      .attr("data-value", d => d.active ? d.value : null)
       .call(e => e.transition().duration(CHART_ANIMATION_DURATION).ease(chartEase).attr("fill", d => d.active ? colorScale(d.value) : "#E5E7EB").attr("opacity", 1)),
-    update => update.call(u => u.transition().duration(CHART_ANIMATION_DURATION).ease(chartEase).attr("fill", d => d.active ? colorScale(d.value) : "#E5E7EB").attr("opacity", 1)),
+    update => update.attr("data-value", d => d.active ? d.value : null)
+      .call(u => u.transition().duration(CHART_ANIMATION_DURATION).ease(chartEase).attr("fill", d => d.active ? colorScale(d.value) : "#E5E7EB").attr("opacity", 1)),
     exit => exit.call(e => e.transition().duration(CHART_ANIMATION_DURATION).attr("opacity", 0).remove())
   )
   .on("mouseenter", function(event, d) {

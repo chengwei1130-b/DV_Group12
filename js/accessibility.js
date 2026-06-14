@@ -1,17 +1,76 @@
 (function () {
   const PALETTES = [
+    // ── Default ─────────────────────────────────────────────────────────────
     { id: "default", label: "Default", description: "Original colors", preview: ["#F7931E", "#FFD84D", "#F3F4F6"], cssFilter: "", colors: null },
-    { id: "deuteranopia", label: "Deuteranopia", description: "Red-green (green weak)", preview: ["#0072B2", "#E69F00", "#F0E442"], cssFilter: "", colors: { primary: "#0072B2", navBg: "#005B99", pageBg: "#EEF3FA", cardBg: "#DDEEFF", labelBg: "#0072B2", labelColor: "#fff", hoverBg: "#0072B2", hoverColor: "#fff", textDark: "#111", textMed: "#333", borderColor: "#0072B2", series: ["#0072B2", "#E69F00", "#F0E442", "#009E73", "#56B4E9", "#CC79A7", "#D55E00", "#4B4B4B"] } },
-    { id: "protanopia", label: "Protanopia", description: "Red-green (red weak)", preview: ["#0077BB", "#EE7733", "#FFDD44"], cssFilter: "", colors: { primary: "#0077BB", navBg: "#005A8E", pageBg: "#EEF3FA", cardBg: "#DDEEFF", labelBg: "#0077BB", labelColor: "#fff", hoverBg: "#0077BB", hoverColor: "#fff", textDark: "#111", textMed: "#333", borderColor: "#0077BB", series: ["#0077BB", "#EE7733", "#FFDD44", "#33BBEE", "#009988", "#EE3377", "#AA4499", "#BBBBBB"] } },
-    { id: "tritanopia", label: "Tritanopia", description: "Blue-yellow blind", preview: ["#EE3377", "#009988", "#FFAA00"], cssFilter: "", colors: { primary: "#EE3377", navBg: "#CC1155", pageBg: "#FFF0F4", cardBg: "#FFE0EA", labelBg: "#EE3377", labelColor: "#fff", hoverBg: "#EE3377", hoverColor: "#fff", textDark: "#111", textMed: "#333", borderColor: "#EE3377", series: ["#EE3377", "#009988", "#FFAA00", "#CC3311", "#33BBEE", "#AA3377", "#004488", "#777777"] } },
-    { id: "achromatopsia", label: "Achromatopsia", description: "Full color blindness", preview: ["#222", "#777", "#CCC"], cssFilter: "grayscale(100%) contrast(1.1)", colors: null },
-    { id: "highcontrast", label: "High Contrast", description: "Maximum visibility", preview: ["#FFFF00", "#000", "#00FFFF"], cssFilter: "", colors: { primary: "#FFFF00", navBg: "#000", pageBg: "#000", cardBg: "#111", labelBg: "#FFFF00", labelColor: "#000", hoverBg: "#FFFF00", hoverColor: "#000", textDark: "#FFF", textMed: "#DDD", borderColor: "#FFFF00", series: ["#FFFF00", "#00FFFF", "#FF88FF", "#FFF", "#FF8800", "#00FF88", "#88FFFF", "#FF4444"] } }
+
+    // ── Deuteranopia (red-green, green-weak) ────────────────────────────────
+    { id: "deuteranopia", label: "Deuteranopia", description: "Red-green (green weak)",
+      preview: ["#005AB5", "#DCB732", "#78C0DF"], cssFilter: "",
+      colors: {
+        primary: "#005AB5", navBg: "#003F80", pageBg: "#EEF4FB", cardBg: "#D9ECFF",
+        labelBg: "#005AB5", labelColor: "#fff", hoverBg: "#003F80", hoverColor: "#fff",
+        textDark: "#111", textMed: "#333", borderColor: "#005AB5",
+        series: ["#005AB5", "#78C0DF", "#ECE4B5", "#DCB732", "#CC6600", "#A8D8EA", "#7B3F00", "#444444"],
+        heatmapLow: "#D9ECFF", heatmapHigh: "#003F80"
+      }
+    },
+
+    // ── Protanopia (red-green, red-weak) ────────────────────────────────────
+    { id: "protanopia", label: "Protanopia", description: "Red-green (red weak)",
+      preview: ["#005AB5", "#CC6600", "#ECE4B5"], cssFilter: "",
+      colors: {
+        primary: "#004FA3", navBg: "#003570", pageBg: "#EEF4FB", cardBg: "#D9ECFF",
+        labelBg: "#004FA3", labelColor: "#fff", hoverBg: "#003570", hoverColor: "#fff",
+        textDark: "#111", textMed: "#333", borderColor: "#004FA3",
+        series: ["#004FA3", "#CC6600", "#78C0DF", "#DCB732", "#ECE4B5", "#7B3F00", "#A8D8EA", "#555555"],
+        heatmapLow: "#D9ECFF", heatmapHigh: "#003570"
+      }
+    },
+
+    // ── Tritanopia (blue-yellow blind) ──────────────────────────────────────
+    { id: "tritanopia", label: "Tritanopia", description: "Blue-yellow blind",
+      preview: ["#900000", "#00E5FF", "#008080"], cssFilter: "",
+      colors: {
+        primary: "#900000", navBg: "#600000", pageBg: "#FFF5F5", cardBg: "#FFE5E5",
+        labelBg: "#900000", labelColor: "#fff", hoverBg: "#600000", hoverColor: "#fff",
+        textDark: "#111", textMed: "#333", borderColor: "#900000",
+        series: ["#900000", "#FF3333", "#00E5FF", "#008080", "#FFB6C1", "#CC0044", "#005F5F", "#777777"],
+        heatmapLow: "#FFE5E5", heatmapHigh: "#900000"
+      }
+    },
+
+    // ── Achromatopsia (full color blindness) ────────────────────────────────
+    { id: "achromatopsia", label: "Achromatopsia", description: "Full color blindness",
+      preview: ["#111111", "#777777", "#CCCCCC"], cssFilter: "",
+      colors: {
+        primary: "#111111", navBg: "#222222", pageBg: "#F5F5F5", cardBg: "#E8E8E8",
+        labelBg: "#333333", labelColor: "#fff", hoverBg: "#111111", hoverColor: "#fff",
+        textDark: "#000", textMed: "#333", borderColor: "#555555",
+        series: ["#111111", "#444444", "#777777", "#AAAAAA", "#DDDDDD", "#222222", "#666666", "#999999"],
+        heatmapLow: "#DDDDDD", heatmapHigh: "#111111"
+      }
+    },
+
+    // ── High Contrast ────────────────────────────────────────────────────────
+    { id: "highcontrast", label: "High Contrast", description: "Maximum visibility",
+      preview: ["#FFFF00", "#000", "#00FFFF"], cssFilter: "",
+      colors: {
+        primary: "#FFFF00", navBg: "#000", pageBg: "#000", cardBg: "#111",
+        labelBg: "#FFFF00", labelColor: "#000", hoverBg: "#FFFF00", hoverColor: "#000",
+        textDark: "#FFF", textMed: "#DDD", borderColor: "#FFFF00",
+        series: ["#FFFF00", "#00FFFF", "#FF88FF", "#FFFFFF", "#FF8800", "#00FF88", "#88FFFF", "#FF4444"],
+        heatmapLow: "#333300", heatmapHigh: "#FFFF00"
+      }
+    }
   ];
 
   let currentPaletteId = localStorage.getItem("a11y_palette") || "default";
   let currentZoom = parseFloat(localStorage.getItem("a11y_zoom") || "1.0");
   let magnifierOn = false;
   let panelOpen = false;
+
+  // Track the initial browser zoom to calculate how much the user natively zooms
+  let baseDPR = window.devicePixelRatio || 1;
 
   document.head.insertAdjacentHTML("beforeend", `<style id="a11y-base">
     #a11y-fab{position:fixed;bottom:28px;right:28px;z-index:9500;display:flex;flex-direction:column;align-items:flex-end;gap:10px;font-family:Arial,sans-serif}
@@ -73,11 +132,11 @@
       pointer-events: none;
     }
 
-    body.a11y-mag *:not(#a11y-fab):not(#a11y-fab *):not(.floating-actions):not(.floating-actions *):not(#a11y-lens-ring):not(#a11y-lens-wrapper):not(.info-dot):not(.filter-panel select):not(.filter-panel button) {
+    body.a11y-mag *:not(#a11y-fab):not(#a11y-fab *):not(.floating-actions):not(.floating-actions *):not(#a11y-lens-ring):not(#a11y-lens-wrapper):not(.info-dot):not(.info-dot *):not(button):not(button *):not(select):not(select *):not(a):not(a *) {
       pointer-events: none !important;
     }
 
-    #a11y-fab, .floating-actions, .info-dot, .filter-panel select, .filter-panel button {
+    #a11y-fab, #a11y-fab *, .floating-actions, .floating-actions *, .info-dot, .info-dot *, button, button *, select, select *, a, a * {
       pointer-events: auto !important;
     }
 
@@ -118,16 +177,24 @@
     </div>
     <button id="a11y-open" aria-label="Accessibility options" aria-expanded="false">⚙</button>
   `;
-  document.body.appendChild(fab);
+  document.documentElement.appendChild(fab);
+
+  // Secure Floating Buttons outside the body
+  document.addEventListener("DOMContentLoaded", () => {
+    const floatingActions = document.querySelector(".floating-actions");
+    if (floatingActions) {
+      document.documentElement.appendChild(floatingActions);
+    }
+  });
 
   const lensWrapper = document.createElement("div");
   lensWrapper.id = "a11y-lens-wrapper";
   lensWrapper.innerHTML = `<div id="a11y-lens-scaler"></div>`;
-  document.body.appendChild(lensWrapper);
+  document.documentElement.appendChild(lensWrapper);
 
   const lensRing = document.createElement("div");
   lensRing.id = "a11y-lens-ring";
-  document.body.appendChild(lensRing);
+  document.documentElement.appendChild(lensRing);
 
   const scaler = document.getElementById("a11y-lens-scaler");
   const openBtn = document.getElementById("a11y-open");
@@ -168,6 +235,7 @@
     document.body.style.zoom = currentZoom;
     document.getElementById("a11y-zpct").textContent = Math.round(currentZoom * 100) + "%";
     localStorage.setItem("a11y_zoom", currentZoom);
+    if (magnifierOn) refreshMagClone();
   }
 
   document.getElementById("a11y-zi").addEventListener("click", () => setZoom(currentZoom + 0.1));
@@ -183,113 +251,38 @@
   }
 
   // =========================================================================
-  // SMART SYNC FOR D3 FILTERS (Ensures clone reflects the active filter state)
+  // NATIVE BROWSER ZOOMING FOR ACCESSIBILITY BUTTONS
   // =========================================================================
-  const LHALF = 190 / 2, MAG = 2.8;
-  let magClone = null;
-  let syncTimeout = null;
+  function compensateNativeZoom() {
+    const currentDPR = window.devicePixelRatio || 1;
+    const invScale = baseDPR / currentDPR;
 
-  // The observer watches for SVG/chart updates. When it sees an update, 
-  // it waits 500ms for the animation to finish, then refreshes the magnifier clone!
-  const domObserver = new MutationObserver(() => {
-    if (!magnifierOn) return;
-    clearTimeout(syncTimeout);
-    syncTimeout = setTimeout(refreshMagClone, 500); 
+    const fabElement = document.getElementById("a11y-fab");
+    if (fabElement) {
+      fabElement.style.transform = `scale(${invScale})`;
+      fabElement.style.transformOrigin = "bottom right";
+    }
+
+    const floaters = document.querySelector(".floating-actions");
+    if (floaters) {
+      floaters.style.transform = `scale(${invScale})`;
+      floaters.style.transformOrigin = "bottom center";
+    }
+  }
+
+  window.addEventListener("resize", () => {
+    if (magnifierOn) refreshMagClone();
+    compensateNativeZoom();
   });
 
-  function refreshMagClone() {
-    if (!magnifierOn) return;
-    
-    const newClone = document.body.cloneNode(true);
-    
-    // Copy the selected values of all dropdowns so the lens shows the selected filter
-    const originalSelects = document.body.querySelectorAll("select");
-    const clonedSelects = newClone.querySelectorAll("select");
-    originalSelects.forEach((select, i) => {
-      if(clonedSelects[i]) clonedSelects[i].value = select.value;
-    });
+  compensateNativeZoom();
 
-    // Strip out interactive UI from the clone so it doesn't loop or steal clicks
-    newClone.querySelectorAll("#a11y-fab, #a11y-lens-wrapper, #a11y-lens-ring, .floating-actions, .global-chart-tooltip").forEach(el => el.remove());
-    newClone.querySelectorAll("*").forEach(el => el.removeAttribute("id"));
-
-    // Set position to overlay exactly over the real page
-    newClone.style.position = "absolute";
-    newClone.style.top = -window.scrollY + "px";
-    newClone.style.left = -window.scrollX + "px";
-    newClone.style.width = document.documentElement.scrollWidth + "px";
-    newClone.style.height = document.documentElement.scrollHeight + "px";
-    newClone.style.margin = "0";
-    newClone.style.pointerEvents = "none";
-    
-    scaler.innerHTML = "";
-    scaler.appendChild(newClone);
-    magClone = newClone;
-  }
-
-  function handleMagMove(e) {
-    if (!magnifierOn) return;
-    const x = e.clientX;
-    const y = e.clientY;
-
-    lensWrapper.style.setProperty("--x", `${x}px`);
-    lensWrapper.style.setProperty("--y", `${y}px`);
-    lensRing.style.setProperty("--x", `${x}px`);
-    lensRing.style.setProperty("--y", `${y}px`);
-  }
-
-  function handleMagScroll() {
-    if (!magnifierOn || !magClone) return;
-    magClone.style.top = -window.scrollY + "px";
-    magClone.style.left = -window.scrollX + "px";
-  }
-
-  function startMag() {
-    lensWrapper.style.display = "block";
-    lensRing.style.display = "block";
-    document.body.classList.add("a11y-mag");
-    hideChartTooltips();
-
-    const currentBg = getComputedStyle(document.body).backgroundColor;
-    scaler.style.backgroundColor = (currentBg === "rgba(0, 0, 0, 0)" || currentBg === "transparent") ? "#FFFDF5" : currentBg;
-
-    refreshMagClone();
-
-    document.addEventListener("mousemove", handleMagMove, { passive: true });
-    window.addEventListener("scroll", handleMagScroll, { passive: true });
-    
-    // Connect observer to watch the dashboard for filter updates
-    const container = document.getElementById('content-container') || document.body;
-    domObserver.observe(container, { childList: true, subtree: true, attributes: true });
-  }
-
-  function stopMag() {
-    lensWrapper.style.display = "none";
-    lensRing.style.display = "none";
-    scaler.innerHTML = "";
-    magClone = null;
-    document.body.classList.remove("a11y-mag");
-    
-    hideChartTooltips();
-    setTimeout(enableChartTooltipsAgain, 80);
-    
-    document.removeEventListener("mousemove", handleMagMove);
-    window.removeEventListener("scroll", handleMagScroll);
-    
-    // Disconnect observer to save performance
-    domObserver.disconnect();
-    clearTimeout(syncTimeout);
-  }
-
-  magBtn.addEventListener("click", () => {
-    magnifierOn = !magnifierOn;
-    magBtn.classList.toggle("on", magnifierOn);
-    magBtn.querySelector(".mb").textContent = magnifierOn ? "ON" : "OFF";
-    if (magnifierOn) startMag(); else stopMag();
-  });
-
+  // =========================================================================
+  // FIX: EXPANDED HOVER HIDING TO ALL INTERACTIVE ELEMENTS
+  // =========================================================================
   function setupHoverHiding() {
-    const targets = document.querySelectorAll('#a11y-fab, .floating-actions, .info-dot, .filter-panel select, .filter-panel button');
+    // We now select ALL buttons, select dropdowns, and anchor links across the site
+    const targets = document.querySelectorAll('#a11y-fab, .floating-actions, .info-dot, button, select, a');
     
     targets.forEach(el => {
       if (el.dataset.hoverBound) return;
@@ -319,6 +312,126 @@
     contentObserver.observe(container, { childList: true, subtree: true });
   });
 
+  // =========================================================================
+  // MAGNIFIER CLONE & SYNC LOGIC
+  // =========================================================================
+  const LHALF = 190 / 2, MAG = 2.8;
+  let magClone = null;
+  let syncTimeout = null;
+
+  const domObserver = new MutationObserver(() => {
+    if (!magnifierOn) return;
+    clearTimeout(syncTimeout);
+    syncTimeout = setTimeout(refreshMagClone, 500); 
+  });
+
+  function refreshMagClone() {
+    if (!magnifierOn) return;
+    
+    const newClone = document.body.cloneNode(true);
+    
+    const originalSelects = document.body.querySelectorAll("select");
+    const clonedSelects = newClone.querySelectorAll("select");
+    originalSelects.forEach((sel, i) => {
+      if (clonedSelects[i]) clonedSelects[i].value = sel.value;
+    });
+
+    const originalButtons = document.body.querySelectorAll("button");
+    const clonedButtons = newClone.querySelectorAll("button");
+    originalButtons.forEach((btn, i) => {
+      if (clonedButtons[i]) {
+        const computed = window.getComputedStyle(btn);
+        clonedButtons[i].style.backgroundColor = computed.backgroundColor;
+        clonedButtons[i].style.color = computed.color;
+        clonedButtons[i].style.border = computed.border;
+        clonedButtons[i].style.borderRadius = computed.borderRadius;
+        clonedButtons[i].style.padding = computed.padding;
+        clonedButtons[i].style.font = computed.font;
+      }
+    });
+
+    newClone.querySelectorAll("#a11y-fab, #a11y-lens-wrapper, #a11y-lens-ring, .floating-actions, .global-chart-tooltip").forEach(el => el.remove());
+    newClone.querySelectorAll("*").forEach(el => el.removeAttribute("id"));
+
+    newClone.style.zoom = currentZoom;
+    newClone.style.position = "absolute";
+    
+    newClone.style.top  = -(window.scrollY / currentZoom) + "px";
+    newClone.style.left = -(window.scrollX / currentZoom) + "px";
+    
+    newClone.style.width  = (document.documentElement.scrollWidth / currentZoom) + "px";
+    newClone.style.height = (document.documentElement.scrollHeight / currentZoom) + "px";
+    
+    newClone.style.margin = "0";
+    newClone.style.pointerEvents = "none";
+    
+    scaler.innerHTML = "";
+    scaler.appendChild(newClone);
+    magClone = newClone;
+  }
+
+  function handleMagMove(e) {
+    if (!magnifierOn) return;
+    const x = e.clientX;
+    const y = e.clientY;
+
+    lensWrapper.style.setProperty("--x", `${x}px`);
+    lensWrapper.style.setProperty("--y", `${y}px`);
+    lensRing.style.setProperty("--x", `${x}px`);
+    lensRing.style.setProperty("--y", `${y}px`);
+  }
+
+  function handleMagScroll() {
+    if (!magnifierOn || !magClone) return;
+    magClone.style.top  = -(window.scrollY / currentZoom) + "px";
+    magClone.style.left = -(window.scrollX / currentZoom) + "px";
+  }
+
+  function startMag() {
+    lensWrapper.style.display = "block";
+    lensRing.style.display = "block";
+    document.body.classList.add("a11y-mag");
+    hideChartTooltips();
+
+    const currentBg = getComputedStyle(document.body).backgroundColor;
+    scaler.style.backgroundColor = (currentBg === "rgba(0, 0, 0, 0)" || currentBg === "transparent") ? "#FFFDF5" : currentBg;
+
+    refreshMagClone();
+
+    document.addEventListener("mousemove", handleMagMove, { passive: true });
+    window.addEventListener("scroll", handleMagScroll, { passive: true });
+    
+    const container = document.getElementById('content-container') || document.body;
+    domObserver.observe(container, { childList: true, subtree: true, attributes: true });
+  }
+
+  function stopMag() {
+    lensWrapper.style.display = "none";
+    lensRing.style.display = "none";
+    scaler.innerHTML = "";
+    magClone = null;
+    document.body.classList.remove("a11y-mag");
+    
+    hideChartTooltips();
+    setTimeout(enableChartTooltipsAgain, 80);
+    
+    document.removeEventListener("mousemove", handleMagMove);
+    window.removeEventListener("scroll", handleMagScroll);
+    
+    domObserver.disconnect();
+    clearTimeout(syncTimeout);
+  }
+
+  magBtn.addEventListener("click", () => {
+    magnifierOn = !magnifierOn;
+    magBtn.classList.toggle("on", magnifierOn);
+    magBtn.querySelector(".mb").textContent = magnifierOn ? "ON" : "OFF";
+    if (magnifierOn) startMag(); else stopMag();
+  });
+
+  // =========================================================================
+  // COLOR BLIND LOGIC
+  // =========================================================================
   function applyPalette(id) {
     const pal = PALETTES.find(p => p.id === id);
     if (!pal) return;
@@ -340,20 +453,102 @@
     const css = document.createElement("style");
     css.id = "a11y-pcss";
     css.textContent = `
-      body{background-color:${c.pageBg}!important}
-      nav{background-color:${c.navBg}!important}
-      nav a{color:${isHC ? "#FFFF00" : "#fff"}!important}
-      nav a:hover,nav a.active{background-color:${c.hoverBg}!important;color:${c.hoverColor}!important}
+      /* ── Page background ── */
+      body{background-color:${c.pageBg}!important;background-image:none!important}
+
+      /* ── Navigation / header ── */
+      nav,.site-header{background:${c.navBg}!important;background-image:none!important}
+      nav a,.nav-links a{color:${isHC ? "#FFFF00" : "#fff"}!important}
+      nav a:hover,nav a.active,.nav-links a:hover,.nav-links a.active{background-color:${c.hoverBg}!important;color:${c.hoverColor}!important}
+
+      /* ── Headings & text ── */
       h1,h2,h3,h4,h5,h6{color:${c.textDark}!important}
       p,span,label,li,td,th{color:${c.textMed}!important}
+
+      /* ── Cards & panels (the main surfaces untouched before) ── */
+      .feature-panel,.premium-link-card,.about-us-member,.mission-panel,
+      .filter-panel,.kpi-card,.story-chart-card,.story-summary,.data-note{
+        background:${c.cardBg}!important;
+        border-color:${c.borderColor}!important;
+      }
+
+      /* ── KPI card accent border-top ── */
+      .kpi-card{border-top-color:${c.primary}!important}
+
+      /* ── KPI icon chip ── */
+      .kpi-icon{background:${isHC ? "#222" : c.cardBg}!important;color:${c.primary}!important;border-color:${c.borderColor}!important}
+
+      /* ── Insight boxes ── */
+      .insight-box{background:${isHC ? "#111" : c.cardBg}!important;color:${c.primary}!important}
+      .insight-box p{color:${c.primary}!important}
+
+      /* ── Section kicker / subtitle ── */
+      .section-kicker{color:${c.primary}!important}
+      .heading-rule{background:${c.primary}!important}
+      .section-subtitle,.story-lede{color:${c.textMed}!important}
+
+      /* ── Filter panel labels & selects ── */
+      .filter-panel label,.filter-panel span{color:${c.textDark}!important}
+      .filter-panel select{background:${isHC ? "#000" : "#fff"}!important;color:${c.textDark}!important;border-color:${c.borderColor}!important}
+
+      /* ── Homepage cards ── */
       .home-description{border-color:${c.primary}!important;background:${c.cardBg}!important}
       .dashboard-link{background:${c.cardBg}!important;color:${c.textDark}!important}
       .dashboard-link:hover{background:${c.hoverBg}!important;color:${c.hoverColor}!important}
       .story-card-large{background:${c.cardBg}!important;color:${c.textMed}!important}
       .story-label{background:${c.labelBg}!important;color:${c.labelColor}!important}
       .question-structure{border-color:${c.primary}!important;background:${isHC ? "#000" : "#f9f9f9"}!important}
-      svg{background-color:${isHC ? "#000" : "#F3F4F6"}!important}
+
+      /* ── Summary / data-note specifics ── */
+      .summary-icon,.mission-icon{background:${isHC ? "#222" : c.cardBg}!important}
+      .story-summary ol,.story-summary li{color:${c.textMed}!important}
+
+      /* ── Heatmap fallback summary blocks (direct-appended by JS) ── */
+      .direct-visible-summary-block{
+        background:${c.cardBg}!important;
+        border-color:${c.borderColor}!important;
+      }
+      .direct-summary-header h2{color:${c.textDark}!important}
+      .direct-summary-header p{color:${c.textMed}!important}
+      .direct-summary-icon{background:${isHC ? "#222" : c.cardBg}!important}
+      .direct-visible-summary-block ol,.direct-visible-summary-block li{color:${c.textMed}!important}
+      .direct-visible-footer{
+        background:${isHC ? "#111" : c.cardBg}!important;
+        border-color:${c.borderColor}!important;
+      }
+      .direct-visible-footer p{color:${c.textMed}!important}
+
+      /* ── Visible heatmap summary fallback blocks ── */
+      .visible-heatmap-summary,.visible-heatmap-note{
+        background:${c.cardBg}!important;
+        border-color:${c.borderColor}!important;
+      }
+      .visible-heatmap-summary h2,.visible-heatmap-summary p,
+      .visible-heatmap-summary ol,.visible-heatmap-summary li{color:${c.textMed}!important}
+      .embedded-summary-footer{
+        background:${isHC ? "#111" : c.cardBg}!important;
+        border-color:${c.borderColor}!important;
+      }
+      .embedded-summary-footer p{color:${c.textMed}!important}
+
+      /* ── Bottom site footer ── */
+      .bottom-site-footer{
+        background:${c.navBg}!important;
+        background-image:none!important;
+      }
+      .bottom-site-footer *{color:${isHC ? "#FFFF00" : "#fff"}!important}
+
+      /* ── Link card button ── */
+      .link-card-button{background:${c.primary}!important;color:${isHC ? "#000" : "#fff"}!important}
+      .link-card-icon{background:${isHC ? "#222" : c.cardBg}!important;color:${c.primary}!important}
+      .premium-link-card h3,.premium-link-card p{color:${c.textDark}!important}
+
+      /* ── Charts / SVG ── */
+      svg{background-color:${isHC ? "#000" : "transparent"}!important}
       .tick text,.axis text,svg text{fill:${c.textDark}!important}
+      .axis line,.axis path{stroke:${c.borderColor}!important}
+      .grid line{stroke:${c.borderColor}!important}
+      .chart-title-label{fill:${c.textDark}!important}
     `;
     document.head.appendChild(css);
     recolorD3(c);
@@ -363,17 +558,97 @@
   function saveOrig(el, attrs) { if (!origAttrs.has(el)) { const saved = {}; attrs.forEach(a => saved[a] = el.getAttribute(a)); origAttrs.set(el, saved); } }
   function restoreOrig(el, attrs) { const saved = origAttrs.get(el); if (!saved) return; attrs.forEach(a => { if (saved[a] === null) el.removeAttribute(a); else el.setAttribute(a, saved[a]); }); }
 
+  const JURISDICTION_ORDER = ["VIC", "NSW", "QLD", "WA", "SA", "ACT", "TAS", "NT"];
+
   function recolorD3(c) {
     const s = c.series;
-    document.querySelectorAll("line.stem").forEach(el => { saveOrig(el, ["stroke"]); el.setAttribute("stroke", s[0]); });
-    document.querySelectorAll("circle.lollipop-head, circle.lollipop-dot, circle.line-point, circle.area-hover-point").forEach(el => { saveOrig(el, ["fill"]); el.setAttribute("fill", s[0]); });
-    document.querySelectorAll("rect.d2-bar-fines").forEach(el => { saveOrig(el, ["fill"]); el.setAttribute("fill", s[0]); });
-    document.querySelectorAll("rect.d2-bar-tests").forEach(el => { saveOrig(el, ["fill"]); el.setAttribute("fill", s[1]); });
-    document.querySelectorAll("path.trend-line, path.d2-area-line").forEach(el => { saveOrig(el, ["stroke"]); el.setAttribute("stroke", s[0]); });
-    document.querySelectorAll("path.d2-area").forEach(el => { saveOrig(el, ["fill"]); el.setAttribute("fill", s[0]); });
-    document.querySelectorAll("rect.heatmap-cell").forEach(el => {
+
+    document.querySelectorAll("line.stem").forEach(el => {
+      saveOrig(el, ["stroke"]); el.setAttribute("stroke", s[0]);
+    });
+    document.querySelectorAll("circle.lollipop-head, circle.lollipop-dot, circle.line-point").forEach(el => {
+      saveOrig(el, ["fill"]); el.setAttribute("fill", s[0]);
+    });
+    document.querySelectorAll("path.trend-line").forEach(el => {
+      saveOrig(el, ["stroke"]); el.setAttribute("stroke", s[0]);
+    });
+
+    document.querySelectorAll("rect.d2-bar-fines").forEach(el => {
+      saveOrig(el, ["fill"]); el.setAttribute("fill", s[0]);
+    });
+    document.querySelectorAll("rect.d2-bar-tests").forEach(el => {
+      saveOrig(el, ["fill"]); el.setAttribute("fill", s[1]);
+    });
+
+    document.querySelectorAll("path.d2-area").forEach(el => {
+      saveOrig(el, ["fill"]);
+      const jur = el.getAttribute("data-jurisdiction");
+      const idx = jur ? JURISDICTION_ORDER.indexOf(jur) : -1;
+      el.setAttribute("fill", s[idx >= 0 ? idx % s.length : 0]);
+    });
+    document.querySelectorAll("path.d2-area-line").forEach(el => {
+      saveOrig(el, ["stroke"]);
+      const jur = el.getAttribute("data-jurisdiction");
+      const idx = jur ? JURISDICTION_ORDER.indexOf(jur) : -1;
+      el.setAttribute("stroke", s[idx >= 0 ? idx % s.length : 0]);
+    });
+
+    document.querySelectorAll("circle.area-hover-point").forEach(el => {
+      saveOrig(el, ["fill"]);
+      const jur = el.getAttribute("data-jurisdiction");
+      const idx = jur ? JURISDICTION_ORDER.indexOf(jur) : -1;
+      el.setAttribute("data-a11y-color", s[idx >= 0 ? idx % s.length : 0]);
+    });
+
+    document.querySelectorAll("g.d2-bar-legend").forEach(legendG => {
+      const items = legendG.querySelectorAll("g");
+      const keys = ["fines", "tests"];
+      items.forEach((item, i) => {
+        const rect = item.querySelector("rect");
+        const txt  = item.querySelector("text");
+        if (rect) { saveOrig(rect, ["fill"]); rect.setAttribute("fill", s[i] || s[0]); }
+        if (txt)  { saveOrig(txt,  ["fill"]); txt.setAttribute("fill", c.textDark); }
+      });
+    });
+
+    document.querySelectorAll("g.d2-area-legend").forEach(legendG => {
+      legendG.querySelectorAll("g").forEach((item, i) => {
+        const rect = item.querySelector("rect");
+        const txt  = item.querySelector("text");
+        if (rect) { saveOrig(rect, ["fill"]); rect.setAttribute("fill", s[i % s.length]); }
+        if (txt)  { saveOrig(txt,  ["fill"]); txt.setAttribute("fill", c.textDark); }
+      });
+    });
+
+    const lowColor  = c.heatmapLow  || s[s.length - 1];
+    const highColor = c.heatmapHigh || s[0];
+    const interpolateHeatmap = d3.interpolateRgb(lowColor, highColor);
+
+    const activeCells = Array.from(document.querySelectorAll("rect.heatmap-cell")).filter(el => {
       const f = el.getAttribute("fill");
-      if (f && f !== "#E5E7EB" && f !== "none" && !f.startsWith("url")) { saveOrig(el, ["fill"]); el.setAttribute("fill", s[0] + "CC"); }
+      return f && f !== "#E5E7EB" && f !== "none" && !f.startsWith("url");
+    });
+    if (activeCells.length) {
+      const vals = activeCells.map((el, i) => parseFloat(el.getAttribute("data-value") || i));
+      const minV = Math.min(...vals);
+      const maxV = Math.max(...vals);
+      const range = maxV - minV || 1;
+      activeCells.forEach((el, i) => {
+        saveOrig(el, ["fill"]);
+        const v = parseFloat(el.getAttribute("data-value") || i);
+        el.setAttribute("fill", interpolateHeatmap((v - minV) / range));
+      });
+    }
+
+    [
+      { gradId: "speeding-heatmap-gradient" },
+      { gradId: "d2-heatmap-gradient" }
+    ].forEach(({ gradId }) => {
+      const grad = document.getElementById(gradId);
+      if (!grad) return;
+      const stops = grad.querySelectorAll("stop");
+      if (stops[0]) stops[0].setAttribute("stop-color", lowColor);
+      if (stops[1]) stops[1].setAttribute("stop-color", highColor);
     });
   }
 
@@ -383,6 +658,22 @@
       ["rect.d2-bar-fines", ["fill"]], ["rect.d2-bar-tests", ["fill"]], ["path.trend-line", ["stroke"]], ["path.d2-area-line", ["stroke"]], ["path.d2-area", ["fill"]], ["rect.heatmap-cell", ["fill"]]
     ];
     selectors.forEach(([sel, attrs]) => document.querySelectorAll(sel).forEach(el => restoreOrig(el, attrs)));
+
+    document.querySelectorAll("g.d2-bar-legend g rect, g.d2-area-legend g rect").forEach(el => restoreOrig(el, ["fill"]));
+    document.querySelectorAll("g.d2-bar-legend g text, g.d2-area-legend g text").forEach(el => restoreOrig(el, ["fill"]));
+
+    const origLow  = d3.interpolateOranges(0);
+    const origHigh = d3.interpolateOranges(1);
+    [
+      { gradId: "speeding-heatmap-gradient" },
+      { gradId: "d2-heatmap-gradient" }
+    ].forEach(({ gradId }) => {
+      const grad = document.getElementById(gradId);
+      if (!grad) return;
+      const stops = grad.querySelectorAll("stop");
+      if (stops[0]) stops[0].setAttribute("stop-color", origLow);
+      if (stops[1]) stops[1].setAttribute("stop-color", origHigh);
+    });
   }
 
   new MutationObserver(() => {

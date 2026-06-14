@@ -37,34 +37,30 @@ function loadPageContent(url, pushToHistory = true) {
           return;
         }
 
-        contentContainer.replaceChildren(section.cloneNode(true));
+        // 1. CLEAR and then APPEND the live node directly to the DOM
+        contentContainer.innerHTML = '';
+        contentContainer.appendChild(section);
 
-        const renderer = pageRenderers[url];
-        if (typeof renderer === "function") renderer();
+        // 2. NOW that it is in the DOM, wait for the paint and initialize
+        requestAnimationFrame(() => {
+          const renderer = pageRenderers[url];
+          if (typeof renderer === "function") renderer();
 
-        attachNavigationHandlers(contentContainer);
+          attachNavigationHandlers(contentContainer);
 
-        if (pushToHistory) {
-          history.pushState({ url }, document.title, `?page=${url}`);
-        }
-
-        setActiveLink(url);
-        window.scrollTo(0, 0);
-
-        // ==========================================
-        // NEW CODE: Hide floating home button on home page
-        // ==========================================
-        const floatingHomeBtn = document.querySelector(".floating-home");
-        if (floatingHomeBtn) {
-          if (url === "home.html" || url === "") {
-            floatingHomeBtn.style.display = "none";
-          } else {
-            // Restore it using 'grid' because your CSS sets .float-action to display: grid
-            floatingHomeBtn.style.display = "grid"; 
+          if (pushToHistory) {
+            history.pushState({ url }, document.title, `?page=${url}`);
           }
-        }
-        // ==========================================
 
+          setActiveLink(url);
+          window.scrollTo(0, 0);
+
+          // Handle Floating Home Button visibility
+          const floatingHomeBtn = document.querySelector(".floating-home");
+          if (floatingHomeBtn) {
+            floatingHomeBtn.style.display = (url === "home.html" || url === "") ? "none" : "grid";
+          }
+        });
       })
       .catch(error => {
         console.error("Error loading page:", error);
