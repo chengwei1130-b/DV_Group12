@@ -2114,3 +2114,576 @@ a {
   opacity: 1 !important;
   clear: both !important;
 }
+
+
+/* ==========================================================
+   Heatmap story summary visibility fix
+   - Keeps existing Story Summary and Data Note sections visible after heatmap.
+   - Does not affect data, filters, calculations, or SPA routing.
+   ========================================================== */
+
+.story-dashboard > .heatmap-card + .story-summary,
+.story-dashboard > .story-summary {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 1 !important;
+  clear: both !important;
+  margin-top: 22px !important;
+}
+
+.story-dashboard > .story-summary + .data-note,
+.story-dashboard > .data-note {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 1 !important;
+  clear: both !important;
+}
+
+.story-summary ol,
+.story-summary li {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+
+/* ==========================================================
+   Inline Story Summary after heatmap insight
+   - Keeps the existing Story Summary and Data Note inside the visible heatmap card.
+   - This avoids layout clipping after the heatmap card.
+   - No data, filter, heatmap value, or chart calculation logic changed.
+   ========================================================== */
+
+.heatmap-card > .story-summary,
+.heatmap-card > .data-note {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 2 !important;
+  clear: both !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin-top: 22px !important;
+}
+
+.heatmap-card > .story-summary {
+  margin-bottom: 0 !important;
+}
+
+.heatmap-card > .data-note {
+  margin-bottom: 0 !important;
+}
+
+.heatmap-card > .story-summary ol,
+.heatmap-card > .story-summary li,
+.heatmap-card > .story-summary .summary-title,
+.heatmap-card > .data-note p {
+  display: revert;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+
+/* ==========================================================
+   Forced visible heatmap summary fallback
+   - Displays a visible copy of the existing summary text inside the heatmap card.
+   - Used only because the original summary section is not visible after rendering.
+   - Does not alter chart data, filters, scales, heatmap values, or routing.
+   ========================================================== */
+
+.heatmap-card > .visible-heatmap-summary,
+.heatmap-card > .visible-heatmap-note {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 20 !important;
+  clear: both !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin-top: 22px !important;
+  transform: none !important;
+}
+
+.heatmap-card > .visible-heatmap-summary ol,
+.heatmap-card > .visible-heatmap-summary li,
+.heatmap-card > .visible-heatmap-summary .summary-title,
+.heatmap-card > .visible-heatmap-note p {
+  display: revert;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.visible-heatmap-summary {
+  animation: none !important;
+}
+
+
+/* ==========================================================
+   Forced visible footer/data note fallback
+   - Displays the existing footer note inside the visible summary block.
+   - This is only a display fallback; no dashboard data or chart logic changes.
+   ========================================================== */
+
+.visible-heatmap-summary .embedded-summary-footer {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin-top: 18px !important;
+  padding: 18px 20px !important;
+  border-radius: 18px !important;
+  background: rgba(255, 246, 218, 0.88) !important;
+  border: 1px solid rgba(247, 147, 30, 0.20) !important;
+  box-shadow: none !important;
+  color: var(--text) !important;
+  line-height: 1.65 !important;
+}
+
+.visible-heatmap-summary .embedded-summary-footer p {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin: 0 0 8px !important;
+}
+
+.visible-heatmap-summary .embedded-summary-footer p:last-child {
+  margin-bottom: 0 !important;
+}
+
+
+/* ==========================================================
+   Direct appended heatmap summary block
+   - Final fallback: attaches a visible summary/footer directly after the visible insight box.
+   - No dashboard data, filters, calculations, or heatmap values changed.
+   ========================================================== */
+
+.heatmap-card > .direct-visible-summary-block {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin-top: 22px !important;
+  padding: 24px !important;
+  border-radius: 24px !important;
+  background: rgba(255, 253, 245, 0.98) !important;
+  border: 1px solid rgba(247, 147, 30, 0.22) !important;
+  box-shadow: 0 14px 32px rgba(102, 69, 0, 0.10) !important;
+  color: var(--ink) !important;
+  position: relative !important;
+  z-index: 999 !important;
+  clear: both !important;
+  transform: none !important;
+}
+
+.direct-summary-header {
+  display: flex !important;
+  gap: 16px !important;
+  align-items: center !important;
+  margin-bottom: 16px !important;
+}
+
+.direct-summary-header h2,
+.direct-summary-header p {
+  margin: 0 !important;
+}
+
+.direct-summary-header h2 {
+  font-size: 24px !important;
+  color: var(--ink) !important;
+}
+
+.direct-summary-header p {
+  margin-top: 4px !important;
+  color: var(--text) !important;
+}
+
+.direct-summary-icon {
+  width: 52px !important;
+  height: 52px !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: 50% !important;
+  background: linear-gradient(180deg, #FFF4D0, #FFE7A2) !important;
+  flex: 0 0 52px !important;
+}
+
+.direct-visible-summary-block ol {
+  margin: 16px 0 0 !important;
+  padding-left: 24px !important;
+  color: var(--text) !important;
+  line-height: 1.8 !important;
+}
+
+.direct-visible-summary-block li {
+  display: list-item !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin-bottom: 6px !important;
+}
+
+.direct-visible-footer {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin-top: 18px !important;
+  padding: 18px 20px !important;
+  border-radius: 18px !important;
+  background: rgba(255, 246, 218, 0.88) !important;
+  border: 1px solid rgba(247, 147, 30, 0.20) !important;
+  color: var(--text) !important;
+  line-height: 1.65 !important;
+}
+
+.direct-visible-footer p {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin: 0 0 8px !important;
+}
+
+.direct-visible-footer p:last-child {
+  margin-bottom: 0 !important;
+}
+
+
+/* ==========================================================
+   Bottom footer matching navigation style
+   - Added from the summary-fixed v8 base.
+   - This footer is presentation only; dashboard logic and SPA routing are unchanged.
+   ========================================================== */
+
+.bottom-site-footer {
+  width: 100%;
+  min-height: 76px;
+  margin-top: 34px;
+  padding: 16px clamp(24px, 5vw, 52px);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: linear-gradient(90deg, #F7931E 0%, #F15A24 100%);
+  border-top: none;
+  color: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 240px;
+}
+
+.footer-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.52);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.footer-logo-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  position: relative;
+}
+
+.footer-logo-icon::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+
+.footer-brand strong {
+  display: block;
+  font-size: 17px;
+  line-height: 1.05;
+  letter-spacing: 0.03em;
+}
+
+.footer-brand span {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 800;
+  opacity: 0.92;
+}
+
+.footer-node-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.footer-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.footer-node::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #FFE681;
+  box-shadow: 0 0 0 3px rgba(255, 230, 129, 0.20);
+}
+
+@media (max-width: 860px) {
+  .bottom-site-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .footer-node-row {
+    justify-content: flex-start;
+  }
+}
+
+
+/* ==========================================================
+   Hide duplicate dashboard Note/Source after forced summary
+   - The visible Story Summary block already includes the Note and Source.
+   - This hides the old original data-note below it to avoid duplicate content.
+   - Does not affect the new global bottom footer or chart/data logic.
+   ========================================================== */
+
+#dashboard1 .story-dashboard > .story-summary,
+#dashboard1 .story-dashboard > .data-note,
+#drug-dashboard .story-dashboard > .story-summary,
+#drug-dashboard .story-dashboard > .data-note {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Keep the runtime visible summary/footer inside the heatmap card showing. */
+#dashboard1 .heatmap-card > .direct-visible-summary-block,
+#drug-dashboard .heatmap-card > .direct-visible-summary-block,
+#dashboard1 .heatmap-card .direct-visible-footer,
+#drug-dashboard .heatmap-card .direct-visible-footer {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  min-height: initial !important;
+  overflow: visible !important;
+}
+
+
+/* ==========================================================
+   Remove duplicate heatmap Note/Source card
+   - The Note/Source now appears once inside the visible Story Summary.
+   - This hides/removes the old separate fallback note card underneath.
+   ========================================================== */
+
+.heatmap-card > .visible-heatmap-note,
+.heatmap-card > footer.visible-heatmap-note,
+#dashboard1 .heatmap-card > .visible-heatmap-note,
+#drug-dashboard .heatmap-card > .visible-heatmap-note {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Keep the single embedded Note/Source inside Story summary visible. */
+.visible-heatmap-summary .embedded-summary-footer,
+.direct-visible-summary-block .direct-visible-footer {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+
+/* ==========================================================
+   Remove duplicate runtime Story Summary sections
+   - Keeps only .direct-visible-summary-block visible.
+   - Hides original .story-summary/.data-note and older fallback blocks.
+   - No chart, data, filter, heatmap, color mode, or routing logic changed.
+   ========================================================== */
+
+#dashboard1 .heatmap-card > .visible-heatmap-summary,
+#dashboard1 .heatmap-card > .visible-heatmap-note,
+#drug-dashboard .heatmap-card > .visible-heatmap-summary,
+#drug-dashboard .heatmap-card > .visible-heatmap-note,
+#dashboard1 .story-dashboard > .story-summary,
+#dashboard1 .story-dashboard > .data-note,
+#drug-dashboard .story-dashboard > .story-summary,
+#drug-dashboard .story-dashboard > .data-note {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
+}
+
+#dashboard1 .heatmap-card > .direct-visible-summary-block,
+#drug-dashboard .heatmap-card > .direct-visible-summary-block {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  min-height: initial !important;
+  margin-top: 22px !important;
+  padding: 24px !important;
+  overflow: visible !important;
+}
+
+
+/* ==========================================================
+   Story summary spacing after heatmap insight
+   - Adds breathing room between the heatmap insight box and summary.
+   - Visual spacing only; no dashboard/chart/data logic changed.
+   ========================================================== */
+
+#dashboard1 .heatmap-card > .direct-visible-summary-block,
+#drug-dashboard .heatmap-card > .direct-visible-summary-block {
+  margin-top: 42px !important;
+}
+
+#dashboard1 .heatmap-card > .heatmap-inline-insight,
+#drug-dashboard .heatmap-card > .heatmap-inline-insight {
+  margin-bottom: 0 !important;
+}
+
+
+/* ==========================================================
+   Academic footer refinement
+   - Replaces repeated header-style wording with course/project details.
+   - Includes GenAI assistance declaration in academic wording.
+   - Presentation only; no dashboard data, chart, filter, or SPA logic changed.
+   ========================================================== */
+
+.bottom-site-footer.academic-footer {
+  width: 100%;
+  margin-top: 44px;
+  padding: 28px clamp(24px, 5vw, 58px);
+  box-sizing: border-box;
+  display: block;
+  background:
+    linear-gradient(90deg, rgba(247, 147, 30, 0.96) 0%, rgba(241, 90, 36, 0.96) 100%);
+  border-top: none;
+  color: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-academic-main {
+  width: min(100%, 1180px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(260px, 0.85fr) minmax(360px, 1.35fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.footer-course-block,
+.footer-declaration-block {
+  min-width: 0;
+}
+
+.footer-kicker {
+  display: inline-flex;
+  margin-bottom: 7px;
+  color: #FFE681;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.footer-course-block strong {
+  display: block;
+  color: #fff;
+  font-size: 19px;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+}
+
+.footer-course-block p,
+.footer-declaration-block p {
+  margin: 7px 0 0;
+  max-width: 780px;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.65;
+}
+
+.bottom-site-footer .academic-node-row {
+  width: min(100%, 1180px);
+  margin: 20px auto 0;
+  justify-content: flex-start;
+}
+
+.bottom-site-footer .academic-node-row .footer-node {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+@media (max-width: 860px) {
+  .footer-academic-main {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .bottom-site-footer.academic-footer {
+    padding-inline: 24px;
+  }
+}
+
+
+/* Final footer header match */
+.bottom-site-footer.academic-footer {
+  border-top: none !important;
+}
+
+
+/* Final footer header-style match
+   Removes the separate dark border line so the footer matches the clean orange header bar. */
+.bottom-site-footer.academic-footer {
+  border-top: none !important;
+}
