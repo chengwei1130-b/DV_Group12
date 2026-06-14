@@ -139,16 +139,23 @@
       pointer-events: none;
     }
 
-    body.a11y-mag *:not(#a11y-fab):not(#a11y-fab *):not(.floating-actions):not(.floating-actions *):not(#a11y-lens-ring):not(#a11y-lens-wrapper):not(.info-dot):not(.filter-panel select):not(.filter-panel button) {
+    body.a11y-mag *:not(#a11y-fab):not(#a11y-fab *):not(.floating-top):not(#a11y-lens-ring):not(#a11y-lens-wrapper):not(.info-dot):not(.filter-panel select):not(.filter-panel button) {
       pointer-events: none !important;
     }
 
-    #a11y-fab, .floating-actions, .info-dot, .filter-panel select, .filter-panel button {
+    #a11y-fab, .floating-top, .info-dot, .filter-panel select, .filter-panel button {
       pointer-events: auto !important;
     }
 
-    body.a11y-mag #a11y-lens-wrapper.hide-lens,
-    body.a11y-mag #a11y-lens-ring.hide-lens {
+    /* Back to Home lives in .floating-actions (moved to <html>, alongside #a11y-fab),
+       so it isn't covered by the body.a11y-mag descendant rule above. Disable it
+       the same way the navbar links are disabled while the magnifier is active. */
+    body.a11y-mag ~ .floating-actions .floating-home {
+      pointer-events: none !important;
+    }
+
+    #a11y-lens-wrapper.hide-lens,
+    #a11y-lens-ring.hide-lens {
       display: none !important;
     }
     
@@ -190,6 +197,18 @@
   if (floatingActions) {
     document.documentElement.appendChild(floatingActions);
   }
+
+  // Keep the accessibility panel a constant physical size regardless of the
+  // browser's native zoom level (Ctrl/Cmd +/-), which would otherwise scale
+  // position:fixed elements along with the rest of the page.
+  const initialDPR = window.devicePixelRatio;
+  function syncFabScale() {
+    const ratio = initialDPR / window.devicePixelRatio;
+    fab.style.transformOrigin = "bottom right";
+    fab.style.transform = `scale(${ratio})`;
+  }
+  window.addEventListener("resize", syncFabScale, { passive: true });
+  syncFabScale();
 
   // Attach lens elements to <html>, NOT <body>, so they never inherit body{zoom}
   const lensWrapper = document.createElement("div");
@@ -321,12 +340,28 @@ function refreshMagClone() {
     magClone = newClone;
   }
 
+  // Elements the lens should hide over: the accessibility panel + its open
+  // button, the magnifier toggle, filter controls, and the floating
+  // Back to Top / Back to Home buttons. Checked by bounding-rect on every
+  // mousemove (see handleMagMove) rather than mouseenter/mouseleave, since
+  // the lens ring sits above these elements (z-index 99999) and can make
+  // enter/leave hit-testing unreliable.
+  const HOVER_HIDE_SELECTOR =
+    '#a11y-open, #a11y-panel, #a11y-magbtn, .filter-panel button, .filter-panel select, .floating-top, .floating-home';
+
   function handleMagMove(e) {
     if (!magnifierOn) return;
     // clientX/Y are in physical viewport pixels — correct to use directly
     // because the lens elements live on <html> and are not subject to body zoom
     const x = e.clientX;
     const y = e.clientY;
+
+    const overHideTarget = Array.from(document.querySelectorAll(HOVER_HIDE_SELECTOR)).some(el => {
+      const r = el.getBoundingClientRect();
+      return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+    });
+    lensWrapper.classList.toggle("hide-lens", overHideTarget);
+    lensRing.classList.toggle("hide-lens", overHideTarget);
 
     lensWrapper.style.setProperty("--x", `${x}px`);
     lensWrapper.style.setProperty("--y", `${y}px`);
@@ -349,6 +384,8 @@ function refreshMagClone() {
 function startMag() {
     lensWrapper.style.display = "block";
     lensRing.style.display = "block";
+    lensWrapper.classList.remove("hide-lens");
+    lensRing.classList.remove("hide-lens");
     document.body.classList.add("a11y-mag");
     hideChartTooltips();
 
@@ -394,36 +431,10 @@ function startMag() {
     if (magnifierOn) startMag(); else stopMag();
   });
 
-  function setupHoverHiding() {
-    const targets = document.querySelectorAll('#a11y-fab, .floating-actions, .info-dot, .filter-panel select, .filter-panel button');
-    
-    targets.forEach(el => {
-      if (el.dataset.hoverBound) return;
-      el.dataset.hoverBound = "true";
-
-      el.addEventListener('mouseenter', () => {
-        if(magnifierOn) {
-          document.getElementById('a11y-lens-wrapper').classList.add('hide-lens');
-          document.getElementById('a11y-lens-ring').classList.add('hide-lens');
-        }
-      });
-
-      el.addEventListener('mouseleave', () => {
-        if(magnifierOn) {
-          document.getElementById('a11y-lens-wrapper').classList.remove('hide-lens');
-          document.getElementById('a11y-lens-ring').classList.remove('hide-lens');
-        }
-      });
-    });
-  }
-
-  setupHoverHiding();
-
-  const contentObserver = new MutationObserver(setupHoverHiding);
-  window.addEventListener("DOMContentLoaded", () => {
-    const container = document.getElementById('content-container') || document.body;
-    contentObserver.observe(container, { childList: true, subtree: true });
-  });
+  // Hover-hiding for the lens is now handled directly inside handleMagMove
+  // via HOVER_HIDE_SELECTOR + getBoundingClientRect checks (see above), so
+  // no per-element mouseenter/mouseleave bindings or mutation observer are
+  // needed here.
 
   function applyPalette(id) {
     const pal = PALETTES.find(p => p.id === id);
