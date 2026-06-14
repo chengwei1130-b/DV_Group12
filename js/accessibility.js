@@ -4,18 +4,23 @@
     { id: "default", label: "Default", description: "Original colors", preview: ["#F7931E", "#FFD84D", "#F3F4F6"], cssFilter: "", colors: null },
 
     // ── Deuteranopia (red-green, green-weak) ────────────────────────────────
+    // Uses Blues + Oranges + Yellow. Avoids greens. High luminance contrast.
     { id: "deuteranopia", label: "Deuteranopia", description: "Red-green (green weak)",
       preview: ["#005AB5", "#DCB732", "#78C0DF"], cssFilter: "",
       colors: {
         primary: "#005AB5", navBg: "#003F80", pageBg: "#EEF4FB", cardBg: "#D9ECFF",
         labelBg: "#005AB5", labelColor: "#fff", hoverBg: "#003F80", hoverColor: "#fff",
         textDark: "#111", textMed: "#333", borderColor: "#005AB5",
+        // Blues → Orange → Yellow → Burnt Orange — all distinguishable without green receptors
         series: ["#005AB5", "#78C0DF", "#ECE4B5", "#DCB732", "#CC6600", "#A8D8EA", "#7B3F00", "#444444"],
+        // Heatmap: single-hue blue sequential (safe for deuteranopia)
         heatmapLow: "#D9ECFF", heatmapHigh: "#003F80"
       }
     },
 
     // ── Protanopia (red-green, red-weak) ────────────────────────────────────
+    // Similar confusion lines to deuteranopia. Same blue-orange strategy,
+    // slightly shifted so deep blues and burnt orange lead.
     { id: "protanopia", label: "Protanopia", description: "Red-green (red weak)",
       preview: ["#005AB5", "#CC6600", "#ECE4B5"], cssFilter: "",
       colors: {
@@ -28,24 +33,29 @@
     },
 
     // ── Tritanopia (blue-yellow blind) ──────────────────────────────────────
+    // Avoids blues and yellows. Relies on Reds, Cyans, and distinct Grays.
     { id: "tritanopia", label: "Tritanopia", description: "Blue-yellow blind",
       preview: ["#900000", "#00E5FF", "#008080"], cssFilter: "",
       colors: {
         primary: "#900000", navBg: "#600000", pageBg: "#FFF5F5", cardBg: "#FFE5E5",
         labelBg: "#900000", labelColor: "#fff", hoverBg: "#600000", hoverColor: "#fff",
         textDark: "#111", textMed: "#333", borderColor: "#900000",
+        // Dark Red → Bright Red → Cyan → Teal → Pink — no blues/yellows
         series: ["#900000", "#FF3333", "#00E5FF", "#008080", "#FFB6C1", "#CC0044", "#005F5F", "#777777"],
+        // Heatmap: red sequential (no blue/yellow confusion)
         heatmapLow: "#FFE5E5", heatmapHigh: "#900000"
       }
     },
 
     // ── Achromatopsia (full color blindness) ────────────────────────────────
+    // Strictly sequential grayscale with ≥20% luminance jumps between each step.
     { id: "achromatopsia", label: "Achromatopsia", description: "Full color blindness",
       preview: ["#111111", "#777777", "#CCCCCC"], cssFilter: "",
       colors: {
         primary: "#111111", navBg: "#222222", pageBg: "#F5F5F5", cardBg: "#E8E8E8",
         labelBg: "#333333", labelColor: "#fff", hoverBg: "#111111", hoverColor: "#fff",
         textDark: "#000", textMed: "#333", borderColor: "#555555",
+        // 5-step grayscale with ~20% luminance gap, padded to 8 by cycling
         series: ["#111111", "#444444", "#777777", "#AAAAAA", "#DDDDDD", "#222222", "#666666", "#999999"],
         heatmapLow: "#DDDDDD", heatmapHigh: "#111111"
       }
@@ -68,9 +78,6 @@
   let currentZoom = parseFloat(localStorage.getItem("a11y_zoom") || "1.0");
   let magnifierOn = false;
   let panelOpen = false;
-
-  // Track the initial browser zoom to calculate how much the user natively zooms
-  let baseDPR = window.devicePixelRatio || 1;
 
   document.head.insertAdjacentHTML("beforeend", `<style id="a11y-base">
     #a11y-fab{position:fixed;bottom:28px;right:28px;z-index:9500;display:flex;flex-direction:column;align-items:flex-end;gap:10px;font-family:Arial,sans-serif}
@@ -132,11 +139,11 @@
       pointer-events: none;
     }
 
-    body.a11y-mag *:not(#a11y-fab):not(#a11y-fab *):not(.floating-actions):not(.floating-actions *):not(#a11y-lens-ring):not(#a11y-lens-wrapper):not(.info-dot):not(.info-dot *):not(button):not(button *):not(select):not(select *):not(a):not(a *) {
+    body.a11y-mag *:not(#a11y-fab):not(#a11y-fab *):not(.floating-actions):not(.floating-actions *):not(#a11y-lens-ring):not(#a11y-lens-wrapper):not(.info-dot):not(.filter-panel select):not(.filter-panel button) {
       pointer-events: none !important;
     }
 
-    #a11y-fab, #a11y-fab *, .floating-actions, .floating-actions *, .info-dot, .info-dot *, button, button *, select, select *, a, a * {
+    #a11y-fab, .floating-actions, .info-dot, .filter-panel select, .filter-panel button {
       pointer-events: auto !important;
     }
 
@@ -178,15 +185,13 @@
     <button id="a11y-open" aria-label="Accessibility options" aria-expanded="false">⚙</button>
   `;
   document.documentElement.appendChild(fab);
+  // Move the Back to Top & Home buttons out of the body so they ignore zoom
+  const floatingActions = document.querySelector(".floating-actions");
+  if (floatingActions) {
+    document.documentElement.appendChild(floatingActions);
+  }
 
-  // Secure Floating Buttons outside the body
-  document.addEventListener("DOMContentLoaded", () => {
-    const floatingActions = document.querySelector(".floating-actions");
-    if (floatingActions) {
-      document.documentElement.appendChild(floatingActions);
-    }
-  });
-
+  // Attach lens elements to <html>, NOT <body>, so they never inherit body{zoom}
   const lensWrapper = document.createElement("div");
   lensWrapper.id = "a11y-lens-wrapper";
   lensWrapper.innerHTML = `<div id="a11y-lens-scaler"></div>`;
@@ -235,6 +240,7 @@
     document.body.style.zoom = currentZoom;
     document.getElementById("a11y-zpct").textContent = Math.round(currentZoom * 100) + "%";
     localStorage.setItem("a11y_zoom", currentZoom);
+    // Rebuild the magnifier clone whenever zoom changes so it matches the new page size
     if (magnifierOn) refreshMagClone();
   }
 
@@ -251,38 +257,145 @@
   }
 
   // =========================================================================
-  // NATIVE BROWSER ZOOMING FOR ACCESSIBILITY BUTTONS
+  // SMART SYNC FOR D3 FILTERS (Ensures clone reflects the active filter state)
   // =========================================================================
-  function compensateNativeZoom() {
-    const currentDPR = window.devicePixelRatio || 1;
-    const invScale = baseDPR / currentDPR;
+  const LHALF = 190 / 2, MAG = 2.8;
+  let magClone = null;
+  let syncTimeout = null;
 
-    const fabElement = document.getElementById("a11y-fab");
-    if (fabElement) {
-      fabElement.style.transform = `scale(${invScale})`;
-      fabElement.style.transformOrigin = "bottom right";
-    }
-
-    const floaters = document.querySelector(".floating-actions");
-    if (floaters) {
-      floaters.style.transform = `scale(${invScale})`;
-      floaters.style.transformOrigin = "bottom center";
-    }
-  }
-
-  window.addEventListener("resize", () => {
-    if (magnifierOn) refreshMagClone();
-    compensateNativeZoom();
+  // The observer watches for SVG/chart updates. When it sees an update, 
+  // it waits 500ms for the animation to finish, then refreshes the magnifier clone!
+  const domObserver = new MutationObserver(() => {
+    if (!magnifierOn) return;
+    clearTimeout(syncTimeout);
+    syncTimeout = setTimeout(refreshMagClone, 500); 
   });
 
-  compensateNativeZoom();
+function refreshMagClone() {
+    if (!magnifierOn) return;
+    
+    const newClone = document.body.cloneNode(true);
+    
+    // Copy dropdown selections so the lens shows the current filter state
+    const originalSelects = document.body.querySelectorAll("select");
+    const clonedSelects = newClone.querySelectorAll("select");
+    originalSelects.forEach((sel, i) => {
+      if (clonedSelects[i]) clonedSelects[i].value = sel.value;
+    });
 
-  // =========================================================================
-  // FIX: EXPANDED HOVER HIDING TO ALL INTERACTIVE ELEMENTS
-  // =========================================================================
+    // --- BUG 1 FIX: PRESERVE BUTTON CSS BEFORE STRIPPING IDs ---
+    const originalButtons = document.body.querySelectorAll("button");
+    const clonedButtons = newClone.querySelectorAll("button");
+    originalButtons.forEach((btn, i) => {
+      if (clonedButtons[i]) {
+        const computed = window.getComputedStyle(btn);
+        // Force the clone to retain the exact background, color, and borders
+        clonedButtons[i].style.backgroundColor = computed.backgroundColor;
+        clonedButtons[i].style.color = computed.color;
+        clonedButtons[i].style.border = computed.border;
+        clonedButtons[i].style.borderRadius = computed.borderRadius;
+        clonedButtons[i].style.padding = computed.padding;
+        clonedButtons[i].style.font = computed.font;
+      }
+    });
+    // -----------------------------------------------------------
+
+    // Remove UI elements that must not appear inside the lens
+    newClone.querySelectorAll("#a11y-fab, #a11y-lens-wrapper, #a11y-lens-ring, .floating-actions, .global-chart-tooltip").forEach(el => el.remove());
+    newClone.querySelectorAll("*").forEach(el => el.removeAttribute("id"));
+
+    newClone.style.zoom = currentZoom;
+    newClone.style.position = "absolute";
+    
+    newClone.style.top  = -(window.scrollY / currentZoom) + "px";
+    newClone.style.left = -(window.scrollX / currentZoom) + "px";
+    
+    newClone.style.width  = (document.documentElement.scrollWidth / currentZoom) + "px";
+    newClone.style.height = (document.documentElement.scrollHeight / currentZoom) + "px";
+    
+    newClone.style.margin = "0";
+    newClone.style.pointerEvents = "none";
+    
+    scaler.innerHTML = "";
+    scaler.appendChild(newClone);
+    magClone = newClone;
+  }
+
+  function handleMagMove(e) {
+    if (!magnifierOn) return;
+    // clientX/Y are in physical viewport pixels — correct to use directly
+    // because the lens elements live on <html> and are not subject to body zoom
+    const x = e.clientX;
+    const y = e.clientY;
+
+    lensWrapper.style.setProperty("--x", `${x}px`);
+    lensWrapper.style.setProperty("--y", `${y}px`);
+    lensRing.style.setProperty("--x", `${x}px`);
+    lensRing.style.setProperty("--y", `${y}px`);
+  }
+
+  function handleMagScroll() {
+    if (!magnifierOn || !magClone) return;
+    // FIX: Must also divide the scroll distances by currentZoom
+    magClone.style.top  = -(window.scrollY / currentZoom) + "px";
+    magClone.style.left = -(window.scrollX / currentZoom) + "px";
+  }
+  
+  // --- BUG 2 FIX: Native Browser Zoom / Resize Handler ---
+  function handleMagResize() {
+    if (magnifierOn) refreshMagClone();
+  }
+
+function startMag() {
+    lensWrapper.style.display = "block";
+    lensRing.style.display = "block";
+    document.body.classList.add("a11y-mag");
+    hideChartTooltips();
+
+    const currentBg = getComputedStyle(document.body).backgroundColor;
+    scaler.style.backgroundColor = (currentBg === "rgba(0, 0, 0, 0)" || currentBg === "transparent") ? "#FFFDF5" : currentBg;
+
+    refreshMagClone();
+
+    document.addEventListener("mousemove", handleMagMove, { passive: true });
+    window.addEventListener("scroll", handleMagScroll, { passive: true });
+    
+    // Add the native zoom/resize listener
+    window.addEventListener("resize", handleMagResize, { passive: true });
+    
+    const container = document.getElementById('content-container') || document.body;
+    domObserver.observe(container, { childList: true, subtree: true, attributes: true });
+  }
+
+  function stopMag() {
+    lensWrapper.style.display = "none";
+    lensRing.style.display = "none";
+    scaler.innerHTML = "";
+    magClone = null;
+    document.body.classList.remove("a11y-mag");
+    
+    hideChartTooltips();
+    setTimeout(enableChartTooltipsAgain, 80);
+    
+    document.removeEventListener("mousemove", handleMagMove);
+    window.removeEventListener("scroll", handleMagScroll);
+    
+    // Remove the native zoom/resize listener
+    window.removeEventListener("resize", handleMagResize);
+    
+    domObserver.disconnect();
+    clearTimeout(syncTimeout);
+  }
+
+  magBtn.addEventListener("click", () => {
+    magnifierOn = !magnifierOn;
+    magBtn.classList.toggle("on", magnifierOn);
+    magBtn.querySelector(".mb").textContent = magnifierOn ? "ON" : "OFF";
+    if (magnifierOn) startMag(); else stopMag();
+  });
+
   function setupHoverHiding() {
-    // We now select ALL buttons, select dropdowns, and anchor links across the site
-    const targets = document.querySelectorAll('#a11y-fab, .floating-actions, .info-dot, button, select, a');
+    const targets = document.querySelectorAll('#a11y-fab, .floating-actions, .info-dot, .filter-panel select, .filter-panel button');
     
     targets.forEach(el => {
       if (el.dataset.hoverBound) return;
@@ -312,126 +425,6 @@
     contentObserver.observe(container, { childList: true, subtree: true });
   });
 
-  // =========================================================================
-  // MAGNIFIER CLONE & SYNC LOGIC
-  // =========================================================================
-  const LHALF = 190 / 2, MAG = 2.8;
-  let magClone = null;
-  let syncTimeout = null;
-
-  const domObserver = new MutationObserver(() => {
-    if (!magnifierOn) return;
-    clearTimeout(syncTimeout);
-    syncTimeout = setTimeout(refreshMagClone, 500); 
-  });
-
-  function refreshMagClone() {
-    if (!magnifierOn) return;
-    
-    const newClone = document.body.cloneNode(true);
-    
-    const originalSelects = document.body.querySelectorAll("select");
-    const clonedSelects = newClone.querySelectorAll("select");
-    originalSelects.forEach((sel, i) => {
-      if (clonedSelects[i]) clonedSelects[i].value = sel.value;
-    });
-
-    const originalButtons = document.body.querySelectorAll("button");
-    const clonedButtons = newClone.querySelectorAll("button");
-    originalButtons.forEach((btn, i) => {
-      if (clonedButtons[i]) {
-        const computed = window.getComputedStyle(btn);
-        clonedButtons[i].style.backgroundColor = computed.backgroundColor;
-        clonedButtons[i].style.color = computed.color;
-        clonedButtons[i].style.border = computed.border;
-        clonedButtons[i].style.borderRadius = computed.borderRadius;
-        clonedButtons[i].style.padding = computed.padding;
-        clonedButtons[i].style.font = computed.font;
-      }
-    });
-
-    newClone.querySelectorAll("#a11y-fab, #a11y-lens-wrapper, #a11y-lens-ring, .floating-actions, .global-chart-tooltip").forEach(el => el.remove());
-    newClone.querySelectorAll("*").forEach(el => el.removeAttribute("id"));
-
-    newClone.style.zoom = currentZoom;
-    newClone.style.position = "absolute";
-    
-    newClone.style.top  = -(window.scrollY / currentZoom) + "px";
-    newClone.style.left = -(window.scrollX / currentZoom) + "px";
-    
-    newClone.style.width  = (document.documentElement.scrollWidth / currentZoom) + "px";
-    newClone.style.height = (document.documentElement.scrollHeight / currentZoom) + "px";
-    
-    newClone.style.margin = "0";
-    newClone.style.pointerEvents = "none";
-    
-    scaler.innerHTML = "";
-    scaler.appendChild(newClone);
-    magClone = newClone;
-  }
-
-  function handleMagMove(e) {
-    if (!magnifierOn) return;
-    const x = e.clientX;
-    const y = e.clientY;
-
-    lensWrapper.style.setProperty("--x", `${x}px`);
-    lensWrapper.style.setProperty("--y", `${y}px`);
-    lensRing.style.setProperty("--x", `${x}px`);
-    lensRing.style.setProperty("--y", `${y}px`);
-  }
-
-  function handleMagScroll() {
-    if (!magnifierOn || !magClone) return;
-    magClone.style.top  = -(window.scrollY / currentZoom) + "px";
-    magClone.style.left = -(window.scrollX / currentZoom) + "px";
-  }
-
-  function startMag() {
-    lensWrapper.style.display = "block";
-    lensRing.style.display = "block";
-    document.body.classList.add("a11y-mag");
-    hideChartTooltips();
-
-    const currentBg = getComputedStyle(document.body).backgroundColor;
-    scaler.style.backgroundColor = (currentBg === "rgba(0, 0, 0, 0)" || currentBg === "transparent") ? "#FFFDF5" : currentBg;
-
-    refreshMagClone();
-
-    document.addEventListener("mousemove", handleMagMove, { passive: true });
-    window.addEventListener("scroll", handleMagScroll, { passive: true });
-    
-    const container = document.getElementById('content-container') || document.body;
-    domObserver.observe(container, { childList: true, subtree: true, attributes: true });
-  }
-
-  function stopMag() {
-    lensWrapper.style.display = "none";
-    lensRing.style.display = "none";
-    scaler.innerHTML = "";
-    magClone = null;
-    document.body.classList.remove("a11y-mag");
-    
-    hideChartTooltips();
-    setTimeout(enableChartTooltipsAgain, 80);
-    
-    document.removeEventListener("mousemove", handleMagMove);
-    window.removeEventListener("scroll", handleMagScroll);
-    
-    domObserver.disconnect();
-    clearTimeout(syncTimeout);
-  }
-
-  magBtn.addEventListener("click", () => {
-    magnifierOn = !magnifierOn;
-    magBtn.classList.toggle("on", magnifierOn);
-    magBtn.querySelector(".mb").textContent = magnifierOn ? "ON" : "OFF";
-    if (magnifierOn) startMag(); else stopMag();
-  });
-
-  // =========================================================================
-  // COLOR BLIND LOGIC
-  // =========================================================================
   function applyPalette(id) {
     const pal = PALETTES.find(p => p.id === id);
     if (!pal) return;
@@ -558,11 +551,14 @@
   function saveOrig(el, attrs) { if (!origAttrs.has(el)) { const saved = {}; attrs.forEach(a => saved[a] = el.getAttribute(a)); origAttrs.set(el, saved); } }
   function restoreOrig(el, attrs) { const saved = origAttrs.get(el); if (!saved) return; attrs.forEach(a => { if (saved[a] === null) el.removeAttribute(a); else el.setAttribute(a, saved[a]); }); }
 
+  // Maps the 8 D2 jurisdictions (in their render order) to series palette slots.
+  // D2_JURISDICTION_ORDER = ["VIC","NSW","QLD","WA","SA","ACT","TAS","NT"]
   const JURISDICTION_ORDER = ["VIC", "NSW", "QLD", "WA", "SA", "ACT", "TAS", "NT"];
 
   function recolorD3(c) {
     const s = c.series;
 
+    // ── D1: single-series charts (line, lollipop) — use s[0] ──────────────
     document.querySelectorAll("line.stem").forEach(el => {
       saveOrig(el, ["stroke"]); el.setAttribute("stroke", s[0]);
     });
@@ -573,6 +569,7 @@
       saveOrig(el, ["stroke"]); el.setAttribute("stroke", s[0]);
     });
 
+    // ── D2: grouped bar — fines = s[0], tests = s[1] ──────────────────────
     document.querySelectorAll("rect.d2-bar-fines").forEach(el => {
       saveOrig(el, ["fill"]); el.setAttribute("fill", s[0]);
     });
@@ -580,6 +577,7 @@
       saveOrig(el, ["fill"]); el.setAttribute("fill", s[1]);
     });
 
+    // ── D2: area chart — each path/line carries data-jurisdiction ──────────
     document.querySelectorAll("path.d2-area").forEach(el => {
       saveOrig(el, ["fill"]);
       const jur = el.getAttribute("data-jurisdiction");
@@ -593,6 +591,7 @@
       el.setAttribute("stroke", s[idx >= 0 ? idx % s.length : 0]);
     });
 
+    // ── D2: hover points ───────────────────────────────────────────────────
     document.querySelectorAll("circle.area-hover-point").forEach(el => {
       saveOrig(el, ["fill"]);
       const jur = el.getAttribute("data-jurisdiction");
@@ -600,6 +599,8 @@
       el.setAttribute("data-a11y-color", s[idx >= 0 ? idx % s.length : 0]);
     });
 
+    // ── Chart legends ─────────────────────────────────────────────────────
+    // Grouped bar legend: fines swatch = s[0], tests swatch = s[1]
     document.querySelectorAll("g.d2-bar-legend").forEach(legendG => {
       const items = legendG.querySelectorAll("g");
       const keys = ["fines", "tests"];
@@ -611,6 +612,7 @@
       });
     });
 
+    // Area chart legend: each item maps to a jurisdiction by index
     document.querySelectorAll("g.d2-area-legend").forEach(legendG => {
       legendG.querySelectorAll("g").forEach((item, i) => {
         const rect = item.querySelector("rect");
@@ -619,9 +621,11 @@
         if (txt)  { saveOrig(txt,  ["fill"]); txt.setAttribute("fill", c.textDark); }
       });
     });
-
+    // This matches best-practice: one-hue scale avoids hue confusion entirely.
     const lowColor  = c.heatmapLow  || s[s.length - 1];
     const highColor = c.heatmapHigh || s[0];
+
+    // Build a D3 interpolator between the two palette endpoints
     const interpolateHeatmap = d3.interpolateRgb(lowColor, highColor);
 
     const activeCells = Array.from(document.querySelectorAll("rect.heatmap-cell")).filter(el => {
@@ -640,6 +644,8 @@
       });
     }
 
+    // ── Heatmap legend gradient stops ─────────────────────────────────────
+    // Update every SVG linearGradient that backs a heatmap legend bar.
     [
       { gradId: "speeding-heatmap-gradient" },
       { gradId: "d2-heatmap-gradient" }
@@ -659,9 +665,11 @@
     ];
     selectors.forEach(([sel, attrs]) => document.querySelectorAll(sel).forEach(el => restoreOrig(el, attrs)));
 
+    // Restore legend swatch and label colours
     document.querySelectorAll("g.d2-bar-legend g rect, g.d2-area-legend g rect").forEach(el => restoreOrig(el, ["fill"]));
     document.querySelectorAll("g.d2-bar-legend g text, g.d2-area-legend g text").forEach(el => restoreOrig(el, ["fill"]));
 
+    // Restore heatmap legend gradient stops to original orange scale
     const origLow  = d3.interpolateOranges(0);
     const origHigh = d3.interpolateOranges(1);
     [
