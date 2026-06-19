@@ -175,6 +175,42 @@ a {
 .nav-spacer {
   width: 250px;
   justify-self: end;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Back to Home control, integrated into the header's top-right area
+   (replaces the old fixed/floating button). Hidden on the homepage itself
+   and shown on other pages via js/script.js. */
+.nav-home-link {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+.nav-home-link:hover,
+.nav-home-link:focus-visible {
+  background: rgba(255, 255, 255, 0.32);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(118, 62, 0, 0.22);
+  outline: none;
+}
+
+.nav-home-link .nav-icon {
+  -webkit-mask-size: 17px 17px;
+  mask-size: 17px 17px;
 }
 
 /* ==========================================================
@@ -609,6 +645,15 @@ a {
   cursor: pointer;
 }
 
+/* The info-dot now opens the chart-expand modal (see js/chart_expand.js)
+   instead of a hover tooltip, so it carries an expand-arrows glyph (⤢)
+   rather than the old "i". Slightly smaller weight/larger size reads
+   better for that icon than the bold "i" did. */
+.info-dot.expand-dot {
+  font-size: 15px;
+  font-weight: 700;
+}
+
 .story-chart-card svg {
   width: 100%;
   height: auto;
@@ -834,80 +879,6 @@ a {
   line-height: 1.35;
 }
 
-.floating-actions {
-  position: fixed;
-  right: 28px;
-  bottom: 92px;
-  z-index: 9400;
-  width: 54px;
-  display: grid;
-  grid-template-columns: 54px;
-  grid-auto-rows: 54px;
-  row-gap: 10px;
-  justify-items: center;
-  align-items: center;
-}
-
-.float-action {
-  position: relative;
-  width: 54px;
-  height: 54px;
-  border: 3px solid #fff;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  color: #fff;
-  background: var(--orange);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, .30);
-  cursor: pointer;
-  text-decoration: none;
-  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
-}
-
-.float-action:hover,
-.float-action:focus-visible {
-  background: #d97a0f;
-  transform: scale(1.08);
-  outline: none;
-}
-
-.float-action .float-icon {
-  width: 22px;
-  height: 22px;
-  display: block;
-  background: currentColor;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-}
-
-.floating-home {
-  position: fixed;
-  top: 116px;
-  right: 64px;
-  color: #111827;
-  background: var(--cream);
-  border: 0;
-  border-radius: 14px;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
-}
-
-.floating-home .float-icon {
-  -webkit-mask-size: 18px 18px;
-  mask-size: 18px 18px;
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='black' d='M12 3.4c.34 0 .67.12.93.35l7.55 6.72a1.15 1.15 0 0 1-1.53 1.72l-.95-.85V18a2.05 2.05 0 0 1-2.05 2.05h-2.2V14.7h-3.5v5.35h-2.2A2.05 2.05 0 0 1 6 18v-6.66l-.95.85a1.15 1.15 0 1 1-1.53-1.72l7.55-6.72c.26-.23.59-.35.93-.35Z'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='black' d='M12 3.4c.34 0 .67.12.93.35l7.55 6.72a1.15 1.15 0 0 1-1.53 1.72l-.95-.85V18a2.05 2.05 0 0 1-2.05 2.05h-2.2V14.7h-3.5v5.35h-2.2A2.05 2.05 0 0 1 6 18v-6.66l-.95.85a1.15 1.15 0 1 1-1.53-1.72l7.55-6.72c.26-.23.59-.35.93-.35Z'/%3E%3C/svg%3E");
-}
-
-.floating-top .float-icon {
-  -webkit-mask-size: 18px 18px;
-  mask-size: 18px 18px;
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='black' d='M12 4.25 19.5 11.75c.32.32.1.88-.35.88H15.2v6.62c0 .42-.33.75-.75.75h-4.9a.74.74 0 0 1-.75-.75v-6.62H4.85c-.45 0-.67-.56-.35-.88L12 4.25Z'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='black' d='M12 4.25 19.5 11.75c.32.32.1.88-.35.88H15.2v6.62c0 .42-.33.75-.75.75h-4.9a.74.74 0 0 1-.75-.75v-6.62H4.85c-.45 0-.67-.56-.35-.88L12 4.25Z'/%3E%3C/svg%3E");
-}
-
-.float-action::after,
 #a11y-open::after {
   content: attr(data-tooltip);
   position: absolute;
@@ -928,8 +899,6 @@ a {
   transition: opacity .18s ease, transform .18s ease;
 }
 
-.float-action:hover::after,
-.float-action:focus-visible::after,
 #a11y-open:hover::after,
 #a11y-open:focus-visible::after {
   opacity: 1;
@@ -1037,26 +1006,11 @@ a {
     grid-template-columns: 1fr;
   }
 
-  .floating-home {
-    top: 110px;
-    right: 16px;
-  }
-
-  .floating-actions {
-    right: 16px;
-    bottom: 74px;
-    width: 48px;
-    grid-template-columns: 48px;
-    grid-auto-rows: 48px;
-  }
-
-  .float-action,
   #a11y-open {
     width: 48px !important;
     height: 48px !important;
   }
 
-  .float-action::after,
   #a11y-open::after {
     display: none;
   }
@@ -1205,34 +1159,7 @@ a {
    - Match the About Us mission icon to the road-safety insight visual style.
    ========================================================== */
 
-/* Use text-based floating button icons instead of CSS masks so the magnifier captures them correctly. */
-.floating-home .float-icon,
-.floating-top .float-icon {
-  background: transparent;
-  -webkit-mask-image: none;
-  mask-image: none;
-  -webkit-mask-size: auto;
-  mask-size: auto;
-  display: grid;
-  place-items: center;
-  line-height: 1;
-}
 
-.floating-home .float-icon::before {
-  content: "⌂";
-  font-size: 21px;
-  font-weight: 900;
-  color: currentColor;
-}
-
-.floating-top .float-icon::before {
-  content: "↑";
-  font-size: 22px;
-  font-weight: 900;
-  color: currentColor;
-}
-
-/* Keep info buttons easy to target and make their hover state more obvious. */
 .info-dot {
   display: grid;
   place-items: center;
@@ -1309,77 +1236,6 @@ a {
   mask-size: 48px 48px;
 }
 
-
-/* ==========================================================
-   Final tooltip and magnifier polish
-   - Pure CSS floating icons render more accurately inside html2canvas magnifier.
-   - Stronger homepage card hover feedback.
-   ========================================================== */
-
-.floating-home .float-icon,
-.floating-top .float-icon {
-  position: relative;
-  width: 22px;
-  height: 22px;
-  background: transparent !important;
-  -webkit-mask-image: none !important;
-  mask-image: none !important;
-  -webkit-mask-size: auto !important;
-  mask-size: auto !important;
-}
-
-.floating-home .float-icon::before,
-.floating-home .float-icon::after,
-.floating-top .float-icon::before,
-.floating-top .float-icon::after {
-  content: "";
-  position: absolute;
-  display: block;
-  box-sizing: border-box;
-}
-
-/* Draw the home icon with borders instead of font glyphs/masks, preventing black-square capture artifacts. */
-.floating-home .float-icon::before {
-  left: 5px;
-  top: 9px;
-  width: 12px;
-  height: 9px;
-  border: 2px solid currentColor;
-  border-top: 0;
-  border-radius: 1px;
-}
-
-.floating-home .float-icon::after {
-  left: 4px;
-  top: 4px;
-  width: 14px;
-  height: 14px;
-  border-left: 2px solid currentColor;
-  border-top: 2px solid currentColor;
-  transform: rotate(45deg);
-  border-radius: 1px 0 0 0;
-}
-
-/* Draw the up arrow with CSS borders for consistent magnifier capture. */
-.floating-top .float-icon::before {
-  left: 10px;
-  top: 5px;
-  width: 2px;
-  height: 13px;
-  background: currentColor;
-  border-radius: 999px;
-}
-
-.floating-top .float-icon::after {
-  left: 6px;
-  top: 5px;
-  width: 10px;
-  height: 10px;
-  border-left: 2px solid currentColor;
-  border-top: 2px solid currentColor;
-  transform: rotate(45deg);
-  border-radius: 1px;
-}
 
 /* Stronger visual confirmation when users hover the homepage navigation cards. */
 .premium-link-card:hover,
@@ -1951,89 +1807,6 @@ a {
   z-index: 20 !important;
   pointer-events: auto !important;
 }
-
-/* Replace the previous CSS-drawn floating home icon because it looked rough
-   inside the magnifier. A normal text glyph is captured much more cleanly. */
-.floating-home .float-icon,
-.floating-top .float-icon {
-  width: 24px !important;
-  height: 24px !important;
-  display: grid !important;
-  place-items: center !important;
-  background: transparent !important;
-  color: currentColor !important;
-  -webkit-mask-image: none !important;
-  mask-image: none !important;
-  font-family: Arial, Helvetica, sans-serif !important;
-  font-weight: 900 !important;
-  line-height: 1 !important;
-}
-
-.floating-home .float-icon::before {
-  content: "⌂" !important;
-  position: static !important;
-  display: block !important;
-  width: auto !important;
-  height: auto !important;
-  border: 0 !important;
-  background: transparent !important;
-  transform: none !important;
-  font-size: 19px !important;
-  color: currentColor !important;
-}
-
-.floating-home .float-icon::after {
-  display: none !important;
-}
-
-.floating-top .float-icon::before {
-  content: "↑" !important;
-  position: static !important;
-  display: block !important;
-  width: auto !important;
-  height: auto !important;
-  border: 0 !important;
-  background: transparent !important;
-  transform: none !important;
-  font-size: 21px !important;
-  color: currentColor !important;
-}
-
-.floating-top .float-icon::after {
-  display: none !important;
-}
-
-
-/* Clean magnifier-safe floating controls. */
-.floating-home .float-icon,
-.floating-top .float-icon {
-  width: 22px !important;
-  height: 22px !important;
-  display: block !important;
-  background-color: transparent !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
-  background-size: 19px 19px !important;
-  -webkit-mask-image: none !important;
-  mask-image: none !important;
-}
-
-.floating-home .float-icon {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23111827' d='M12 4.2 4.8 10.55v8.15c0 .61.49 1.1 1.1 1.1h4.1v-5.5h4v5.5h4.1c.61 0 1.1-.49 1.1-1.1v-8.15L12 4.2Zm0-2.35c.31 0 .62.11.87.33l8.75 7.72a1.15 1.15 0 0 1-1.52 1.72l-.5-.44v7.52a3.4 3.4 0 0 1-3.4 3.4h-4.45v-5.5h-1.5v5.5H5.9a3.4 3.4 0 0 1-3.4-3.4v-7.52l-.5.44A1.15 1.15 0 1 1 .48 9.9l8.75-7.72c.25-.22.56-.33.87-.33Z'/%3E%3C/svg%3E") !important;
-}
-
-.floating-top .float-icon {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='white' d='M12 4.3 5.2 11.1a1.1 1.1 0 1 0 1.56 1.56l4.14-4.14V19a1.1 1.1 0 1 0 2.2 0V8.52l4.14 4.14a1.1 1.1 0 0 0 1.56-1.56L12 4.3Z'/%3E%3C/svg%3E") !important;
-}
-
-.floating-home .float-icon::before,
-.floating-home .float-icon::after,
-.floating-top .float-icon::before,
-.floating-top .float-icon::after {
-  display: none !important;
-  content: none !important;
-}
-
 
 /* ==========================================================
    Strict-structure heatmap info icon

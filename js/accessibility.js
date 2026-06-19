@@ -139,19 +139,12 @@
       pointer-events: none;
     }
 
-    body.a11y-mag *:not(#a11y-fab):not(#a11y-fab *):not(.floating-top):not(#a11y-lens-ring):not(#a11y-lens-wrapper):not(.info-dot):not(.filter-panel select):not(.filter-panel button) {
+    body.a11y-mag *:not(#a11y-fab):not(#a11y-fab *):not(#a11y-lens-ring):not(#a11y-lens-wrapper):not(.info-dot):not(.filter-panel select):not(.filter-panel button) {
       pointer-events: none !important;
     }
 
-    #a11y-fab, .floating-top, .info-dot, .filter-panel select, .filter-panel button {
+    #a11y-fab, .info-dot, .filter-panel select, .filter-panel button {
       pointer-events: auto !important;
-    }
-
-    /* Back to Home lives in .floating-actions (moved to <html>, alongside #a11y-fab),
-       so it isn't covered by the body.a11y-mag descendant rule above. Disable it
-       the same way the navbar links are disabled while the magnifier is active. */
-    body.a11y-mag ~ .floating-actions .floating-home {
-      pointer-events: none !important;
     }
 
     #a11y-lens-wrapper.hide-lens,
@@ -192,23 +185,14 @@
     <button id="a11y-open" aria-label="Accessibility options" aria-expanded="false">⚙</button>
   `;
   document.documentElement.appendChild(fab);
-  // Move the Back to Top & Home buttons out of the body so they ignore zoom
-  const floatingActions = document.querySelector(".floating-actions");
-  if (floatingActions) {
-    document.documentElement.appendChild(floatingActions);
-  }
 
-  // Keep the accessibility panel a constant physical size regardless of the
-  // browser's native zoom level (Ctrl/Cmd +/-), which would otherwise scale
-  // position:fixed elements along with the rest of the page.
-  const initialDPR = window.devicePixelRatio;
-  function syncFabScale() {
-    const ratio = initialDPR / window.devicePixelRatio;
-    fab.style.transformOrigin = "bottom right";
-    fab.style.transform = `scale(${ratio})`;
-  }
-  window.addEventListener("resize", syncFabScale, { passive: true });
-  syncFabScale();
+  // NOTE: the button intentionally has NO custom scaling/repositioning logic.
+  // It uses plain position:fixed (bottom:28px; right:28px) so it stays
+  // anchored to the bottom-right corner of the viewport exactly like any
+  // normal fixed element — including when the user zooms with the browser's
+  // native zoom (Ctrl/Cmd +/-). A previous "keep constant physical size"
+  // hack here (using devicePixelRatio to counter-scale the button) was what
+  // caused the button to drift away from its corner when zooming; removed.
 
   // Attach lens elements to <html>, NOT <body>, so they never inherit body{zoom}
   const lensWrapper = document.createElement("div");
@@ -320,7 +304,7 @@ function refreshMagClone() {
     // -----------------------------------------------------------
 
     // Remove UI elements that must not appear inside the lens
-    newClone.querySelectorAll("#a11y-fab, #a11y-lens-wrapper, #a11y-lens-ring, .floating-actions, .global-chart-tooltip").forEach(el => el.remove());
+    newClone.querySelectorAll("#a11y-fab, #a11y-lens-wrapper, #a11y-lens-ring, .global-chart-tooltip").forEach(el => el.remove());
     newClone.querySelectorAll("*").forEach(el => el.removeAttribute("id"));
 
     newClone.style.zoom = currentZoom;
@@ -341,13 +325,13 @@ function refreshMagClone() {
   }
 
   // Elements the lens should hide over: the accessibility panel + its open
-  // button, the magnifier toggle, filter controls, and the floating
-  // Back to Top / Back to Home buttons. Checked by bounding-rect on every
-  // mousemove (see handleMagMove) rather than mouseenter/mouseleave, since
-  // the lens ring sits above these elements (z-index 99999) and can make
-  // enter/leave hit-testing unreliable.
+  // button, the magnifier toggle, filter controls, and the integrated
+  // Back to Home link. Checked by bounding-rect on every mousemove (see
+  // handleMagMove) rather than mouseenter/mouseleave, since the lens ring
+  // sits above these elements (z-index 99999) and can make enter/leave
+  // hit-testing unreliable.
   const HOVER_HIDE_SELECTOR =
-    '#a11y-open, #a11y-panel, #a11y-magbtn, .filter-panel button, .filter-panel select, .floating-top, .floating-home';
+    '#a11y-open, #a11y-panel, #a11y-magbtn, .filter-panel button, .filter-panel select, .nav-home-link';
 
   function handleMagMove(e) {
     if (!magnifierOn) return;

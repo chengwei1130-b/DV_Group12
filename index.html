@@ -37,7 +37,12 @@
         </a>
       </div>
 
-      <div class="nav-spacer" aria-hidden="true"></div>
+      <div class="nav-spacer">
+        <a href="home.html" class="nav-home-link" aria-label="Back to homepage">
+          <span class="nav-icon nav-home-icon" aria-hidden="true"></span>
+          Back to Home
+        </a>
+      </div>
     </nav>
   </header>
 
@@ -72,17 +77,9 @@
     </div>
   </footer>
 
-<div class="floating-actions" aria-label="Quick navigation">
-    <a href="home.html" class="float-action floating-home" aria-label="Back to homepage" data-tooltip="Back to homepage">
-      <span class="float-icon" aria-hidden="true"></span>
-    </a>
-    <button type="button" class="float-action floating-top" aria-label="Back to top" data-tooltip="Back to top">
-      <span class="float-icon" aria-hidden="true"></span>
-    </button>
-  </div>
-
   <!-- Load D3 utilities first, then shared data loader, then page renderers, then SPA router -->
   <script src="js/load_data.js"></script>
+  <script src="js/chart_expand.js"></script>
   <script src="js/dashboard1.js"></script>
   <script src="js/d1_tooltips.js"></script>
   <script src="js/d1_lineChart.js"></script>

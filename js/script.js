@@ -55,10 +55,10 @@ function loadPageContent(url, pushToHistory = true) {
           setActiveLink(url);
           window.scrollTo(0, 0);
 
-          // Handle Floating Home Button visibility
-          const floatingHomeBtn = document.querySelector(".floating-home");
-          if (floatingHomeBtn) {
-            floatingHomeBtn.style.display = (url === "home.html" || url === "") ? "none" : "grid";
+          // Handle Back to Home link visibility (now integrated top-right in the header)
+          const navHomeLink = document.querySelector(".nav-home-link");
+          if (navHomeLink) {
+            navHomeLink.style.display = (url === "home.html" || url === "") ? "none" : "inline-flex";
           }
         });
       })
@@ -70,7 +70,7 @@ function loadPageContent(url, pushToHistory = true) {
 
   function attachNavigationHandlers(container = document) {
     const links = container.querySelectorAll(
-      ".nav-menu a, .site-brand, .dashboard-link, .floating-home"
+      ".nav-menu a, .site-brand, .dashboard-link, .nav-home-link"
     );
 
     links.forEach(link => {
@@ -91,10 +91,6 @@ function loadPageContent(url, pushToHistory = true) {
   window.addEventListener("popstate", event => {
     const url = event.state?.url ?? getPageFromQuery();
     loadPageContent(url, false);
-  });
-
-  document.querySelector(".floating-top")?.addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
   attachNavigationHandlers();
