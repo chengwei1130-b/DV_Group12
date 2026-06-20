@@ -99,13 +99,44 @@
       margin: 0 0 6px; font-size: 11px; font-weight: 800;
       letter-spacing: .08em; text-transform: uppercase; color: #F1622B;
     }
-    .chart-expand-title { margin: 0 0 18px; font-size: 22px; line-height: 1.25; color: #111827; }
+    .chart-expand-title { margin: 0 0 14px; font-size: 22px; line-height: 1.25; color: #111827; }
+
+    /* "How to read this table" / "Data note" info boxes shown below the
+       table, condensing the table area to roughly half the right panel. */
+    .chart-expand-info-box {
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin: 14px 0 0;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .chart-expand-info-title {
+      margin: 0 0 6px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+    .chart-expand-info-box p { margin: 0; color: #374151; }
+    .chart-expand-info-how {
+      background: #FDF1E6;
+      border: 1px solid rgba(241, 98, 43, 0.18);
+    }
+    .chart-expand-info-how .chart-expand-info-title { color: #B9501C; }
+    .chart-expand-info-note {
+      background: #EAF1FB;
+      border: 1px solid rgba(30, 86, 160, 0.18);
+    }
+    .chart-expand-info-note .chart-expand-info-title { color: #1E56A0; }
+    .chart-expand-info-box:empty,
+    .chart-expand-info-box[hidden] { display: none; }
 
     .chart-expand-table-wrap {
       border: 1px solid rgba(23, 32, 51, 0.10);
       border-radius: 14px;
       overflow: auto;
-      flex: 1 1 auto;
+      flex: 1 1 50%;
+      max-height: 50%;
     }
     .chart-expand-table {
       width: 100%;
@@ -154,7 +185,8 @@
     @media (max-width: 880px) {
       .chart-expand-modal { grid-template-columns: 1fr; grid-template-rows: 55% 45%; width: 94vw; height: 94vh; }
       .chart-expand-left { padding: 56px 16px 16px; }
-      .chart-expand-right { border-left: none; border-top: 1px solid rgba(23, 32, 51, 0.08); }
+      .chart-expand-right { border-left: none; border-top: 1px solid rgba(23, 32, 51, 0.08); padding: 20px 18px; }
+      .chart-expand-info-box { padding: 10px 12px; font-size: 12px; margin-top: 10px; }
     }
   </style>`);
 
@@ -177,12 +209,22 @@
             <tbody class="chart-expand-table-body"></tbody>
           </table>
         </div>
+        <div class="chart-expand-info-box chart-expand-info-how">
+          <p class="chart-expand-info-title">How to read this table</p>
+          <p class="chart-expand-info-how-text"></p>
+        </div>
+        <div class="chart-expand-info-box chart-expand-info-note">
+          <p class="chart-expand-info-title">Data note</p>
+          <p class="chart-expand-info-note-text"></p>
+        </div>
       </div>
     </div>`;
   document.documentElement.appendChild(overlay);
 
   const chartWrap = overlay.querySelector(".chart-expand-chart-wrap");
   const titleEl = overlay.querySelector(".chart-expand-title");
+  const howText = overlay.querySelector(".chart-expand-info-how-text");
+  const noteText = overlay.querySelector(".chart-expand-info-note-text");
   const tableHeadRow = overlay.querySelector(".chart-expand-table-head-row");
   const tableBody = overlay.querySelector(".chart-expand-table-body");
   const closeBtn = overlay.querySelector(".chart-expand-close");
@@ -257,6 +299,23 @@
     });
   }
 
+  // Fills the "How to read this table" / "Data note" boxes above the table.
+  // Uses tableData.description / tableData.note when a chart script has
+  // supplied them; otherwise falls back to copy generated from the chart's
+  // title and column names so every chart still gets a sensible default.
+  function renderChartExpandInfo(tableData, chartTitle) {
+    const columns = (tableData && tableData.columns) || [];
+    const valueCols = columns.slice(1); // first column is usually the row label (Year, etc.)
+    const metricLabel = valueCols.length ? valueCols.join(" and ") : "values";
+    const lowerTitle = (chartTitle || "this chart").replace(/^\d+\.\s*/, "").trim();
+
+    const defaultHow = `This table shows the ${metricLabel.toLowerCase()} behind "${lowerTitle}". It is the processed data used to generate the chart on the left.`;
+    const defaultNote = `Values are based on the processed dataset and may differ slightly from raw data due to cleaning and formatting.`;
+
+    howText.textContent = (tableData && tableData.description) || defaultHow;
+    noteText.textContent = (tableData && tableData.note) || defaultNote;
+  }
+
   function openChartExpand(button) {
     const card = button.closest(".story-chart-card");
     if (!card) return;
@@ -270,8 +329,10 @@
     const chartKey = chartContainer ? chartContainer.id : "";
     const tableData = (window.chartExpandTableData && window.chartExpandTableData[chartKey]) || null;
 
-    titleEl.textContent = heading ? heading.textContent.trim() : "Chart";
+    const chartTitle = heading ? heading.textContent.trim() : "Chart";
+    titleEl.textContent = chartTitle;
     renderChartExpandTable(tableData);
+    renderChartExpandInfo(tableData, chartTitle);
 
     chartWrap.innerHTML = "";
     if (sourceChart) {
