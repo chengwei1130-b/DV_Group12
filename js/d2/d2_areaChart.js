@@ -21,6 +21,9 @@ function d2DrawAreaChart(data) {
   if (!years.length || !jurisdictions.length) {
     root.selectAll("*").remove();
     root.append("text").attr("x", W / 2).attr("y", H / 2).attr("text-anchor", "middle").text("No data");
+    // Keep the expanded-chart modal's data table in sync (see js/chart_expand.js).
+    window.chartExpandTableData = window.chartExpandTableData || {};
+    window.chartExpandTableData.d2AreaChart = { columns: ["Year", "Jurisdiction", "Positive Drug Tests"], rows: [], rowKeys: [] };
     return;
   }
 
@@ -60,29 +63,51 @@ function d2DrawAreaChart(data) {
     exit => exit.remove()
   );
 
-  // Generate specific hover circles directly on the lines rather than using full-height zones
+  // Generate specific hover circles directly on the lines rather than using full-height zones.
+  // Tooltip HTML is also stamped on as a `data-tooltip` attribute so the
+  // expanded chart modal (which clones this SVG, losing D3 event listeners)
+  // can still show working tooltips on hover. See js/chart_expand.js.
   const pointData = [];
   stacked.forEach(series => {
     series.forEach(d => {
       pointData.push({ year: d.data.year, jurisdiction: series.key, val: d.data[series.key], yPos: d[1] });
     });
   });
-  
+
+  // Feed the expanded-chart modal's right-hand data table (see js/chart_expand.js).
+  window.chartExpandTableData = window.chartExpandTableData || {};
+  const sortedPointData = [...pointData].sort((a, b) => a.year - b.year || a.jurisdiction.localeCompare(b.jurisdiction));
+  window.chartExpandTableData = window.chartExpandTableData || {};
+  window.chartExpandTableData.d2AreaChart = {
+    columns: ["Year", "Jurisdiction", "Positive Drug Tests"],
+    rows: sortedPointData.map(d => [d.year, d.jurisdiction, d2FormatNum(d.val)]),
+    rowKeys: sortedPointData.map(d => `point-${d.year}-${d.jurisdiction}`)
+  };
+  const areaPointTipHtml = d => {
+    const color = D2_JURISDICTION_COLORS[d.jurisdiction] || '#999';
+    return `<strong>${d.year}</strong><br><span style="color:${color}">${d.jurisdiction}: ${d2FormatNum(d.val)}</span>`;
+  };
+
   root.selectAll("circle.area-hover-point").data(pointData, d => `${d.year}-${d.jurisdiction}`).join(
-    enter => enter.append("circle").attr("class", "area-hover-point").attr("r", 9).attr("fill", "transparent").style("cursor", "crosshair")
-      .attr("cx", d => x(d.year)).attr("cy", d => y(d.yPos))
-      .on("mouseenter", function(event, d) {
-        const color = D2_JURISDICTION_COLORS[d.jurisdiction] || '#999';
-        d3.select(this).attr("fill", color); // Briefly show point on hover
-        d2ShowTooltipPinned(event, `<strong>${d.year}</strong><br><span style="color:${color}">${d.jurisdiction}: ${d2FormatNum(d.val)}</span>`);
-      })
-      .on("mouseleave", function() {
-        d3.select(this).attr("fill", "transparent");
-        d2HideTooltip();
-      }),
-    update => update.transition(t).attr("cx", d => x(d.year)).attr("cy", d => y(d.yPos)),
-    exit => exit.remove()
-  );
+      enter => enter.append("circle").attr("class", "area-hover-point").attr("r", 9)
+        .attr("fill", d => D2_JURISDICTION_COLORS[d.jurisdiction] || '#999')
+        .attr("stroke", "#ffffff").attr("stroke-width", 2).style("cursor", "pointer")
+        .attr("cx", d => x(d.year)).attr("cy", d => y(d.yPos))
+        .attr("data-tooltip", areaPointTipHtml)
+        .attr("data-key", d => `point-${d.year}-${d.jurisdiction}`)
+        .on("mouseenter", function(event, d) {
+          d3.select(this).attr("r", 11).attr("stroke", "#111827").attr("stroke-width", 2); // Emphasize point on hover
+          d2ShowTooltipPinned(event, areaPointTipHtml(d));
+        })
+        .on("mouseleave", function() {
+          d3.select(this).attr("r", 9).attr("stroke", "#ffffff").attr("stroke-width", 2);
+          d2HideTooltip();
+        }),
+      update => update.attr("data-tooltip", areaPointTipHtml).attr("fill", d => D2_JURISDICTION_COLORS[d.jurisdiction] || '#999')
+        .attr("data-key", d => `point-${d.year}-${d.jurisdiction}`)
+        .transition(t).attr("cx", d => x(d.year)).attr("cy", d => y(d.yPos)),
+      exit => exit.remove()
+    );
 
   const legendG = root.selectAll("g.d2-area-legend").data([null]).join("g").attr("class", "d2-area-legend").attr("transform", `translate(${W + 14},0)`);
   legendG.selectAll("*").remove();

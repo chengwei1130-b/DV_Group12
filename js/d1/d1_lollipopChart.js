@@ -10,6 +10,14 @@ function drawLollipopChart(data) {
   const values     = jurisdictionTotals(data);
   const t          = svg.transition().duration(CHART_ANIMATION_DURATION).ease(chartEase);
 
+  // Feed the expanded-chart modal's right-hand data table (see js/chart_expand.js).
+  window.chartExpandTableData = window.chartExpandTableData || {};
+  window.chartExpandTableData.lollipopChart = {
+      columns: ["Jurisdiction", "Speeding Fines"],
+      rows: values.map(d => [d.jurisdiction, formatNumber(d.value)]),
+      rowKeys: values.map(d => `point-${d.jurisdiction}`)
+    };
+
   svg.attr("width", 760).attr("height", 430);
 
   let root = svg.select("g.lollipop-chart-root");
@@ -35,13 +43,17 @@ function drawLollipopChart(data) {
     .attr("x1", d => x(d.jurisdiction) + x.bandwidth() / 2).attr("x2", d => x(d.jurisdiction) + x.bandwidth() / 2).attr("y1", height).attr("y2", d => y(d.value));
   stems.exit().transition(t).attr("y2", height).style("opacity", 0).remove();
 
-  // Bind tooltip directly to circles
+  // Bind tooltip directly to circles. Tooltip HTML is also stamped on as a
+  // `data-tooltip` attribute so the expanded chart modal (which clones this
+  // SVG, losing D3 event listeners) can still show working tooltips on
+  // hover. See js/chart_expand.js.
+  const lollipopTipHtml = d => `<strong>${d.jurisdiction}</strong><br>Speeding fines: ${formatNumber(d.value)}<br>${formatMillions(d.value)}`;
   const dots = root.selectAll("circle.lollipop-dot").data(values, d => d.jurisdiction);
   dots.enter().append("circle").attr("class", "lollipop-dot").attr("r", 0)
     .attr("fill", "#F7931E").attr("stroke", "#ffffff").attr("stroke-width", 2).style("cursor", "pointer")
-    .on("mouseenter", (event, d) => showTooltipPinned(event, `<strong>${d.jurisdiction}</strong><br>Speeding fines: ${formatNumber(d.value)}<br>${formatMillions(d.value)}`))
+    .on("mouseenter", (event, d) => showTooltipPinned(event, lollipopTipHtml(d)))
     .on("mouseleave", hideTooltip)
-    .merge(dots).transition(t).delay((_, i) => i * CHART_STAGGER_DELAY)
+    .merge(dots).attr("data-tooltip", lollipopTipHtml).attr("data-key", d => `point-${d.jurisdiction}`).transition(t).delay((_, i) => i * CHART_STAGGER_DELAY)
     .attr("cx", d => x(d.jurisdiction) + x.bandwidth() / 2).attr("cy", d => y(d.value)).attr("r", 9); // Radius 9 for easier click/hover
   dots.exit().transition(t).attr("r", 0).style("opacity", 0).remove();
 

@@ -93,12 +93,25 @@ function updateDashboard(allData) {
   const filtered = getFilteredData(allData);
   updateKpis(filtered);
   
-  // Safe execution checks so the page doesn't crash
-  if (typeof drawLineChart === "function") drawLineChart(filtered);
-  if (typeof drawLollipopChart === "function") drawLollipopChart(filtered);
-  if (typeof drawHeatmap === "function") drawHeatmap(filtered, allData);
-}
+  // Try/catch guarantees one broken chart won't stop the insights from loading
+  try { if (typeof drawLineChart === "function") drawLineChart(filtered); } catch(e) { console.error("Line error:", e); }
+  try { if (typeof drawLollipopChart === "function") drawLollipopChart(filtered); } catch(e) { console.error("Lollipop error:", e); }
+  try { if (typeof drawHeatmap === "function") drawHeatmap(filtered, allData); } catch(e) { console.error("Heatmap error:", e); }
 
+  // Guarantee insight text renders even if a chart stumbles
+  setTimeout(() => {
+    const byJurisdiction = jurisdictionTotals(filtered);
+    const topJur = byJurisdiction.length ? byJurisdiction[0] : null;
+    const insightText = topJur 
+      ? `${byJurisdiction.slice(0, 3).map(d => d.jurisdiction).join(", ")} recorded the highest total speeding fines in the selected period.` 
+      : "No data available.";
+      
+    const insightBox = d3.select("#jurisdictionInsight");
+    if (!insightBox.text() || insightBox.text() === "Loading insight...") {
+      insightBox.text(insightText);
+    }
+  }, 200);
+}
 function initFilters(allData) {
   const years = Array.from(new Set(allData.map(d => d.YEAR))).sort((a, b) => a - b);
   const jurisdictions = JURISDICTION_ORDER.filter(j => allData.some(d => d.JURISDICTION === j));
@@ -132,13 +145,12 @@ function renderDashboard1Page() {
     if (d3.select("#dashboard1").empty()) return;
     if (!allData || !allData.length) return;
     initFilters(allData);
-    
-    // Safely trigger tooltips
     if (typeof initD1InfoTooltips === "function") initD1InfoTooltips();
+    
+    if (typeof initChartExpandButtons === "function") initChartExpandButtons('#dashboard1');
     
     updateDashboard(allData);
   };
-
   if (window.appData) run(window.appData);
   else window.appDataPromise.then(run).catch(err => console.error("Data error:", err));
 }

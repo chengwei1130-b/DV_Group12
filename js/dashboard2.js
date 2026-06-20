@@ -96,9 +96,9 @@ function d2UpdateDashboard(allData) {
   const filtered = d2GetFiltered(allData);
   d2UpdateKpis(filtered);
   
-  if (typeof d2DrawGroupedBar === "function") d2DrawGroupedBar(filtered);
-  if (typeof d2DrawAreaChart === "function") d2DrawAreaChart(filtered);
-  if (typeof d2DrawHeatmap === "function") d2DrawHeatmap(filtered, allData);
+  try { if (typeof d2DrawGroupedBar === "function") d2DrawGroupedBar(filtered); } catch(e) { console.error("Bar error:", e); }
+  try { if (typeof d2DrawAreaChart === "function") d2DrawAreaChart(filtered); } catch(e) { console.error("Area error:", e); }
+  try { if (typeof d2DrawHeatmap === "function") d2DrawHeatmap(filtered, allData); } catch(e) { console.error("Heatmap error:", e); }
 }
 
 function d2InitFilters(allData) {
@@ -136,6 +136,7 @@ function renderDashboard2Page() {
     
     d2InitFilters(allData);
     if (typeof initD2InfoTooltips === "function") initD2InfoTooltips();
+    if (typeof initChartExpandButtons === "function") initChartExpandButtons('#drug-dashboard');
     d2UpdateDashboard(allData);
   };
   

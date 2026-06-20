@@ -179,39 +179,6 @@ a {
   justify-content: flex-end;
 }
 
-/* Back to Home control, integrated into the header's top-right area
-   (replaces the old fixed/floating button). Hidden on the homepage itself
-   and shown on other pages via js/script.js. */
-.nav-home-link {
-  display: none;
-  align-items: center;
-  gap: 8px;
-  height: 44px;
-  padding: 0 18px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: #fff;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 800;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
-}
-
-.nav-home-link:hover,
-.nav-home-link:focus-visible {
-  background: rgba(255, 255, 255, 0.32);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(118, 62, 0, 0.22);
-  outline: none;
-}
-
-.nav-home-link .nav-icon {
-  -webkit-mask-size: 17px 17px;
-  mask-size: 17px 17px;
-}
 
 /* ==========================================================
    Shared page layout
@@ -939,8 +906,7 @@ a {
     justify-items: center;
   }
 
-  .site-brand,
-  .nav-spacer {
+  .site-brand{
     min-width: 0;
   }
 

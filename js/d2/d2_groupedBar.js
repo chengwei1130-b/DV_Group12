@@ -19,6 +19,14 @@ function d2DrawGroupedBar(data) {
     return rows.length ? { jurisdiction: j, fines: d3.sum(rows, d => d["Speeding Fines"]), tests: d3.sum(rows, d => d["Alcohol drug tests"]) } : null;
   }).filter(Boolean).sort((a, b) => b.fines - a.fines);
 
+  // Feed the expanded-chart modal's right-hand data table (see js/chart_expand.js).
+  window.chartExpandTableData = window.chartExpandTableData || {};
+  window.chartExpandTableData.d2GroupedBar = {
+      columns: ["Jurisdiction", "Speeding Fines", "Drug Tests"],
+      rows: agg.map(d => [d.jurisdiction, d2FormatNum(d.fines), d2FormatNum(d.tests)]),
+      rowKeys: agg.map(d => `bar-${d.jurisdiction}`)
+    };
+
   if (!agg.length) {
     root.selectAll("*").remove();
     root.append("text").attr("x", W / 2).attr("y", H / 2).attr("text-anchor", "middle").text("No data");
@@ -46,22 +54,26 @@ function d2DrawGroupedBar(data) {
 
   const groups = root.selectAll("g.d2-bar-group").data(agg, d => d.jurisdiction).join("g").attr("class", "d2-bar-group").attr("transform", d => `translate(${x0(d.jurisdiction)},0)`);
 
-  // Bind tooltip directly to the individual bars
+  // Bind tooltip directly to the individual bars. Tooltip HTML is also
+  // stamped on as a `data-tooltip` attribute so the expanded chart modal
+  // (which clones this SVG, losing D3 event listeners) can still show
+  // working tooltips on hover. See js/chart_expand.js.
   groups.each(function (gd) {
     const g = d3.select(this);
     series.forEach((key, si) => {
       const bars = g.selectAll(`rect.d2-bar-${key}`).data([gd]);
+      const barTipHtml = d => `<strong>${d.jurisdiction}</strong><br>${seriesLabels[key]}: ${d2FormatNum(d[key])}<br>(${d2FormatM(d[key])})`;
       bars.enter().append("rect").attr("class", `d2-bar-${key}`).attr("x", x1(key)).attr("width", x1.bandwidth()).attr("y", H).attr("height", 0)
         .attr("fill", seriesColors[key]).attr("rx", 4).style("cursor", "pointer")
         .on("mouseenter", function(event, d) {
           d3.select(this).attr("stroke", "#111827").attr("stroke-width", 1.5);
-          d2ShowTooltipPinned(event, `<strong>${d.jurisdiction}</strong><br>${seriesLabels[key]}: ${d2FormatNum(d[key])}<br>(${d2FormatM(d[key])})`);
+          d2ShowTooltipPinned(event, barTipHtml(d));
         })
         .on("mouseleave", function() {
           d3.select(this).attr("stroke", "none");
           d2HideTooltip();
         })
-        .merge(bars).transition(t).delay(si * D2_STAGGER).attr("x", x1(key)).attr("width", x1.bandwidth()).attr("y", d => y(d[key])).attr("height", d => H - y(d[key]));
+        .merge(bars).attr("data-tooltip", barTipHtml).attr("data-key", d => `bar-${d.jurisdiction}`).transition(t).delay(si * D2_STAGGER).attr("x", x1(key)).attr("width", x1.bandwidth()).attr("y", d => y(d[key])).attr("height", d => H - y(d[key]));
     });
   });
 

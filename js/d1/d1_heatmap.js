@@ -1,4 +1,4 @@
-function d2EnsureDirectVisibleSummary(card, heatmapText) {
+function ensureD1DirectVisibleSummary(card, heatmapText) {
   if (!card) return;
 
   const insightBox = card.querySelector('.heatmap-inline-insight') || card.querySelector('.insight-box');
@@ -17,7 +17,7 @@ function d2EnsureDirectVisibleSummary(card, heatmapText) {
         <span class="direct-summary-icon" aria-hidden="true">💡</span>
         <div>
           <h2>Story summary</h2>
-          <p>Key takeaways from the drug testing enforcement data</p>
+          <p>Key takeaways from the speeding enforcement data</p>
         </div>
       </div>
       <ol>
@@ -32,9 +32,9 @@ function d2EnsureDirectVisibleSummary(card, heatmapText) {
     `;
   }
 
-  const summaryOne = document.querySelector('#d2SummaryOne')?.textContent || 'Drug testing volumes vary significantly across jurisdictions.';
-  const summaryTwo = document.querySelector('#d2SummaryTwo')?.textContent || 'Positive drug test trends show meaningful year-to-year changes.';
-  const summaryThree = heatmapText || document.querySelector('#d2SummaryThree')?.textContent || 'The heatmap reveals concentration hotspots by jurisdiction and year.';
+  const summaryOne = document.querySelector('#summaryOne')?.textContent || 'Speeding fines peaked during the selected period.';
+  const summaryTwo = document.querySelector('#summaryTwo')?.textContent || 'Fine records are concentrated in larger jurisdictions.';
+  const summaryThree = heatmapText || document.querySelector('#summaryThree')?.textContent || 'The heatmap reveals how the pattern varies across both year and jurisdiction.';
 
   block.querySelector('.direct-summary-one').textContent = summaryOne;
   block.querySelector('.direct-summary-two').textContent = summaryTwo;
@@ -51,7 +51,7 @@ function d2EnsureDirectVisibleSummary(card, heatmapText) {
   block.style.clear = 'both';
 
   // Hide every older/original summary or note section so only the direct block remains.
-  document.querySelectorAll('#drug-dashboard .story-summary, #drug-dashboard .data-note').forEach(el => {
+  document.querySelectorAll('#dashboard1 .story-summary, #dashboard1 .data-note').forEach(el => {
     if (el.closest('.direct-visible-summary-block')) return;
     if (el.classList.contains('direct-visible-summary-block')) return;
     el.style.display = 'none';
@@ -66,15 +66,15 @@ function d2EnsureDirectVisibleSummary(card, heatmapText) {
 }
 
 
-function d2EnsureVisibleSummary(card, text) {
+function ensureD1VisibleSummary(card, text) {
   if (!card) return;
 
-  const existingSummary = document.querySelector('#drug-dashboard .story-summary');
-  const existingNote = document.querySelector('#drug-dashboard .data-note');
+  const existingSummary = document.querySelector('#dashboard1 .story-summary');
+  const existingNote = document.querySelector('#dashboard1 .data-note');
 
-  const summaryOne = document.querySelector('#d2SummaryOne')?.textContent || 'Drug testing volumes vary significantly across jurisdictions.';
-  const summaryTwo = document.querySelector('#d2SummaryTwo')?.textContent || 'Positive drug test trends show meaningful year-to-year changes.';
-  const summaryThree = text || document.querySelector('#d2SummaryThree')?.textContent || 'The heatmap reveals concentration hotspots by jurisdiction and year.';
+  const summaryOne = document.querySelector('#summaryOne')?.textContent || 'Speeding fines peaked during the selected period.';
+  const summaryTwo = document.querySelector('#summaryTwo')?.textContent || 'Fine records are concentrated in larger jurisdictions.';
+  const summaryThree = text || document.querySelector('#summaryThree')?.textContent || 'The heatmap reveals how the pattern varies across both year and jurisdiction.';
 
   let visibleSummary = card.querySelector('.visible-heatmap-summary');
 
@@ -86,7 +86,7 @@ function d2EnsureVisibleSummary(card, text) {
         <div class="summary-icon" aria-hidden="true">💡</div>
         <div>
           <h2>Story summary</h2>
-          <p>Key takeaways from the drug testing enforcement data</p>
+          <p>Key takeaways from the speeding enforcement data</p>
         </div>
       </div>
       <ol>
@@ -149,19 +149,19 @@ function d2EnsureVisibleSummary(card, text) {
 }
 
 
-function d2EnsureHeatmapContent(text) {
-  const card = document.querySelector('#drug-dashboard .heatmap-card');
+function ensureD1HeatmapContent(text) {
+  const card = document.querySelector('#dashboard1 .heatmap-card');
   if (!card) return;
 
-  const chartContainer = card.querySelector('#d2-heatmap-chart');
+  const chartContainer = card.querySelector('#d1-heatmap-chart');
   let insightBox = card.querySelector(':scope > .insight-box') || card.querySelector('.insight-box');
 
-  // Use the existing heatmap insight box from dashboard2.html. If it is missing,
+  // Use the existing heatmap insight box from dashboard1.html. If it is missing,
   // create the same structure as a fallback so the content under the heatmap is always visible.
   if (!insightBox) {
     insightBox = document.createElement('div');
     insightBox.className = 'insight-box heatmap-inline-insight';
-    insightBox.innerHTML = '<span aria-hidden="true">▦</span><p id="d2HeatmapInsight"></p>';
+    insightBox.innerHTML = '<span aria-hidden="true">▦</span><p id="heatmapInsight"></p>';
   }
 
   insightBox.classList.add('heatmap-inline-insight');
@@ -170,17 +170,17 @@ function d2EnsureHeatmapContent(text) {
     chartContainer.insertAdjacentElement('afterend', insightBox);
   }
 
-  const textTarget = insightBox.querySelector('p') || document.querySelector('#d2HeatmapInsight');
+  const textTarget = insightBox.querySelector('p') || document.querySelector('#heatmapInsight');
   if (textTarget) textTarget.textContent = text;
 
   insightBox.style.display = 'flex';
   insightBox.style.visibility = 'visible';
   insightBox.style.opacity = '1';
 
-  d3.selectAll('#d2HeatmapInsight').text(text);
-  d3.selectAll('#d2SummaryThree, #d2Summary3').text(text);
+  d3.selectAll('#heatmapInsight').text(text);
+  d3.selectAll('#summaryThree, #d1SummaryThree, #d1Summary3').text(text);
 
-  const dashboard = document.querySelector('#drug-dashboard .story-dashboard');
+  const dashboard = document.querySelector('#dashboard1 .story-dashboard');
   if (dashboard) {
     const summary = dashboard.querySelector(':scope > .story-summary') || dashboard.querySelector('.story-summary');
     const dataNote = dashboard.querySelector(':scope > .data-note') || dashboard.querySelector('.data-note');
@@ -209,26 +209,25 @@ function d2EnsureHeatmapContent(text) {
     });
   }
 
-  d2EnsureDirectVisibleSummary(card, text);
+  ensureD1DirectVisibleSummary(card, text);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// js/d2_heatmap.js
+// js/d1_heatmap.js
 // ─────────────────────────────────────────────────────────────────────────────
 
-function d2DrawHeatmap(data, allData) {
-  const dash = d3.select("#drug-dashboard");
+function drawHeatmap(data, allData) {
+  const dash = d3.select("#dashboard1");
   if (dash.empty()) return;
 
-  let container = dash.select("#d2-heatmap-chart");
-
+  let container = dash.select("#d1-heatmap-chart");
   if (container.empty()) {
     const card = dash.select(".heatmap-card").node();
     if (card) {
-      card.querySelectorAll("#drug-outcome-chart, #d2HeatmapContainer, svg").forEach(el => el.remove());
+      card.querySelectorAll("#drug-outcome-chart, #heatmapChart, svg").forEach(el => el.remove());
       const newDiv = document.createElement("div");
-      newDiv.id = "d2-heatmap-chart";
-      newDiv.className = "drug-outcome-content";
+      newDiv.id = "d1-heatmap-chart";
+      newDiv.className = "fine-trend-heatmap-svg";
       const insightBox = card.querySelector(".insight-box");
       if (insightBox) card.insertBefore(newDiv, insightBox);
       else card.appendChild(newDiv);
@@ -237,82 +236,102 @@ function d2DrawHeatmap(data, allData) {
   }
 
   container.selectAll("*").interrupt().remove();
+  
+  const startYear = +d3.select("#startYear").property("value");
+  const endYear = +d3.select("#endYear").property("value");
+  const selectedJurisdiction = d3.select("#jurisdictionSelect").property("value");
 
-  if (!data || data.length === 0) {
+  const years = Array.from(new Set(allData.map(d => d.YEAR)))
+    .filter(yr => yr >= Math.min(startYear, endYear) && yr <= Math.max(startYear, endYear))
+    .sort((a, b) => a - b);
+
+  const jurisdictions = selectedJurisdiction === "All"
+    ? JURISDICTION_ORDER.filter(j => allData.some(d => d.JURISDICTION === j))
+    : [selectedJurisdiction];
+
+  if (!years.length || !jurisdictions.length) {
     const message = "No heatmap data available for the selected filters.";
-    container.append("p").attr("class", "heatmap-empty").style("padding", "24px").style("text-align", "center").text(message);
-    d2EnsureHeatmapContent(message);
+    container.append("p").attr("class", "heatmap-empty").text(message);
+    ensureD1HeatmapContent(message);
+    // Keep the expanded-chart modal's data table in sync (see js/chart_expand.js).
+    window.chartExpandTableData = window.chartExpandTableData || {};
+    window.chartExpandTableData["d1-heatmap-chart"] = { columns: ["Year", "Jurisdiction", "Speeding Fines"], rows: [], rowKeys: [] };
     return;
   }
 
-  const startYear = +d3.select("#d2StartYear").property("value");
-  const endYear = +d3.select("#d2EndYear").property("value");
-  const selectedJurisdiction = d3.select("#d2JurisdictionSelect").property("value");
-
-  const years = Array.from(new Set(allData.map(d => d.YEAR)))
-    .filter(yr => yr >= Math.min(startYear, endYear) && yr <= Math.max(startYear, endYear)).sort((a, b) => a - b);
-
-  const jurisdictions = selectedJurisdiction === "All"
-    ? D2_JURISDICTION_ORDER.filter(j => allData.some(d => d.JURISDICTION === j))
-    : [selectedJurisdiction];
-
   const dataMap = new Map();
-  data.forEach(d => { dataMap.set(`${d.YEAR}-${d.JURISDICTION}`, d["Positive drug tests"]); });
+  data.forEach(row => dataMap.set(`${row.YEAR}-${row.JURISDICTION}`, row["Speeding Fines"]));
 
   const margin = { top: 54, right: 180, bottom: 62, left: 92 };
   const totalWidth = 1160;
   const totalHeight = Math.max(360, 96 + jurisdictions.length * 42);
   const innerWidth = totalWidth - margin.left - margin.right;
   const innerHeight = totalHeight - margin.top - margin.bottom;
+  const cellWidth = innerWidth / years.length;
+  const cellHeight = innerHeight / jurisdictions.length;
+
+  const maxValue = d3.max(allData, d => d["Speeding Fines"]) || 1;
+  const colorScale = d3.scaleSequential(d3.interpolateOranges).domain([0, maxValue]);
 
   const svg = container.append("svg").attr("class", "drug-outcome-style-heatmap").attr("width", totalWidth).attr("height", totalHeight).attr("viewBox", `0 0 ${totalWidth} ${totalHeight}`).attr("preserveAspectRatio", "xMidYMid meet");
   const inner = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
-  const maxVal = d3.max(allData, d => d["Positive drug tests"]) || 1;
-  const cellWidth = innerWidth / years.length;
-  const cellHeight = innerHeight / jurisdictions.length;
-  const colorScale = d3.scaleSequential().domain([0, maxVal]).interpolator(d3.interpolateOranges);
 
-  const cells = [];
-  years.forEach((year, xi) => {
-    jurisdictions.forEach((jur, yi) => {
-      const val = dataMap.get(`${year}-${jur}`) || 0;
-      cells.push({ year, jur, val, xi, yi, active: dataMap.has(`${year}-${jur}`) });
-    });
-  });
+  const cells = years.flatMap((year, xi) => jurisdictions.map((jurisdiction, yi) => {
+      const key = `${year}-${jurisdiction}`;
+      const value = dataMap.has(key) ? dataMap.get(key) : null;
+      return { year, jurisdiction, value, xi, yi, active: value !== null };
+  }));
 
-  inner.selectAll(".heatmap-cell").data(cells, d => `${d.year}-${d.jur}`).join(
-    enter => enter.append("rect").attr("class", "heatmap-cell")
-      .attr("x", d => d.xi * cellWidth).attr("y", d => d.yi * cellHeight).attr("width", Math.max(0, cellWidth - 3)).attr("height", Math.max(0, cellHeight - 3))
-      .attr("rx", 8).style("cursor", "pointer").attr("fill", "#E5E7EB").attr("opacity", 0)
-      .attr("data-value", d => d.active ? d.val : null)
-      .call(e => e.transition().duration(600).ease(d3.easeCubicOut).attr("fill", d => d.active ? colorScale(d.val) : "#E5E7EB").attr("opacity", 1)),
-    update => update.attr("data-value", d => d.active ? d.val : null)
-      .call(u => u.transition().duration(600).ease(d3.easeCubicOut).attr("fill", d => d.active ? colorScale(d.val) : "#E5E7EB")),
-    exit => exit.call(e => e.transition().duration(600).attr("opacity", 0).remove())
-  )
+  // Feed the expanded-chart modal's right-hand data table (see js/chart_expand.js).
+  window.chartExpandTableData = window.chartExpandTableData || {};
+  window.chartExpandTableData["d1-heatmap-chart"] = {
+      columns: ["Year", "Jurisdiction", "Speeding Fines"],
+      rows: cells.map(d => [d.year, d.jurisdiction, d.active ? formatNumber(d.value) : "No record"]),
+      rowKeys: cells.map(d => `cell-${d.year}-${d.jurisdiction}`)
+    };
+
+  // Builds the tooltip HTML for a cell. Also stamped onto each cell as a
+  // `data-tooltip` attribute (below) so the expanded chart modal — which
+  // clones this SVG and can't carry over D3 event listeners — can still
+  // show working tooltips on hover. See js/chart_expand.js.
+  const heatmapCellTipHtml = d => {
+    const displayValue = d.active ? `${formatNumber(d.value)} (${formatMillions(d.value)})` : "No record";
+    return `<strong>${d.jurisdiction} — ${d.year}</strong><br>Speeding fines: ${displayValue}`;
+  };
+
+  inner.selectAll(".heatmap-cell").data(cells, d => `${d.year}-${d.jurisdiction}`).join(
+      enter => enter.append("rect").attr("class", "heatmap-cell")
+        .attr("x", d => d.xi * cellWidth).attr("y", d => d.yi * cellHeight)
+        .attr("width", Math.max(0, cellWidth - 3)).attr("height", Math.max(0, cellHeight - 3))
+        .attr("rx", 8).style("cursor", "pointer").attr("fill", "#E5E7EB").attr("opacity", 0)
+        .attr("data-value", d => d.active ? d.value : null)
+        .attr("data-tooltip", heatmapCellTipHtml)
+        .attr("data-key", d => `cell-${d.year}-${d.jurisdiction}`)
+        .call(e => e.transition().duration(CHART_ANIMATION_DURATION).ease(chartEase).attr("fill", d => d.active ? colorScale(d.value) : "#E5E7EB").attr("opacity", 1)),
+      update => update.attr("data-value", d => d.active ? d.value : null)
+        .attr("data-tooltip", heatmapCellTipHtml)
+        .attr("data-key", d => `cell-${d.year}-${d.jurisdiction}`)
+        .call(u => u.transition().duration(CHART_ANIMATION_DURATION).ease(chartEase).attr("fill", d => d.active ? colorScale(d.value) : "#E5E7EB").attr("opacity", 1)),
+      exit => exit.call(e => e.transition().duration(CHART_ANIMATION_DURATION).attr("opacity", 0).remove())
+    )
   .on("mouseenter", function(event, d) {
     d3.select(this).attr("stroke", "#111827").attr("stroke-width", 2);
-    const displayValue = d.active ? `${d2FormatNum(d.val)} (${d2FormatK(d.val)})` : "No record";
-    d2ShowTooltipPinned(event, `<strong>${d.jur} — ${d.year}</strong><br>Positive tests: ${displayValue}`);
+    showTooltipPinned(event, heatmapCellTipHtml(d));
   })
-  .on("mouseleave", function() { 
+  .on("mouseleave", function(event) { 
     d3.select(this).attr("stroke", "none"); 
-    d2HideTooltip(); 
+    hideTooltip(); 
   });
 
-  inner.selectAll(".cell-label").data(cells, d => `${d.year}-${d.jur}`).join(
+  inner.selectAll(".cell-label").data(cells, d => `${d.year}-${d.jurisdiction}`).join(
     enter => enter.append("text").attr("class", "cell-label")
       .attr("x", d => d.xi * cellWidth + cellWidth / 2).attr("y", d => d.yi * cellHeight + cellHeight / 2 + 5)
       .attr("text-anchor", "middle").attr("font-size", 12).attr("font-weight", 800).attr("opacity", 0)
-      .attr("fill", d => (d.active && d.val > maxVal * 0.55) ? "#fff" : "#222")
-      .text(d => d.active && d.val > 0 ? d2FormatK(d.val) : "–") 
-      .call(e => e.transition().duration(600).ease(d3.easeCubicOut).attr("opacity", 1)),
-    update => update.call(u => u.transition().duration(600).ease(d3.easeCubicOut)
-      .attr("x", d => d.xi * cellWidth + cellWidth / 2).attr("y", d => d.yi * cellHeight + cellHeight / 2 + 5)
-      .attr("fill", d => (d.active && d.val > maxVal * 0.55) ? "#fff" : "#222")
-      .text(d => d.active && d.val > 0 ? d2FormatK(d.val) : "–")),
-    exit => exit.call(e => e.transition().duration(600).attr("opacity", 0).remove())
-  );
+      .text(d => d.active ? formatMillions(d.value) : "N/A")
+      .call(e => e.transition().duration(CHART_ANIMATION_DURATION).attr("opacity", 1)),
+    update => update.call(u => u.transition().duration(CHART_ANIMATION_DURATION).attr("x", d => d.xi * cellWidth + cellWidth / 2).attr("y", d => d.yi * cellHeight + cellHeight / 2 + 5).attr("fill", d => (d.active && d.value > maxValue * 0.55) ? "#fff" : "#222").text(d => d.active ? formatMillions(d.value) : "N/A")),
+    exit => exit.call(e => e.transition().duration(CHART_ANIMATION_DURATION).attr("opacity", 0).remove())
+  ).attr("fill", d => (d.active && d.value > maxValue * 0.55) ? "#fff" : "#222");
 
   const xScale = d3.scalePoint().domain(years).range([cellWidth / 2, innerWidth - cellWidth / 2]);
   const yScale = d3.scalePoint().domain(jurisdictions).range([cellHeight / 2, innerHeight - cellHeight / 2]);
@@ -320,24 +339,24 @@ function d2DrawHeatmap(data, allData) {
   inner.append("g").attr("class", "axis-x").attr("transform", `translate(0,${innerHeight})`).call(d3.axisBottom(xScale).tickFormat(d3.format("d"))).call(g => g.select(".domain").remove());
   inner.append("g").attr("class", "axis-y").call(d3.axisLeft(yScale)).call(g => g.select(".domain").remove());
 
-  inner.append("text").attr("x", innerWidth / 2).attr("y", innerHeight + 48).attr("text-anchor", "middle").attr("font-size", "13px").attr("font-weight", "800").attr("fill", "#111827").text("Year");
-  inner.append("text").attr("class", "chart-title-label horizontal-axis-label").attr("x", 0).attr("y", -22).attr("transform", null).attr("text-anchor", "start").attr("font-size", "13px").attr("font-weight", "800").attr("fill", "#111827").text("Jurisdiction");
+  inner.append("text").attr("class", "chart-title-label").attr("x", innerWidth / 2).attr("y", innerHeight + 48).attr("text-anchor", "middle").text("Year");
+  inner.append("text").attr("class", "chart-title-label horizontal-axis-label").attr("x", 0).attr("y", -22).attr("transform", null).attr("text-anchor", "start").text("Jurisdiction");
 
   const defs = svg.append("defs");
-  const linearGrad = defs.append("linearGradient").attr("id", "d2-heatmap-gradient").attr("x1", "0%").attr("x2", "100%");
-  linearGrad.append("stop").attr("offset", "0%").attr("stop-color", colorScale(0));
-  linearGrad.append("stop").attr("offset", "100%").attr("stop-color", colorScale(maxVal));
+  const gradient = defs.append("linearGradient").attr("id", "speeding-heatmap-gradient").attr("x1", "0%").attr("x2", "100%");
+  gradient.append("stop").attr("offset", "0%").attr("stop-color", colorScale(0));
+  gradient.append("stop").attr("offset", "100%").attr("stop-color", colorScale(maxValue));
 
   const legend = inner.append("g").attr("class", "heatmap-svg-legend").attr("transform", `translate(${innerWidth + 28},22)`);
-  legend.append("text").attr("x", 0).attr("y", -8).attr("font-size", 11).attr("font-weight", 800).attr("fill", "#374151").text("Positive Tests");
-  legend.append("rect").attr("width", 130).attr("height", 14).attr("rx", 7).attr("fill", "url(#d2-heatmap-gradient)");
+  legend.append("text").attr("x", 0).attr("y", -8).attr("font-size", 11).attr("font-weight", 800).attr("fill", "#374151").text("Fines");
+  legend.append("rect").attr("width", 130).attr("height", 14).attr("rx", 7).attr("fill", "url(#speeding-heatmap-gradient)");
   legend.append("text").attr("x", 0).attr("y", 30).attr("font-size", 10).attr("fill", "#374151").text("Low");
   legend.append("text").attr("x", 130).attr("y", 30).attr("font-size", 10).attr("text-anchor", "end").attr("fill", "#374151").text("High");
 
-  const maxCell = d3.greatest(cells.filter(d => d.active), d => d.val);
+  const maxCell = d3.greatest(cells.filter(d => d.active), d => d.value);
   const heatmapMessage = maxCell
-    ? `${maxCell.jur} in ${maxCell.year} had the highest positive drug test count (${d3.format(",")(maxCell.val)}).`
+    ? `${maxCell.jurisdiction} in ${maxCell.year} shows the highest fine total in the selected view.`
     : "No heatmap insight available for the selected filters.";
 
-  d2EnsureHeatmapContent(heatmapMessage);
+  ensureD1HeatmapContent(heatmapMessage);
 }

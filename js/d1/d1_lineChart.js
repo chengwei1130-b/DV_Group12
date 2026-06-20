@@ -10,6 +10,13 @@ function drawLineChart(data) {
   const values     = yearlyTotals(data);
   const t          = svg.transition().duration(CHART_ANIMATION_DURATION).ease(chartEase);
 
+  // Feed the expanded-chart modal's right-hand data table (see js/chart_expand.js).
+  window.chartExpandTableData = window.chartExpandTableData || {};
+  window.chartExpandTableData.lineChart = {
+      columns: ["Year", "Speeding Fines"],
+      rows: values.map(d => [d.year, formatNumber(d.value)]),
+      rowKeys: values.map(d => `point-${d.year}`)
+    };
   svg.attr("width", 760).attr("height", 430);
 
   let root = svg.select("g.line-chart-root");
@@ -34,12 +41,16 @@ function drawLineChart(data) {
     .attr("fill", "none").attr("stroke", "#F15A24").attr("stroke-width", 3).transition(t).attr("d", line);
 
   // Bind tooltip directly to circles. Radius is slightly larger (9px) for easier hovering.
+  // Tooltip HTML is also stamped on as a `data-tooltip` attribute so the
+  // expanded chart modal (which clones this SVG, losing D3 event listeners)
+  // can still show working tooltips on hover. See js/chart_expand.js.
+  const lineTipHtml = d => `<strong>Year: ${d.year}</strong><br>Speeding fines: ${formatNumber(d.value)}<br>${formatMillions(d.value)}`;
   const points = root.selectAll("circle.line-point").data(values, d => d.year);
   points.enter().append("circle").attr("class", "line-point").attr("r", 0)
     .attr("fill", "#F7931E").attr("stroke", "#ffffff").attr("stroke-width", 2).style("cursor", "pointer")
-    .on("mouseenter", (event, d) => showTooltipPinned(event, `<strong>Year: ${d.year}</strong><br>Speeding fines: ${formatNumber(d.value)}<br>${formatMillions(d.value)}`))
+    .on("mouseenter", (event, d) => showTooltipPinned(event, lineTipHtml(d)))
     .on("mouseleave", hideTooltip)
-    .merge(points).transition(t).delay((_, i) => i * CHART_STAGGER_DELAY)
+    .merge(points).attr("data-tooltip", lineTipHtml).attr("data-key", d => `point-${d.year}`).transition(t).delay((_, i) => i * CHART_STAGGER_DELAY)
     .attr("cx", d => x(d.year)).attr("cy", d => y(d.value)).attr("r", 9);
   points.exit().transition(t).attr("r", 0).style("opacity", 0).remove();
 
