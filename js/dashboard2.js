@@ -36,7 +36,29 @@ function d2GetFiltered(allData) {
   });
 }
 
-function d2UpdateKpis(data) {
+// Cached once per page load: KPI totals computed from the FULL, unfiltered
+// dataset. Used as the comparison point for the delta badges in each KPI card.
+let d2Baseline = null;
+function getD2Baseline(allData) {
+  if (d2Baseline) return d2Baseline;
+  const totalTests    = d3.sum(allData, d => d["Alcohol drug tests"]);
+  const totalPositive = d3.sum(allData, d => d["Positive drug tests"]);
+  const rate          = totalTests > 0 ? (totalPositive / totalTests) * 100 : 0;
+
+  const byJuris = Array.from(
+    d3.rollup(allData,
+      vs => ({ tests: d3.sum(vs, d => d["Alcohol drug tests"]), positive: d3.sum(vs, d => d["Positive drug tests"]) }),
+      d => d.JURISDICTION
+    ),
+    ([name, v]) => ({ name, rate: v.tests > 0 ? (v.positive / v.tests) * 100 : 0 })
+  ).sort((a, b) => b.rate - a.rate);
+
+  d2Baseline = { totalTests, totalPositive, rate, topJuris: byJuris[0] ?? null };
+  return d2Baseline;
+}
+
+function d2UpdateKpis(data, allData) {
+  const baseline = getD2Baseline(allData);
   const totalTests    = d3.sum(data, d => d["Alcohol drug tests"]);
   const totalPositive = d3.sum(data, d => d["Positive drug tests"]);
   const rate          = totalTests > 0 ? (totalPositive / totalTests) * 100 : 0;
@@ -53,14 +75,27 @@ function d2UpdateKpis(data) {
   const s = d3.select("#d2StartYear").property("value");
   const e = d3.select("#d2EndYear").property("value");
 
-  d3.select("#d2KpiTests").text(d2FormatM(totalTests));
+  d3.select("#d2KpiTests").text(d2FormatNum(totalTests));
   d3.select("#d2KpiTestsNote").text(`${s}–${e}`);
-  d3.select("#d2KpiPositive").text(d2FormatK(totalPositive));
+  d3.select("#d2KpiTestsDelta").html(formatKpiDelta(totalTests, baseline.totalTests));
+
+  d3.select("#d2KpiPositive").text(d2FormatNum(totalPositive));
   d3.select("#d2KpiPositiveNote").text("Total confirmed positives");
+  d3.select("#d2KpiPositiveDelta").html(formatKpiDelta(totalPositive, baseline.totalPositive));
+
   d3.select("#d2KpiRate").text(totalTests > 0 ? d2FormatPct(rate) : "--");
   d3.select("#d2KpiRateNote").text("Positive / all tests");
+  d3.select("#d2KpiRateDelta").html(
+    totalTests > 0 ? formatKpiDelta(rate, baseline.rate, { isPercentagePoints: true, label: "vs overall rate" }) : ""
+  );
+
   d3.select("#d2KpiTopJurisdiction").text(topJuris ? topJuris.name : "--");
   d3.select("#d2KpiTopNote").text(topJuris ? `${d2FormatPct(topJuris.rate)} positivity` : "No data");
+  d3.select("#d2KpiTopDelta").html(
+    (topJuris && baseline.topJuris)
+      ? formatKpiDelta(topJuris.rate, baseline.topJuris.rate, { isPercentagePoints: true, label: "vs top jurisdiction" })
+      : ""
+  );
 
   // BULLETPROOF INSIGHTS & SUMMARIES
   try {
@@ -76,7 +111,7 @@ function d2UpdateKpis(data) {
     );
 
     d3.selectAll("#d2AreaInsight, #d2LineInsight, #lineInsight").text(
-      (peak && latest) ? `Positive tests peaked in ${peak.year} at ${d2FormatK(peak.value)}.` : "No data available."
+      (peak && latest) ? `Positive tests peaked in ${peak.year} at ${d2FormatNum(peak.value)}.` : "No data available."
     );
 
     // Bottom Summaries
@@ -94,7 +129,7 @@ function d2UpdateKpis(data) {
 
 function d2UpdateDashboard(allData) {
   const filtered = d2GetFiltered(allData);
-  d2UpdateKpis(filtered);
+  d2UpdateKpis(filtered, allData);
   
   try { if (typeof d2DrawGroupedBar === "function") d2DrawGroupedBar(filtered); } catch(e) { console.error("Bar error:", e); }
   try { if (typeof d2DrawAreaChart === "function") d2DrawAreaChart(filtered); } catch(e) { console.error("Area error:", e); }

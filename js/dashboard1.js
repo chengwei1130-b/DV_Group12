@@ -11,6 +11,38 @@ const formatNumber    = d3.format(",");
 const formatMillions  = value => `${d3.format(".2~f")((value || 0) / 1_000_000)}M`;
 const formatPercent   = value => `${value >= 0 ? "+" : ""}${d3.format(".1f")(value)}%`;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared KPI delta helper (used by both dashboard1.js and dashboard2.js)
+// Builds a colored "+/-" badge comparing a filtered KPI value against the
+// equivalent value computed from the FULL, unfiltered dataset. Returns "" when
+// there is no meaningful difference (e.g. filters are at their default state).
+// ─────────────────────────────────────────────────────────────────────────────
+function formatKpiDelta(current, base, opts = {}) {
+  const { isPercentagePoints = false, label = "vs full dataset", decimals = 1 } = opts;
+  if (current === null || current === undefined || base === null || base === undefined) return "";
+
+  const diff = current - base;
+  const threshold = isPercentagePoints ? 0.05 : 0.5;
+  if (Math.abs(diff) < threshold) return "";
+
+  const direction = diff > 0 ? "up" : "down";
+  const arrow = diff > 0 ? "▲" : "▼";
+  const sign = diff > 0 ? "+" : "−";
+  const absDiff = Math.abs(diff);
+
+  const diffText = isPercentagePoints
+    ? `${sign}${d3.format("." + decimals + "f")(absDiff)}pp`
+    : `${sign}${formatNumber(Math.round(absDiff))}`;
+
+  let pctText = "";
+  if (!isPercentagePoints && base) {
+    const pct = Math.abs((diff / base) * 100);
+    pctText = ` (${sign}${d3.format(".1f")(pct)}%)`;
+  }
+
+  return `<span class="kpi-delta kpi-delta-${direction}"><span class="kpi-delta-arrow" aria-hidden="true">${arrow}</span>${diffText}${pctText} <span class="kpi-delta-label">${label}</span></span>`;
+}
+
 // HELPER FUNCTIONS (Kept global so chart files can use them)
 function sumBy(data, groupKey, valueKey) {
   return Array.from(
@@ -49,7 +81,23 @@ function getFilteredData(allData) {
   });
 }
 
-function updateKpis(data) {
+// Cached once per page load: KPI totals computed from the FULL, unfiltered
+// dataset. Used as the comparison point for the delta badges in each KPI card.
+let d1Baseline = null;
+function getD1Baseline(allData) {
+  if (d1Baseline) return d1Baseline;
+  const byYear         = yearlyTotals(allData);
+  const byJurisdiction = jurisdictionTotals(allData);
+  d1Baseline = {
+    total: d3.sum(allData, d => d["Speeding Fines"]),
+    peak: byYear.length ? byYear.reduce((p, c) => (p.value > c.value) ? p : c) : null,
+    topJurisdiction: byJurisdiction.length ? byJurisdiction[0] : null
+  };
+  return d1Baseline;
+}
+
+function updateKpis(data, allData) {
+  const baseline       = getD1Baseline(allData);
   const byYear         = yearlyTotals(data);
   const byJurisdiction = jurisdictionTotals(data);
 
@@ -64,21 +112,33 @@ function updateKpis(data) {
   const selectedEnd   = d3.select("#endYear").property("value");
 
   // 1. UPDATE KPI CARDS
-  d3.select("#kpiTotalFines").text(formatMillions(total));
+  d3.select("#kpiTotalFines").text(formatNumber(total));
   d3.select("#kpiTotalNote").text(`${selectedStart}–${selectedEnd}`);
+  d3.select("#kpiTotalDelta").html(formatKpiDelta(total, baseline.total));
 
   d3.select("#kpiPeakYear").text(peak ? peak.year : "--");
-  d3.select("#kpiPeakNote").text(peak ? `${formatMillions(peak.value)} fines` : "No data");
+  d3.select("#kpiPeakNote").text(peak ? `${formatNumber(peak.value)} fines` : "No data");
+  d3.select("#kpiPeakDelta").html(
+    (peak && baseline.peak) ? formatKpiDelta(peak.value, baseline.peak.value, { label: "vs all-time peak" }) : ""
+  );
 
   d3.select("#kpiTopJurisdiction").text(topJurisdiction ? topJurisdiction.jurisdiction : "--");
-  d3.select("#kpiTopNote").text(topJurisdiction ? `${formatMillions(topJurisdiction.value)} fines` : "No data");
+  d3.select("#kpiTopNote").text(topJurisdiction ? `${formatNumber(topJurisdiction.value)} fines` : "No data");
+  d3.select("#kpiTopDelta").html(
+    (topJurisdiction && baseline.topJurisdiction)
+      ? formatKpiDelta(topJurisdiction.value, baseline.topJurisdiction.value, { label: "vs leading jurisdiction" })
+      : ""
+  );
 
-  d3.select("#kpiChange").text(change === null ? "--" : formatPercent(change));
+  const changeEl = d3.select("#kpiChange");
+  changeEl.text(change === null ? "--" : formatPercent(change));
+  changeEl.classed("kpi-positive", change !== null && change >= 0);
+  changeEl.classed("kpi-negative", change !== null && change < 0);
   d3.select("#kpiChangeNote").text((peak && latest) ? `${peak.year} to ${latest.year}` : "No data");
 
   // 2. BULLETPROOF INSIGHTS & SUMMARIES (Targets multiple possible HTML IDs)
   try {
-    d3.selectAll("#lineInsight, #d1LineInsight").text(peak && latest ? `Speeding fines peaked in ${peak.year} at ${formatMillions(peak.value)}, reaching ${formatMillions(latest.value)} in ${latest.year}.` : "No data available.");
+    d3.selectAll("#lineInsight, #d1LineInsight").text(peak && latest ? `Speeding fines peaked in ${peak.year} at ${formatNumber(peak.value)}, reaching ${formatNumber(latest.value)} in ${latest.year}.` : "No data available.");
     d3.selectAll("#jurisdictionInsight, #d1JurisdictionInsight").text(topJurisdiction ? `${byJurisdiction.slice(0, 3).map(d => d.jurisdiction).join(", ")} recorded the highest total speeding fines in the selected period.` : "No data available.");
     
     // Bottom Summaries
@@ -91,7 +151,7 @@ function updateKpis(data) {
 
 function updateDashboard(allData) {
   const filtered = getFilteredData(allData);
-  updateKpis(filtered);
+  updateKpis(filtered, allData);
   
   // Try/catch guarantees one broken chart won't stop the insights from loading
   try { if (typeof drawLineChart === "function") drawLineChart(filtered); } catch(e) { console.error("Line error:", e); }
