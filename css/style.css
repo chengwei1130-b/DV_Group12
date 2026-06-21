@@ -579,7 +579,7 @@ a {
   color: #dc2626;
 }
 
-.kpi-delta {
+.kpi-card .kpi-delta {
   display: block;
   margin-top: 4px !important;
   font-size: 12.5px;
