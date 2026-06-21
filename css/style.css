@@ -2721,6 +2721,38 @@ body.onboarding-active #a11y-open::after {
   transform: translateY(0);
 }
 
+.onboarding-popover.home-card-mobile-popover {
+  width: min(300px, calc(100vw - 28px));
+  padding: 12px 14px 12px;
+  border-radius: 18px;
+}
+
+.onboarding-popover.home-card-mobile-popover .onboarding-progress {
+  margin-bottom: 6px;
+  font-size: 11px;
+}
+
+.onboarding-popover.home-card-mobile-popover .onboarding-title {
+  margin-bottom: 6px;
+  font-size: 19px;
+  line-height: 1.15;
+}
+
+.onboarding-popover.home-card-mobile-popover .onboarding-text {
+  font-size: 13px;
+  line-height: 1.42;
+}
+
+.onboarding-popover.home-card-mobile-popover .onboarding-actions {
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.onboarding-popover.home-card-mobile-popover .onboarding-actions button {
+  min-height: 36px;
+  font-size: 12px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .onboarding-spotlight,
   .onboarding-popover {
@@ -2826,4 +2858,311 @@ body.onboarding-active #a11y-fab {
 .onboarding-highlight.info-dot,
 .onboarding-highlight#a11y-open {
   border-radius: 999px;
+}
+
+/* ==========================================================
+   Mobile viewport safety patch
+   - Prevents phone/DevTools widths from crushing headings, navigation,
+     home cards, dashboard cards, and expanded chart tables.
+   - Mobile CSS only; desktop/projector layout and chart/data logic unchanged.
+   ========================================================== */
+@media (max-width: 640px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  .site-header {
+    position: relative;
+  }
+
+  .nav-links {
+    width: 100%;
+    max-width: none;
+    padding: 10px 12px;
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  .site-brand {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    justify-self: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .brand-copy {
+    min-width: 0;
+    max-width: calc(100vw - 104px);
+  }
+
+  .brand-copy strong {
+    display: block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+    line-height: 0.98;
+  }
+
+  .brand-mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    flex: 0 0 auto;
+  }
+
+  .brand-copy strong {
+    font-size: clamp(14px, 4vw, 16px);
+  }
+
+  .brand-copy small {
+    font-size: 12px;
+  }
+
+  .nav-menu {
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .nav-menu a {
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+    padding: 0 8px;
+    gap: 6px;
+    font-size: 12px;
+  }
+
+  .nav-icon {
+    width: 14px;
+    height: 14px;
+    -webkit-mask-size: 14px 14px;
+    mask-size: 14px 14px;
+    flex: 0 0 auto;
+  }
+
+  .page {
+    width: 100%;
+    padding: 22px 14px 72px;
+    overflow-x: hidden;
+  }
+
+  .page::before {
+    display: none;
+  }
+
+  .section-kicker {
+    margin-bottom: 10px;
+    font-size: 11px;
+    letter-spacing: 1.6px;
+  }
+
+  .heading-rule {
+    margin-bottom: 14px;
+  }
+
+  .page-heading h1,
+  .dashboard-heading h1 {
+    max-width: 100%;
+    font-size: clamp(30px, 9.5vw, 38px);
+    line-height: 1.08;
+    letter-spacing: -0.4px;
+    overflow-wrap: break-word;
+  }
+
+  .section-subtitle {
+    max-width: 100%;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .home-showcase-grid,
+  .chart-grid,
+  #dashboard1 .chart-grid,
+  #drug-dashboard .chart-grid {
+    width: 100%;
+    max-width: 100%;
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+
+  .feature-panel {
+    min-height: 0;
+    padding: 12px;
+    border-radius: 22px;
+    overflow: hidden;
+  }
+
+  .feature-image-shell {
+    min-height: 140px;
+    padding: 8px;
+    border-radius: 18px;
+  }
+
+  .home-image {
+    width: min(72%, 260px);
+  }
+
+  .feature-copy-panel h2 {
+    font-size: 20px;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  .feature-copy-panel p,
+  .premium-link-card p {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .feature-pill-row {
+    gap: 8px;
+  }
+
+  .feature-pill {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .story-path-panel {
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .home-card-stack {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: none !important;
+    gap: 16px;
+  }
+
+  .premium-link-card {
+    min-height: 0;
+    padding: 18px 14px;
+    border-radius: 22px;
+  }
+
+  .premium-link-card h3 {
+    font-size: 19px;
+    line-height: 1.25;
+    overflow-wrap: break-word;
+  }
+
+  .link-card-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .link-card-button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .filter-panel,
+  .kpi-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .filter-panel {
+    padding: 14px;
+    border-radius: 20px;
+  }
+
+  .kpi-card {
+    min-height: 112px;
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .story-chart-card {
+    padding: 14px;
+    border-radius: 20px;
+    overflow-x: auto;
+  }
+
+  .chart-heading {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .chart-heading h2 {
+    font-size: 18px;
+    line-height: 1.25;
+  }
+
+  .chart-heading p {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  #dashboard1 .story-chart-card > svg,
+  #drug-dashboard .story-chart-card > svg {
+    min-width: 620px;
+  }
+
+  #dashboard1 #d1-heatmap-chart svg,
+  #drug-dashboard #d2-heatmap-chart svg {
+    min-width: 720px;
+  }
+
+  .insight-box {
+    padding: 12px 14px;
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .onboarding-popover {
+    width: min(320px, calc(100vw - 24px));
+    padding: 16px 16px 14px;
+  }
+}
+
+
+@media (max-width: 420px) {
+  .nav-links {
+    padding: 12px 8px;
+    gap: 8px;
+  }
+
+  .site-brand {
+    gap: 8px;
+  }
+
+  .brand-copy {
+    max-width: calc(100vw - 88px);
+  }
+
+  .brand-copy strong {
+    font-size: 15px;
+  }
+
+  .nav-menu {
+    gap: 7px;
+  }
+
+  .nav-menu a {
+    height: 38px;
+    padding: 0 6px;
+    font-size: 12px;
+  }
+
+  .page {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .page-heading h1,
+  .dashboard-heading h1 {
+    font-size: clamp(30px, 9vw, 36px);
+  }
+
+  .onboarding-popover.home-card-mobile-popover {
+    width: min(292px, calc(100vw - 24px));
+    padding: 11px 13px 11px;
+  }
 }

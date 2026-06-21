@@ -166,6 +166,18 @@
     .chart-expand-table tbody tr[data-row-key] { cursor: pointer; }
     .chart-expand-table-empty { color: #6B7280; text-align: center; }
 
+    .chart-expand-preview-message {
+      width: min(100%, 520px);
+      padding: 18px 20px;
+      border: 1px dashed rgba(241, 98, 43, 0.35);
+      border-radius: 16px;
+      background: #FFF7ED;
+      color: #374151;
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
     /* Pulses/glows the matching chart element (circle, bar, or heatmap cell)
        when its row is hovered in the data table. transform-box: fill-box
        makes the scale animate around the shape's own center regardless of
@@ -183,10 +195,56 @@
     }
 
     @media (max-width: 880px) {
-      .chart-expand-modal { grid-template-columns: 1fr; grid-template-rows: 55% 45%; width: 94vw; height: 94vh; }
-      .chart-expand-left { padding: 56px 16px 16px; }
-      .chart-expand-right { border-left: none; border-top: 1px solid rgba(23, 32, 51, 0.08); padding: 20px 18px; }
-      .chart-expand-info-box { padding: 10px 12px; font-size: 12px; margin-top: 10px; }
+      .chart-expand-overlay { padding: 8px; }
+      .chart-expand-modal {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(220px, 42%) minmax(0, 58%);
+        width: calc(100vw - 16px);
+        height: calc(100dvh - 16px);
+        max-height: calc(100dvh - 16px);
+        border-radius: 18px;
+      }
+      .chart-expand-left {
+        min-height: 0;
+        padding: 52px 12px 12px;
+        overflow: hidden;
+      }
+      .chart-expand-chart-wrap {
+        align-items: center;
+        justify-content: flex-start;
+        overflow: auto;
+      }
+      .chart-expand-left svg {
+        width: 100%;
+        min-width: 520px;
+        height: auto;
+        max-height: 100%;
+      }
+      .chart-expand-right {
+        min-height: 0;
+        border-left: none;
+        border-top: 1px solid rgba(23, 32, 51, 0.08);
+        padding: 14px 12px;
+        overflow-y: auto;
+      }
+      .chart-expand-kicker { margin-bottom: 4px; font-size: 10px; }
+      .chart-expand-title { margin-bottom: 8px; font-size: 16px; }
+      .chart-expand-table-wrap {
+        flex: 0 0 auto;
+        max-height: 34dvh;
+        min-height: 130px;
+      }
+      .chart-expand-table { font-size: 12px; }
+      .chart-expand-table thead th,
+      .chart-expand-table tbody td { padding: 8px 10px; }
+      .chart-expand-info-box {
+        display: block;
+        margin-top: 10px;
+        padding: 10px 12px;
+        font-size: 12px;
+        line-height: 1.45;
+      }
+      .chart-expand-info-title { font-size: 10.5px; margin-bottom: 4px; }
     }
   </style>`);
 
@@ -337,14 +395,28 @@
     chartWrap.innerHTML = "";
     if (sourceChart) {
       const clone = sourceChart.cloneNode(true);
+
+      // Some mobile/DevTools views are stricter when cloning SVG content.
+      // Removing embedded script nodes and catching clone append errors keeps
+      // the data table available even if the enlarged preview cannot be
+      // inserted. This does not change chart data or table values.
+      clone.querySelectorAll("script").forEach(script => script.remove());
       clone.removeAttribute("width");
       clone.removeAttribute("height");
       clone.style.width = "100%";
       clone.style.height = "auto";
       clone.style.maxHeight = "72vh";
       clone.style.display = "block";
-      chartWrap.appendChild(clone);
-      bindClonedChartTooltips(clone);
+
+      try {
+        chartWrap.appendChild(clone);
+        bindClonedChartTooltips(clone);
+      } catch (error) {
+        console.warn("Expanded chart preview could not be cloned, but the data table is still shown.", error);
+        chartWrap.innerHTML = `<p class="chart-expand-preview-message">Chart preview could not be displayed in this viewport. The data table is still available on this expanded view.</p>`;
+      }
+    } else {
+      chartWrap.innerHTML = `<p class="chart-expand-preview-message">Chart preview is not available for this card. The data table is still available.</p>`;
     }
 
     lastFocused = document.activeElement;

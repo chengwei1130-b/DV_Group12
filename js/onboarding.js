@@ -278,6 +278,14 @@
     return Boolean(element?.closest?.("#home .home-card-stack .premium-link-card"));
   }
 
+  function useCompactMobileHomePopover(element = currentTarget) {
+    return Boolean(isHomeNavCard(element) && window.innerWidth <= 640);
+  }
+
+  function syncPopoverMode(element = currentTarget) {
+    popover?.classList.toggle("home-card-mobile-popover", useCompactMobileHomePopover(element));
+  }
+
   function isHomeReadableSection(element) {
     return Boolean(element?.matches?.("#home .feature-copy-panel, #home .story-path-panel"));
   }
@@ -290,6 +298,31 @@
     const viewportW = window.innerWidth;
 
     if (isHomeNavCard(element)) {
+      // On phone widths the guide card has to sit above the Home navigation
+      // card, otherwise it can cover the card button. Keep desktop behaviour
+      // unchanged, but ask mobile cards to sit lower in the viewport.
+      if (viewportW <= 640) {
+        const popoverHeight = popover?.getBoundingClientRect?.().height || 220;
+        const preferredTop = Math.min(viewportH * 0.44, popoverHeight + 22);
+        const button = element.querySelector?.(".link-card-button");
+        const buttonRect = button?.getBoundingClientRect?.();
+        const visibleBottom = Math.min(rect.bottom, viewportH - 16);
+        const visibleHeight = Math.max(0, visibleBottom - Math.max(rect.top, 16));
+        const visibilityRatio = visibleHeight / Math.max(1, rect.height);
+        const buttonVisible = buttonRect
+          ? buttonRect.bottom <= viewportH - 18 && buttonRect.top >= popoverHeight + 18
+          : true;
+
+        return (
+          rect.top >= preferredTop - 22 &&
+          rect.top <= preferredTop + 64 &&
+          visibilityRatio >= 0.50 &&
+          buttonVisible &&
+          rect.right > 12 &&
+          rect.left < viewportW - 12
+        );
+      }
+
       const topSafeZone = Math.min(78, viewportH * 0.12);
       const bottomSafeZone = Math.min(78, viewportH * 0.12);
       const visibleTop = Math.max(rect.top, topSafeZone);
@@ -330,6 +363,35 @@
 
     if (isHomeNavCard(element)) {
       const rect = element.getBoundingClientRect();
+
+      if (window.innerWidth <= 640) {
+        const popoverHeight = popover?.getBoundingClientRect?.().height || 220;
+        const button = element.querySelector?.(".link-card-button");
+        const buttonRect = button?.getBoundingClientRect?.();
+        const preferredTop = Math.min(window.innerHeight * 0.44, popoverHeight + 22);
+        let scrollAmount = rect.top - preferredTop;
+
+        // If the card action button would still be hidden under the guide or
+        // near the bottom edge, nudge the page just enough to keep it visible.
+        if (buttonRect) {
+          const bottomOverflow = buttonRect.bottom - (window.innerHeight - 18);
+          const topOverlap = (popoverHeight + 18) - buttonRect.top;
+
+          if (bottomOverflow > 0) {
+            scrollAmount = Math.max(scrollAmount, bottomOverflow);
+          }
+
+          if (topOverlap > 0) {
+            scrollAmount = Math.min(scrollAmount, -topOverlap);
+          }
+        }
+
+        if (Math.abs(scrollAmount) > 1) {
+          window.scrollBy({ top: scrollAmount, left: 0, behavior: "auto" });
+        }
+        return;
+      }
+
       const topSafeZone = Math.min(78, window.innerHeight * 0.12);
       const bottomSafeZone = Math.min(78, window.innerHeight * 0.12);
       let scrollAmount = 0;
@@ -372,6 +434,7 @@
     clearTarget();
     currentTarget = step.target;
     currentTarget.classList.add("onboarding-highlight");
+    syncPopoverMode(currentTarget);
 
     popover.querySelector(".onboarding-progress").textContent = `${activeIndex + 1} of ${activeSteps.length}`;
     popover.querySelector(".onboarding-title").textContent = step.title;
@@ -537,22 +600,37 @@
 
     const rect = currentTarget.getBoundingClientRect();
     const gap = 18;
-    const popRect = popover.getBoundingClientRect();
     const viewportW = window.innerWidth;
     const viewportH = window.innerHeight;
     const isInfoDot = currentTarget.classList?.contains("info-dot");
     const isA11y = currentTarget.id === "a11y-open";
     const isHomeNavCard = Boolean(currentTarget.closest?.("#home .home-card-stack .premium-link-card"));
+    const isMobileHomeNavCard = isHomeNavCard && viewportW <= 640;
+
+    syncPopoverMode(currentTarget);
+    const popRect = popover.getBoundingClientRect();
 
     let top = rect.bottom + gap;
     let left = rect.left + (rect.width / 2) - (popRect.width / 2);
 
     if (isHomeNavCard) {
-      top = rect.top + (rect.height / 2) - (popRect.height / 2);
-      left = rect.left - popRect.width - gap;
+      if (viewportW <= 640) {
+        // Phone view: keep the guide above the highlighted Home card and use
+        // the compact guide style so the card title and action button stay
+        // visible instead of being covered.
+        top = rect.top - popRect.height - 10;
+        left = (viewportW - popRect.width) / 2;
 
-      if (left < gap) {
-        left = rect.right + gap;
+        if (top < 10) {
+          top = 10;
+        }
+      } else {
+        top = rect.top + (rect.height / 2) - (popRect.height / 2);
+        left = rect.left - popRect.width - gap;
+
+        if (left < gap) {
+          left = rect.right + gap;
+        }
       }
     }
 
@@ -574,12 +652,16 @@
       }
     }
 
-    if (top + popRect.height > viewportH - gap) {
-      top = rect.top - popRect.height - gap;
-    }
+    if (isMobileHomeNavCard) {
+      top = Math.max(10, Math.min(top, viewportH - popRect.height - 10));
+    } else {
+      if (top + popRect.height > viewportH - gap) {
+        top = rect.top - popRect.height - gap;
+      }
 
-    if (top < gap) {
-      top = Math.min(viewportH - popRect.height - gap, Math.max(gap, rect.bottom + gap));
+      if (top < gap) {
+        top = Math.min(viewportH - popRect.height - gap, Math.max(gap, rect.bottom + gap));
+      }
     }
 
     left = Math.max(gap, Math.min(left, viewportW - popRect.width - gap));
@@ -611,6 +693,7 @@
     overlay?.classList.remove("show");
     spotlight?.classList.remove("show");
     popover?.classList.remove("show");
+    popover?.classList.remove("home-card-mobile-popover");
   }
 
   document.addEventListener("click", event => {
