@@ -8,6 +8,9 @@
       <p class="section-subtitle story-lede">
         A guided data story showing how speeding fines changed from 2020 to 2024 across Australian jurisdictions.
       </p>
+      <button class="onboarding-start-btn" type="button" data-onboarding="dashboard1" aria-label="Start Speeding dashboard guide">
+        <span aria-hidden="true">?</span> Start Guide
+      </button>
     </section>
 
     <section class="filter-panel" aria-label="Dashboard filters">
@@ -122,31 +125,7 @@
         <p id="heatmapInsight">Loading insight...</p>
       </div>
     </section>
-
-    <section class="story-summary">
-      <div class="summary-title">
-        <div class="summary-icon" aria-hidden="true">💡</div>
-        <div>
-          <h2>Story summary</h2>
-          <p>Key takeaways from the speeding enforcement data</p>
-        </div>
-      </div>
-
-      <ol>
-        <li id="summaryOne">Speeding fines peaked during the selected period.</li>
-        <li id="summaryTwo">Fine records are concentrated in larger jurisdictions.</li>
-        <li id="summaryThree">The heatmap reveals how the pattern varies across both year and jurisdiction.</li>
-      </ol>
-    </section>
-
-    <footer class="data-note">
-      <p>
-        <strong>Note:</strong> Data shows recorded enforcement activity, not direct proof of actual driver behaviour.
-        Higher values may reflect enforcement intensity, population size, reporting practices, or testing activity.
-      </p>
-      <p><strong>Source:</strong> Australian road safety enforcement data, final processed dataset (2020–2024).</p>
-    </footer>
-  </div>
+</div>
 
   <div id="speedingTooltip" class="chart-tooltip"></div>
 </section>

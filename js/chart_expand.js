@@ -377,10 +377,58 @@
     if (e.key === "Escape" && overlay.classList.contains("open")) closeChartExpand();
   });
 
+  // Ensures the heatmap card keeps exactly one expand/info button in its
+  // heading. The heatmap renderers sometimes rebuild/move nearby content after
+  // page injection, so this small display repair keeps the existing expand
+  // behaviour available without touching chart calculations or heatmap data.
+  function ensureHeatmapExpandButton(card, scopeSelector) {
+    if (!card) return;
+
+    const heading = card.querySelector(".chart-heading");
+    if (!heading) return;
+
+    const buttons = Array.from(heading.querySelectorAll(".info-dot"));
+    const button = buttons[0] || document.createElement("button");
+
+    // Remove accidental duplicates inside the heatmap heading only.
+    buttons.slice(1).forEach(extraButton => extraButton.remove());
+
+    if (!button.parentElement) heading.appendChild(button);
+
+    button.type = "button";
+    button.classList.add("info-dot", "heatmap-info-dot", "expand-dot");
+    button.textContent = "⤢";
+
+    if (!button.id) {
+      button.id = scopeSelector === "#drug-dashboard" ? "d2HeatmapInfo" : "d1HeatmapInfo";
+    }
+
+    if (!button.getAttribute("aria-label")) {
+      const title = heading.querySelector("h2")?.textContent?.replace(/^\d+\.\s*/, "").trim() || "Heatmap";
+      button.setAttribute("aria-label", `${title} information`);
+    }
+
+    if (!button.dataset.info) {
+      button.dataset.info = "Heatmap combines year and jurisdiction patterns in one view.";
+    }
+
+    // Inline visibility only on the heatmap button, because this is the one
+    // affected by the injected heatmap layout. Other chart buttons stay governed
+    // by the existing CSS.
+    button.style.display = "grid";
+    button.style.visibility = "visible";
+    button.style.opacity = "1";
+    button.style.pointerEvents = "auto";
+  }
+
   // Turns every `.info-dot` button inside scopeSelector into an expand
   // trigger: swaps the "i" glyph for an expand icon and wires the click.
   // Safe to call repeatedly (e.g. every time a dashboard page re-renders).
   function initChartExpandButtons(scopeSelector) {
+    document.querySelectorAll(`${scopeSelector} .heatmap-card`).forEach(card => {
+      ensureHeatmapExpandButton(card, scopeSelector);
+    });
+
     document.querySelectorAll(`${scopeSelector} .info-dot`).forEach(btn => {
       if (!btn.dataset.expandBound) {
         btn.dataset.expandBound = "1";

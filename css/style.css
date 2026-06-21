@@ -600,6 +600,10 @@ a {
   color: #dc2626;
 }
 
+.kpi-delta-neutral {
+  color: #64748b;
+}
+
 .kpi-delta-arrow {
   margin-right: 2px;
   font-size: 11px;
@@ -1889,250 +1893,6 @@ a {
   clear: both !important;
 }
 
-.story-dashboard > .story-summary,
-.story-dashboard > .data-note {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  clear: both !important;
-}
-
-
-/* ==========================================================
-   Heatmap story summary visibility fix
-   - Keeps existing Story Summary and Data Note sections visible after heatmap.
-   - Does not affect data, filters, calculations, or SPA routing.
-   ========================================================== */
-
-.story-dashboard > .heatmap-card + .story-summary,
-.story-dashboard > .story-summary {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  position: relative !important;
-  z-index: 1 !important;
-  clear: both !important;
-  margin-top: 22px !important;
-}
-
-.story-dashboard > .story-summary + .data-note,
-.story-dashboard > .data-note {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  position: relative !important;
-  z-index: 1 !important;
-  clear: both !important;
-}
-
-.story-summary ol,
-.story-summary li {
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-
-/* ==========================================================
-   Inline Story Summary after heatmap insight
-   - Keeps the existing Story Summary and Data Note inside the visible heatmap card.
-   - This avoids layout clipping after the heatmap card.
-   - No data, filter, heatmap value, or chart calculation logic changed.
-   ========================================================== */
-
-.heatmap-card > .story-summary,
-.heatmap-card > .data-note {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  position: relative !important;
-  z-index: 2 !important;
-  clear: both !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  margin-top: 22px !important;
-}
-
-.heatmap-card > .story-summary {
-  margin-bottom: 0 !important;
-}
-
-.heatmap-card > .data-note {
-  margin-bottom: 0 !important;
-}
-
-.heatmap-card > .story-summary ol,
-.heatmap-card > .story-summary li,
-.heatmap-card > .story-summary .summary-title,
-.heatmap-card > .data-note p {
-  display: revert;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-
-/* ==========================================================
-   Forced visible heatmap summary fallback
-   - Displays a visible copy of the existing summary text inside the heatmap card.
-   - Used only because the original summary section is not visible after rendering.
-   - Does not alter chart data, filters, scales, heatmap values, or routing.
-   ========================================================== */
-
-.heatmap-card > .visible-heatmap-summary,
-.heatmap-card > .visible-heatmap-note {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  position: relative !important;
-  z-index: 20 !important;
-  clear: both !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  margin-top: 22px !important;
-  transform: none !important;
-}
-
-.heatmap-card > .visible-heatmap-summary ol,
-.heatmap-card > .visible-heatmap-summary li,
-.heatmap-card > .visible-heatmap-summary .summary-title,
-.heatmap-card > .visible-heatmap-note p {
-  display: revert;
-  visibility: visible !important;
-  opacity: 1 !important;
-  transform: none !important;
-}
-
-.visible-heatmap-summary {
-  animation: none !important;
-}
-
-
-/* ==========================================================
-   Forced visible footer/data note fallback
-   - Displays the existing footer note inside the visible summary block.
-   - This is only a display fallback; no dashboard data or chart logic changes.
-   ========================================================== */
-
-.visible-heatmap-summary .embedded-summary-footer {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  margin-top: 18px !important;
-  padding: 18px 20px !important;
-  border-radius: 18px !important;
-  background: rgba(255, 246, 218, 0.88) !important;
-  border: 1px solid rgba(247, 147, 30, 0.20) !important;
-  box-shadow: none !important;
-  color: var(--text) !important;
-  line-height: 1.65 !important;
-}
-
-.visible-heatmap-summary .embedded-summary-footer p {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  margin: 0 0 8px !important;
-}
-
-.visible-heatmap-summary .embedded-summary-footer p:last-child {
-  margin-bottom: 0 !important;
-}
-
-
-/* ==========================================================
-   Direct appended heatmap summary block
-   - Final fallback: attaches a visible summary/footer directly after the visible insight box.
-   - No dashboard data, filters, calculations, or heatmap values changed.
-   ========================================================== */
-
-.heatmap-card > .direct-visible-summary-block {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  margin-top: 22px !important;
-  padding: 24px !important;
-  border-radius: 24px !important;
-  background: rgba(255, 253, 245, 0.98) !important;
-  border: 1px solid rgba(247, 147, 30, 0.22) !important;
-  box-shadow: 0 14px 32px rgba(102, 69, 0, 0.10) !important;
-  color: var(--ink) !important;
-  position: relative !important;
-  z-index: 999 !important;
-  clear: both !important;
-  transform: none !important;
-}
-
-.direct-summary-header {
-  display: flex !important;
-  gap: 16px !important;
-  align-items: center !important;
-  margin-bottom: 16px !important;
-}
-
-.direct-summary-header h2,
-.direct-summary-header p {
-  margin: 0 !important;
-}
-
-.direct-summary-header h2 {
-  font-size: 24px !important;
-  color: var(--ink) !important;
-}
-
-.direct-summary-header p {
-  margin-top: 4px !important;
-  color: var(--text) !important;
-}
-
-.direct-summary-icon {
-  width: 52px !important;
-  height: 52px !important;
-  display: grid !important;
-  place-items: center !important;
-  border-radius: 50% !important;
-  background: linear-gradient(180deg, #FFF4D0, #FFE7A2) !important;
-  flex: 0 0 52px !important;
-}
-
-.direct-visible-summary-block ol {
-  margin: 16px 0 0 !important;
-  padding-left: 24px !important;
-  color: var(--text) !important;
-  line-height: 1.8 !important;
-}
-
-.direct-visible-summary-block li {
-  display: list-item !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  margin-bottom: 6px !important;
-}
-
-.direct-visible-footer {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  margin-top: 18px !important;
-  padding: 18px 20px !important;
-  border-radius: 18px !important;
-  background: rgba(255, 246, 218, 0.88) !important;
-  border: 1px solid rgba(247, 147, 30, 0.20) !important;
-  color: var(--text) !important;
-  line-height: 1.65 !important;
-}
-
-.direct-visible-footer p {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  margin: 0 0 8px !important;
-}
-
-.direct-visible-footer p:last-child {
-  margin-bottom: 0 !important;
-}
-
 
 /* ==========================================================
    Bottom footer matching navigation style
@@ -2157,219 +1917,6 @@ a {
   z-index: 1;
 }
 
-.footer-brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 240px;
-}
-
-.footer-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  border: 2px solid rgba(255, 255, 255, 0.52);
-  background: rgba(255, 255, 255, 0.14);
-}
-
-.footer-logo-icon {
-  width: 18px;
-  height: 18px;
-  display: block;
-  border: 3px solid #fff;
-  border-radius: 50%;
-  position: relative;
-}
-
-.footer-logo-icon::after {
-  content: "";
-  position: absolute;
-  inset: 4px;
-  border: 2px solid #fff;
-  border-radius: 50%;
-}
-
-.footer-brand strong {
-  display: block;
-  font-size: 17px;
-  line-height: 1.05;
-  letter-spacing: 0.03em;
-}
-
-.footer-brand span {
-  display: block;
-  margin-top: 2px;
-  font-size: 12px;
-  font-weight: 800;
-  opacity: 0.92;
-}
-
-.footer-node-row {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.footer-node {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 34px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-
-.footer-node::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: #FFE681;
-  box-shadow: 0 0 0 3px rgba(255, 230, 129, 0.20);
-}
-
-@media (max-width: 860px) {
-  .bottom-site-footer {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .footer-node-row {
-    justify-content: flex-start;
-  }
-}
-
-
-/* ==========================================================
-   Hide duplicate dashboard Note/Source after forced summary
-   - The visible Story Summary block already includes the Note and Source.
-   - This hides the old original data-note below it to avoid duplicate content.
-   - Does not affect the new global bottom footer or chart/data logic.
-   ========================================================== */
-
-#dashboard1 .story-dashboard > .story-summary,
-#dashboard1 .story-dashboard > .data-note,
-#drug-dashboard .story-dashboard > .story-summary,
-#drug-dashboard .story-dashboard > .data-note {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  height: 0 !important;
-  min-height: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  overflow: hidden !important;
-}
-
-/* Keep the runtime visible summary/footer inside the heatmap card showing. */
-#dashboard1 .heatmap-card > .direct-visible-summary-block,
-#drug-dashboard .heatmap-card > .direct-visible-summary-block,
-#dashboard1 .heatmap-card .direct-visible-footer,
-#drug-dashboard .heatmap-card .direct-visible-footer {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  height: auto !important;
-  min-height: initial !important;
-  overflow: visible !important;
-}
-
-
-/* ==========================================================
-   Remove duplicate heatmap Note/Source card
-   - The Note/Source now appears once inside the visible Story Summary.
-   - This hides/removes the old separate fallback note card underneath.
-   ========================================================== */
-
-.heatmap-card > .visible-heatmap-note,
-.heatmap-card > footer.visible-heatmap-note,
-#dashboard1 .heatmap-card > .visible-heatmap-note,
-#drug-dashboard .heatmap-card > .visible-heatmap-note {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  height: 0 !important;
-  min-height: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  overflow: hidden !important;
-}
-
-/* Keep the single embedded Note/Source inside Story summary visible. */
-.visible-heatmap-summary .embedded-summary-footer,
-.direct-visible-summary-block .direct-visible-footer {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-
-/* ==========================================================
-   Remove duplicate runtime Story Summary sections
-   - Keeps only .direct-visible-summary-block visible.
-   - Hides original .story-summary/.data-note and older fallback blocks.
-   - No chart, data, filter, heatmap, color mode, or routing logic changed.
-   ========================================================== */
-
-#dashboard1 .heatmap-card > .visible-heatmap-summary,
-#dashboard1 .heatmap-card > .visible-heatmap-note,
-#drug-dashboard .heatmap-card > .visible-heatmap-summary,
-#drug-dashboard .heatmap-card > .visible-heatmap-note,
-#dashboard1 .story-dashboard > .story-summary,
-#dashboard1 .story-dashboard > .data-note,
-#drug-dashboard .story-dashboard > .story-summary,
-#drug-dashboard .story-dashboard > .data-note {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  height: 0 !important;
-  min-height: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  overflow: hidden !important;
-}
-
-#dashboard1 .heatmap-card > .direct-visible-summary-block,
-#drug-dashboard .heatmap-card > .direct-visible-summary-block {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  height: auto !important;
-  min-height: initial !important;
-  margin-top: 22px !important;
-  padding: 24px !important;
-  overflow: visible !important;
-}
-
-
-/* ==========================================================
-   Story summary spacing after heatmap insight
-   - Adds breathing room between the heatmap insight box and summary.
-   - Visual spacing only; no dashboard/chart/data logic changed.
-   ========================================================== */
-
-#dashboard1 .heatmap-card > .direct-visible-summary-block,
-#drug-dashboard .heatmap-card > .direct-visible-summary-block {
-  margin-top: 42px !important;
-}
-
-#dashboard1 .heatmap-card > .heatmap-inline-insight,
-#drug-dashboard .heatmap-card > .heatmap-inline-insight {
-  margin-bottom: 0 !important;
-}
 
 
 /* ==========================================================
@@ -2534,4 +2081,749 @@ a {
    Removes the separate dark border line so the footer matches the clean orange header bar. */
 .bottom-site-footer.academic-footer {
   border-top: none !important;
+}
+
+/* Final heatmap visibility guard after removing Story Summary.
+   UI/layout only: keeps the heatmap cards visible without changing chart logic. */
+#dashboard1 .heatmap-card,
+#drug-dashboard .heatmap-card {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+/* ==========================================================
+   Chart insight box alignment
+   - Keeps the insight boxes under the first two chart cards aligned.
+   - Visual/layout only; no chart, data, filter, D3, or heatmap logic changed.
+   ========================================================== */
+#dashboard1 .chart-grid,
+#drug-dashboard .chart-grid {
+  align-items: stretch;
+}
+
+#dashboard1 .chart-grid > .story-chart-card,
+#drug-dashboard .chart-grid > .story-chart-card {
+  display: flex;
+  flex-direction: column;
+}
+
+#dashboard1 .chart-grid > .story-chart-card > .insight-box,
+#drug-dashboard .chart-grid > .story-chart-card > .insight-box {
+  margin-top: auto;
+  min-height: 78px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#dashboard1 .chart-grid > .story-chart-card > .insight-box > span,
+#drug-dashboard .chart-grid > .story-chart-card > .insight-box > span {
+  flex: 0 0 22px;
+  display: inline-flex;
+  justify-content: center;
+}
+
+/* ==========================================================
+   Presentation fit refinement
+   - Uses more of the browser viewport and reduces chart vertical bulk on
+     desktop/projector screens so the dashboard storytelling area fits better.
+   - CSS-only layout change; no data, filters, D3 scales, grouping, heatmap
+     values, chart calculations, or SPA routing logic changed.
+   ========================================================== */
+@media (min-width: 1200px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  .site-header .nav-links,
+  .page,
+  .story-dashboard,
+  .home-showcase-grid,
+  .about-us-content,
+  .mission-panel,
+  .footer-academic-main,
+  .footer-feature-row {
+    max-width: none;
+  }
+
+  .site-header .nav-links {
+    width: min(96vw, 1760px);
+  }
+
+  .page {
+    width: min(96vw, 1760px);
+    padding-left: clamp(18px, 1.6vw, 32px);
+    padding-right: clamp(18px, 1.6vw, 32px);
+  }
+
+  .story-dashboard,
+  .home-showcase-grid,
+  .about-us-content,
+  .mission-panel,
+  .footer-academic-main,
+  .footer-feature-row {
+    width: 100%;
+  }
+
+  .dashboard-heading {
+    margin-bottom: 24px;
+  }
+
+  .dashboard-heading h1 {
+    max-width: none;
+  }
+
+  .filter-panel {
+    margin-bottom: 16px;
+  }
+
+  .kpi-grid {
+    margin-bottom: 16px;
+  }
+
+  .chart-grid {
+    gap: 16px;
+  }
+
+  #dashboard1 .story-chart-card,
+  #drug-dashboard .story-chart-card {
+    padding: clamp(16px, 1.15vw, 22px);
+  }
+
+  #dashboard1 .chart-heading,
+  #drug-dashboard .chart-heading {
+    margin-bottom: 10px;
+  }
+
+  #dashboard1 .chart-grid > .story-chart-card,
+  #drug-dashboard .chart-grid > .story-chart-card {
+    min-height: 0;
+  }
+
+  #dashboard1 .chart-grid > .story-chart-card > svg,
+  #drug-dashboard .chart-grid > .story-chart-card > svg {
+    width: 100%;
+    height: clamp(300px, 32vh, 360px);
+    max-height: 360px;
+  }
+
+  #dashboard1 .heatmap-card,
+  #drug-dashboard .heatmap-card {
+    margin-top: 16px;
+  }
+
+  #dashboard1 #d1-heatmap-chart svg,
+  #drug-dashboard #d2-heatmap-chart svg {
+    width: 100%;
+    max-height: clamp(310px, 34vh, 390px);
+  }
+
+  #dashboard1 .insight-box,
+  #drug-dashboard .insight-box {
+    padding: 14px 18px;
+  }
+
+  #dashboard1 .chart-grid > .story-chart-card > .insight-box,
+  #drug-dashboard .chart-grid > .story-chart-card > .insight-box {
+    min-height: 68px;
+  }
+}
+
+
+/* ==========================================================
+   Zoom-safe full-width presentation fit
+   - Removes the desktop pixel cap so zoomed-out presentation views still
+     fill the browser instead of becoming a centered narrow column.
+   - Keeps charts in normal document flow; no overlays, no fake scaling, and
+     no chart/data/D3/filter logic changes.
+   ========================================================== */
+@media (min-width: 1200px) {
+  .site-header .nav-links,
+  .page {
+    width: calc(100vw - clamp(24px, 2vw, 44px));
+    max-width: none !important;
+  }
+
+  .page {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: clamp(12px, 1vw, 24px);
+    padding-right: clamp(12px, 1vw, 24px);
+  }
+
+  .story-dashboard,
+  .home-showcase-grid,
+  .about-us-content,
+  .mission-panel,
+  .footer-academic-main,
+  .footer-feature-row {
+    width: 100%;
+    max-width: none !important;
+  }
+
+  #dashboard1 .chart-grid,
+  #drug-dashboard .chart-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #dashboard1 .story-chart-card svg,
+  #drug-dashboard .story-chart-card svg {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  #dashboard1 #d1-heatmap-chart svg,
+  #drug-dashboard #d2-heatmap-chart svg {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  #dashboard1 .fine-trend-heatmap-svg,
+  #dashboard1 .drug-outcome-style-heatmap,
+  #drug-dashboard .drug-outcome-style-heatmap {
+    max-width: 100%;
+  }
+}
+
+/* ==========================================================
+   Home and About full-width fit refinement
+   - Extends the same zoom-safe viewport fit used by the dashboards to the
+     Home and About pages.
+   - CSS-only layout change; no data, chart, D3, filter, heatmap, or SPA
+     routing logic changed.
+   ========================================================== */
+@media (min-width: 1200px) {
+  .home-page .home-showcase-grid {
+    width: 100%;
+    max-width: none !important;
+    grid-template-columns: minmax(0, 1.18fr) minmax(420px, 0.82fr);
+    justify-content: stretch;
+    align-items: stretch;
+    gap: clamp(18px, 1.4vw, 28px);
+  }
+
+  .home-page .feature-panel,
+  .home-page .home-card-stack,
+  .home-page .premium-link-card {
+    min-width: 0;
+  }
+
+  .home-page .feature-panel {
+    min-height: clamp(500px, 58vh, 720px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .home-page .feature-image-shell {
+    min-height: clamp(220px, 30vh, 360px);
+  }
+
+  .home-page .home-image {
+    width: min(58%, 560px);
+  }
+
+  .home-page .feature-copy-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .home-page .story-path-panel {
+    margin-top: auto;
+  }
+
+  .home-page .home-card-stack {
+    display: grid;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: clamp(18px, 1.4vw, 28px);
+  }
+
+  .home-page .premium-link-card {
+    width: 100%;
+    min-height: 0;
+    padding: clamp(22px, 1.8vw, 34px);
+  }
+
+  .about-page .about-us-content {
+    width: 100%;
+    max-width: none !important;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(22px, 1.8vw, 36px);
+    align-items: stretch;
+  }
+
+  .about-page .about-us-member {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    padding: clamp(28px, 2vw, 40px);
+  }
+
+  .about-page .mission-panel {
+    width: 100%;
+    max-width: none !important;
+    grid-template-columns: minmax(180px, 0.28fr) minmax(0, 1fr);
+    margin-top: clamp(24px, 2vw, 42px);
+  }
+}
+
+@media (min-width: 1600px) {
+  .home-page .feature-copy-panel p,
+  .home-page .premium-link-card p,
+  .about-page .about-us-member p,
+  .about-page .mission-copy p {
+    font-size: 16px;
+  }
+
+  .home-page .premium-link-card h3 {
+    font-size: clamp(22px, 1.25vw, 28px);
+  }
+
+  .about-page .about-us-member h2 {
+    font-size: clamp(24px, 1.35vw, 30px);
+  }
+}
+
+
+/* ==========================================================
+   Dashboard storytelling overview fit
+   - Keeps the page full-width, but prevents SVG charts from becoming
+     oversized when the browser is zoomed out for presentation.
+   - CSS-only visual refinement; no chart data, D3 scales, calculations,
+     filters, grouping, heatmap values, or SPA routing logic changed.
+   ========================================================== */
+@media (min-width: 1200px) {
+  #dashboard1 .chart-grid > .story-chart-card,
+  #drug-dashboard .chart-grid > .story-chart-card {
+    padding: clamp(12px, 0.9vw, 18px) !important;
+    margin-bottom: clamp(10px, 0.75vw, 14px);
+  }
+
+  #dashboard1 .chart-heading,
+  #drug-dashboard .chart-heading {
+    margin-bottom: clamp(6px, 0.55vw, 10px);
+  }
+
+  #dashboard1 #lineChart,
+  #dashboard1 #lollipopChart,
+  #drug-dashboard #d2GroupedBar,
+  #drug-dashboard #d2AreaChart {
+    display: block;
+    width: min(100%, 900px) !important;
+    max-width: 900px !important;
+    height: auto !important;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #dashboard1 .chart-grid > .story-chart-card > .insight-box,
+  #drug-dashboard .chart-grid > .story-chart-card > .insight-box {
+    margin-top: clamp(8px, 0.65vw, 12px);
+    min-height: 56px;
+    padding: clamp(10px, 0.75vw, 14px) clamp(14px, 1vw, 18px);
+  }
+
+  #dashboard1 .heatmap-card,
+  #drug-dashboard .heatmap-card {
+    margin-top: clamp(10px, 0.8vw, 14px);
+    padding: clamp(14px, 1vw, 18px) !important;
+  }
+
+  #dashboard1 #d1-heatmap-chart svg,
+  #drug-dashboard #d2-heatmap-chart svg {
+    display: block;
+    width: min(100%, 1320px) !important;
+    max-width: 1320px !important;
+    height: auto !important;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #dashboard1 .heatmap-card .insight-box,
+  #drug-dashboard .heatmap-card .insight-box {
+    margin-top: clamp(8px, 0.65vw, 12px);
+    padding: clamp(10px, 0.75vw, 14px) clamp(14px, 1vw, 18px);
+  }
+}
+
+/* ==========================================================
+   Dashboard storytelling space balance
+   - Keeps the zoom-safe full-width layout, but lets the real SVG charts use
+     more of the wide cards so there is less empty cream space during
+     zoomed-out presentation views.
+   - CSS-only visual refinement; no data, D3 scales, calculations, filters,
+     grouping, heatmap values, chart types, or SPA routing logic changed.
+   ========================================================== */
+@media (min-width: 1200px) {
+  #dashboard1 .chart-grid,
+  #drug-dashboard .chart-grid {
+    gap: clamp(8px, 0.55vw, 12px);
+  }
+
+  #dashboard1 .chart-grid > .story-chart-card,
+  #drug-dashboard .chart-grid > .story-chart-card {
+    padding: clamp(10px, 0.7vw, 14px) !important;
+  }
+
+  #dashboard1 #lineChart,
+  #dashboard1 #lollipopChart,
+  #drug-dashboard #d2GroupedBar,
+  #drug-dashboard #d2AreaChart {
+    width: min(100%, clamp(980px, 40vw, 1160px)) !important;
+    max-width: 1160px !important;
+  }
+
+  #dashboard1 #d1-heatmap-chart svg,
+  #drug-dashboard #d2-heatmap-chart svg {
+    width: min(100%, clamp(1280px, 70vw, 1620px)) !important;
+    max-width: 1620px !important;
+  }
+
+  #dashboard1 .chart-grid > .story-chart-card > .insight-box,
+  #drug-dashboard .chart-grid > .story-chart-card > .insight-box,
+  #dashboard1 .heatmap-card .insight-box,
+  #drug-dashboard .heatmap-card .insight-box {
+    margin-top: clamp(6px, 0.5vw, 10px);
+  }
+}
+
+/* ==========================================================
+   Dashboard final storytelling compact fit
+   - Tightens only the presentation layout so the two top charts and the
+     heatmap can be shown together more comfortably when zoomed out.
+   - CSS-only visual refinement; no data, D3 scales, calculations, filters,
+     grouping, heatmap values, chart types, or SPA routing logic changed.
+   ========================================================== */
+@media (min-width: 1200px) {
+  #dashboard1 .story-dashboard,
+  #drug-dashboard .story-dashboard {
+    gap: clamp(6px, 0.45vw, 10px);
+  }
+
+  #dashboard1 .chart-grid,
+  #drug-dashboard .chart-grid {
+    gap: clamp(6px, 0.45vw, 10px);
+  }
+
+  #dashboard1 .chart-grid > .story-chart-card,
+  #drug-dashboard .chart-grid > .story-chart-card {
+    padding: clamp(8px, 0.55vw, 12px) !important;
+    margin-bottom: clamp(6px, 0.45vw, 10px);
+    border-radius: clamp(16px, 1.25vw, 24px);
+  }
+
+  #dashboard1 .chart-heading,
+  #drug-dashboard .chart-heading {
+    margin-bottom: clamp(4px, 0.35vw, 8px);
+  }
+
+  #dashboard1 .chart-heading h3,
+  #drug-dashboard .chart-heading h3 {
+    margin-bottom: 2px;
+  }
+
+  #dashboard1 #lineChart,
+  #dashboard1 #lollipopChart,
+  #drug-dashboard #d2GroupedBar,
+  #drug-dashboard #d2AreaChart {
+    width: min(100%, clamp(900px, 36vw, 1060px)) !important;
+    max-width: 1060px !important;
+  }
+
+  #dashboard1 .chart-grid > .story-chart-card > .insight-box,
+  #drug-dashboard .chart-grid > .story-chart-card > .insight-box {
+    min-height: 44px;
+    margin-top: clamp(4px, 0.35vw, 8px);
+    padding: clamp(8px, 0.55vw, 11px) clamp(12px, 0.8vw, 16px);
+  }
+
+  #dashboard1 .heatmap-card,
+  #drug-dashboard .heatmap-card {
+    margin-top: clamp(6px, 0.45vw, 10px);
+    padding: clamp(10px, 0.75vw, 14px) !important;
+    border-radius: clamp(16px, 1.25vw, 24px);
+  }
+
+  #dashboard1 #d1-heatmap-chart svg,
+  #drug-dashboard #d2-heatmap-chart svg {
+    width: min(100%, clamp(1180px, 62vw, 1480px)) !important;
+    max-width: 1480px !important;
+  }
+
+  #dashboard1 .heatmap-card .insight-box,
+  #drug-dashboard .heatmap-card .insight-box {
+    min-height: 40px;
+    margin-top: clamp(4px, 0.35vw, 8px);
+    padding: clamp(8px, 0.55vw, 11px) clamp(12px, 0.8vw, 16px);
+  }
+}
+
+
+/* ==========================================================
+   Home page final polish
+   - Adds clearer spacing between the three highlight pills and the
+     story guide panel.
+   - Makes the About Us button match the filled dashboard buttons.
+   - CSS-only visual refinement; no dashboard data/chart logic changed.
+   ========================================================== */
+.home-page .feature-pill-row {
+  margin-bottom: clamp(16px, 1vw, 24px);
+}
+
+.home-page .story-path-panel {
+  margin-top: 0 !important;
+}
+
+.home-page .premium-link-card-outline .link-card-button,
+.home-page .premium-link-card-outline .ghost-button {
+  color: #fff !important;
+  border-color: transparent !important;
+  background: linear-gradient(90deg, var(--orange), var(--orange-deep), #ff9d1f) !important;
+  background-size: 220% 100%;
+  background-position: 0% 50%;
+}
+
+.home-page .premium-link-card-outline:hover .link-card-button,
+.home-page .premium-link-card-outline:focus-visible .link-card-button,
+.home-page .premium-link-card-outline:hover .ghost-button,
+.home-page .premium-link-card-outline:focus-visible .ghost-button {
+  color: #fff !important;
+  background-position: 100% 50% !important;
+}
+
+/* ==========================================================
+   Onboarding guide feature
+   - UI-only guided tour for Home, dashboards, and About Us.
+   - No chart/data/filter/D3 logic is changed.
+   ========================================================== */
+.page-heading,
+.section-heading {
+  position: relative;
+}
+
+.onboarding-start-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px 10px 12px;
+  border: 2px solid var(--orange-deep);
+  border-radius: 999px;
+  background: rgba(255, 253, 245, 0.94);
+  color: var(--orange-deep);
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(122, 70, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.onboarding-start-btn span {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: linear-gradient(180deg, var(--orange), var(--orange-deep));
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.onboarding-start-btn:hover,
+.onboarding-start-btn:focus-visible {
+  color: #fff;
+  background: linear-gradient(90deg, var(--orange), var(--orange-deep));
+  box-shadow: 0 14px 32px rgba(122, 70, 0, 0.20);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.onboarding-start-btn:hover span,
+.onboarding-start-btn:focus-visible span {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+  opacity: 0;
+  background: transparent;
+  transition: opacity 0.18s ease;
+}
+
+.onboarding-overlay.show {
+  opacity: 1;
+}
+
+.onboarding-spotlight {
+  position: fixed;
+  z-index: 10001;
+  pointer-events: none;
+  opacity: 0;
+  border: 4px solid rgba(255, 255, 255, 0.96);
+  box-shadow:
+    0 0 0 7px rgba(247, 147, 30, 0.90),
+    0 0 0 9999px rgba(17, 24, 39, 0.54),
+    0 22px 58px rgba(15, 23, 42, 0.34);
+  transform-origin: top left;
+  transition:
+    opacity 0.12s ease,
+    box-shadow 0.22s ease;
+  will-change: top, left, width, height, border-radius;
+}
+
+.onboarding-spotlight.show {
+  opacity: 1;
+}
+
+body.onboarding-active #a11y-open::after {
+  display: none !important;
+}
+
+.onboarding-popover {
+  position: fixed;
+  z-index: 10004;
+  width: min(360px, calc(100vw - 32px));
+  padding: 18px 18px 16px;
+  border: 1px solid rgba(247, 147, 30, 0.28);
+  border-radius: 18px;
+  background: #fffdf5;
+  box-shadow: 0 24px 58px rgba(15, 23, 42, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition:
+    top 0.24s cubic-bezier(.22, 1, .36, 1),
+    left 0.24s cubic-bezier(.22, 1, .36, 1),
+    opacity 0.14s ease,
+    transform 0.14s ease;
+  will-change: top, left, transform, opacity;
+}
+
+.onboarding-popover.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onboarding-spotlight,
+  .onboarding-popover {
+    transition: opacity 0.12s ease !important;
+  }
+}
+
+.onboarding-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(241, 90, 36, 0.10);
+  color: var(--orange-deep);
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.onboarding-progress {
+  margin: 0 34px 8px 0;
+  color: var(--orange-deep);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+
+.onboarding-title {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.onboarding-text {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.onboarding-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.onboarding-actions button {
+  flex: 1;
+  min-height: 38px;
+  border: 1px solid rgba(241, 90, 36, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 246, 218, 0.92);
+  color: var(--orange-deep);
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.onboarding-actions .onboarding-next {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(90deg, var(--orange), var(--orange-deep));
+}
+
+.onboarding-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.onboarding-highlight {
+  position: relative;
+  z-index: 10002 !important;
+}
+
+.onboarding-highlight.info-dot {
+  position: absolute !important;
+}
+
+.onboarding-highlight#a11y-open {
+  position: relative;
+  z-index: 10003 !important;
+}
+
+@media (max-width: 900px) {
+  .onboarding-start-btn {
+    position: static;
+    margin-top: 16px;
+  }
+}
+
+body.onboarding-active #a11y-fab {
+  z-index: 10002 !important;
+}
+
+.onboarding-highlight.info-dot,
+.onboarding-highlight#a11y-open {
+  border-radius: 999px;
 }
