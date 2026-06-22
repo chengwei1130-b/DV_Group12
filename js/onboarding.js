@@ -244,9 +244,15 @@
       </div>
     `;
 
-    document.body.appendChild(overlay);
-    document.body.appendChild(spotlight);
-    document.body.appendChild(popover);
+    // Append to <html> (not <body>) so these fixed-position elements are
+    // NOT subject to the body{zoom} applied by the accessibility widget.
+    // When zoom is applied to <body>, position:fixed children placed inside
+    // it are positioned in the zoomed coordinate space, causing them to appear
+    // in the wrong location. Placing them on <html> keeps them in true
+    // viewport pixel coordinates that match getBoundingClientRect() values.
+    document.documentElement.appendChild(overlay);
+    document.documentElement.appendChild(spotlight);
+    document.documentElement.appendChild(popover);
 
     popover.querySelector(".onboarding-close").addEventListener("click", closeGuide);
     popover.querySelector(".onboarding-prev").addEventListener("click", () => moveStep(-1));
@@ -475,6 +481,15 @@
       height: rect.height,
       borderRadius: spotlight.style.borderRadius || "22px"
     };
+  }
+
+  // Returns the current body{zoom} factor set by the accessibility widget.
+  // getBoundingClientRect() values already reflect zoomed layout in CSS-pixel
+  // viewport coordinates. Since spotlight/popover now live on <html> (outside
+  // the zoomed body), those raw rect values can be used directly — no scaling
+  // needed. We keep this helper available for the popover clamping logic.
+  function getBodyZoom() {
+    return parseFloat(document.body.style.zoom) || 1;
   }
 
   function getSpotlightBox() {
@@ -721,6 +736,19 @@
   window.addEventListener("resize", () => {
     positionSpotlight(false);
     positionPopover();
+  });
+
+  // Reposition spotlight/popover when the accessibility zoom level changes.
+  // body{zoom} causes getBoundingClientRect() to return scaled values so the
+  // positions are correct, but a repaint is needed to re-query the new rects.
+  window.addEventListener("a11y-zoom-change", () => {
+    // Two rAFs let the browser reflow from the new zoom before we re-read rects.
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        positionSpotlight(false);
+        positionPopover();
+      });
+    });
   });
   window.addEventListener("scroll", () => {
     if (suppressSpotlightScrollUpdate) return;

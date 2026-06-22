@@ -36,9 +36,22 @@ function d2GetFiltered(allData) {
   });
 }
 
-// Cached once per page load: KPI totals computed from the FULL, unfiltered
-// dataset. Used as the comparison point for the delta badges in each KPI card.
+// Recomputed on every filter change: KPI totals computed from the single year
+// immediately BEFORE the selected start year (same jurisdiction filter).
+// Used as the comparison point for the delta badges in each KPI card.
 let d2Baseline = null;
+
+function d2GetPreviousYearData(allData) {
+  let startYear = +d3.select("#d2StartYear").property("value");
+  const jurisdiction = d3.select("#d2JurisdictionSelect").property("value");
+  const prevYear = startYear - 1;
+
+  return allData.filter(d => {
+    const inPrevYear = d.YEAR === prevYear;
+    const inJuris    = jurisdiction === "All" || d.JURISDICTION === jurisdiction;
+    return inPrevYear && inJuris;
+  });
+}
 
 // Removes Story Summary / Note sections only. This is DOM cleanup only and
 // deliberately avoids touching the heatmap card, chart container, data, filters,
@@ -135,13 +148,13 @@ function refreshD2ChartUiControls() {
 }
 
 function getD2Baseline(allData) {
-  if (d2Baseline) return d2Baseline;
-  const totalTests    = d3.sum(allData, d => d["Alcohol drug tests"]);
-  const totalPositive = d3.sum(allData, d => d["Positive drug tests"]);
-  const rate          = totalTests > 0 ? (totalPositive / totalTests) * 100 : 0;
+  const prevYearData  = d2GetPreviousYearData(allData);
+  const totalTests    = prevYearData.length ? d3.sum(prevYearData, d => d["Alcohol drug tests"]) : null;
+  const totalPositive = prevYearData.length ? d3.sum(prevYearData, d => d["Positive drug tests"]) : null;
+  const rate          = (prevYearData.length && totalTests > 0) ? (totalPositive / totalTests) * 100 : null;
 
   const byJuris = Array.from(
-    d3.rollup(allData,
+    d3.rollup(prevYearData,
       vs => ({ tests: d3.sum(vs, d => d["Alcohol drug tests"]), positive: d3.sum(vs, d => d["Positive drug tests"]) }),
       d => d.JURISDICTION
     ),
@@ -154,14 +167,14 @@ function getD2Baseline(allData) {
 
 // Dashboard 2-only wrapper around the shared KPI delta helper.
 // This keeps Dashboard 1/global logic untouched, but prevents Dashboard 2 KPI
-// cards from looking empty when the selected view matches the full dataset.
+// cards from looking empty when the selected view matches the previous year.
 function d2FormatKpiDelta(current, base, opts = {}) {
   const deltaHtml = formatKpiDelta(current, base, opts);
   if (deltaHtml) return deltaHtml;
 
   if (current === null || current === undefined || base === null || base === undefined) return "";
 
-  const { label = "vs full dataset" } = opts;
+  const { label = "vs previous year" } = opts;
   return `<span class="kpi-delta kpi-delta-neutral"><span class="kpi-delta-arrow" aria-hidden="true">•</span>No change <span class="kpi-delta-label">${label}</span></span>`;
 }
 
@@ -194,14 +207,14 @@ function d2UpdateKpis(data, allData) {
   d3.select("#d2KpiRate").text(totalTests > 0 ? d2FormatPct(rate) : "--");
   d3.select("#d2KpiRateNote").text("Positive / all tests");
   d3.select("#d2KpiRateDelta").html(
-    totalTests > 0 ? d2FormatKpiDelta(rate, baseline.rate, { isPercentagePoints: true, label: "vs overall rate" }) : ""
+    totalTests > 0 ? d2FormatKpiDelta(rate, baseline.rate, { isPercentagePoints: true, label: "vs previous year" }) : ""
   );
 
   d3.select("#d2KpiTopJurisdiction").text(topJuris ? topJuris.name : "--");
   d3.select("#d2KpiTopNote").text(topJuris ? `${d2FormatPct(topJuris.rate)} positivity` : "No data");
   d3.select("#d2KpiTopDelta").html(
     (topJuris && baseline.topJuris)
-      ? d2FormatKpiDelta(topJuris.rate, baseline.topJuris.rate, { isPercentagePoints: true, label: "vs top jurisdiction" })
+      ? d2FormatKpiDelta(topJuris.rate, baseline.topJuris.rate, { isPercentagePoints: true, label: "vs previous year" })
       : ""
   );
 

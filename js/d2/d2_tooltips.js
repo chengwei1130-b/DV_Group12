@@ -37,14 +37,22 @@ function d2ShowTooltipPinned(event, html, isInfo = false) {
     const ttWidth = tooltip.node().offsetWidth;
     const ttHeight = tooltip.node().offsetHeight;
 
+
     const GAP_Y = 10; // Pixels ABOVE the data point
+    // getBoundingClientRect() returns viewport pixels, but the tooltip lives
+    // inside document.body which has CSS zoom applied by the accessibility
+    // widget. position:absolute coordinates inside a zoomed element are in
+    // the element's OWN (unzoomed) coordinate space, so we must divide by
+    // the current zoom to map viewport px → body-local px.
+    const zoom = parseFloat(document.body.style.zoom) || 1;
 
-    let x = rect.left + window.scrollX + (rect.width / 2) - (ttWidth / 2);
-    let y = rect.top + window.scrollY - ttHeight - GAP_Y;
+    let x = (rect.left + window.scrollX + (rect.width / 2) - (ttWidth / 2)) / zoom;
+    let y = (rect.top + window.scrollY - ttHeight - GAP_Y) / zoom;
 
-    if (x < 10) x = 10;
-    else if (x + ttWidth > document.documentElement.clientWidth - 10) x = document.documentElement.clientWidth - ttWidth - 10;
-    if (y < window.scrollY + 10) y = rect.bottom + window.scrollY + GAP_Y;
+    if (x < 10 / zoom) x = 10 / zoom;
+    else if (x + ttWidth > (document.documentElement.clientWidth - 10) / zoom) x = (document.documentElement.clientWidth - ttWidth - 10) / zoom;
+    if (y < (window.scrollY + 10) / zoom) y = (rect.bottom + window.scrollY + GAP_Y) / zoom;
+
 
     tooltip.style("left", `${x}px`).style("top", `${y}px`);
   }

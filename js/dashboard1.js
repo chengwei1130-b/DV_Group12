@@ -14,11 +14,12 @@ const formatPercent   = value => `${value >= 0 ? "+" : ""}${d3.format(".1f")(val
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared KPI delta helper (used by both dashboard1.js and dashboard2.js)
 // Builds a colored "+/-" badge comparing a filtered KPI value against the
-// equivalent value computed from the FULL, unfiltered dataset. Returns "" when
-// there is no meaningful difference (e.g. filters are at their default state).
+// equivalent value computed from the single YEAR IMMEDIATELY BEFORE the
+// selected start year (same jurisdiction filter). Returns "" when there is no
+// meaningful difference (e.g. filters are at their default state).
 // ─────────────────────────────────────────────────────────────────────────────
 function formatKpiDelta(current, base, opts = {}) {
-  const { isPercentagePoints = false, label = "vs full dataset", decimals = 1 } = opts;
+  const { isPercentagePoints = false, label = "vs previous year", decimals = 1 } = opts;
   if (current === null || current === undefined || base === null || base === undefined) return "";
 
   const diff = current - base;
@@ -51,7 +52,7 @@ function d1FormatKpiDelta(current, base, opts = {}) {
 
   if (current === null || current === undefined || base === null || base === undefined) return "";
 
-  const { label = "vs full dataset" } = opts;
+  const { label = "vs previous year" } = opts;
   return `<span class="kpi-delta kpi-delta-neutral"><span class="kpi-delta-arrow" aria-hidden="true">•</span>No change <span class="kpi-delta-label">${label}</span></span>`;
 }
 
@@ -93,9 +94,22 @@ function getFilteredData(allData) {
   });
 }
 
-// Cached once per page load: KPI totals computed from the FULL, unfiltered
-// dataset. Used as the comparison point for the delta badges in each KPI card.
+// Recomputed on every filter change: KPI totals computed from the single year
+// immediately BEFORE the selected start year (same jurisdiction filter).
+// Used as the comparison point for the delta badges in each KPI card.
 let d1Baseline = null;
+
+function getD1PreviousYearData(allData) {
+  let startYear = +d3.select("#startYear").property("value");
+  const jurisdiction = d3.select("#jurisdictionSelect").property("value");
+  const prevYear = startYear - 1;
+
+  return allData.filter(d => {
+    const inPrevYear     = d.YEAR === prevYear;
+    const inJurisdiction = jurisdiction === "All" || d.JURISDICTION === jurisdiction;
+    return inPrevYear && inJurisdiction;
+  });
+}
 
 // Removes Story Summary / Note sections only. This is DOM cleanup only and
 // deliberately avoids touching the heatmap card, chart container, data, filters,
@@ -192,11 +206,11 @@ function refreshD1ChartUiControls() {
 }
 
 function getD1Baseline(allData) {
-  if (d1Baseline) return d1Baseline;
-  const byYear         = yearlyTotals(allData);
-  const byJurisdiction = jurisdictionTotals(allData);
+  const prevYearData   = getD1PreviousYearData(allData);
+  const byYear         = yearlyTotals(prevYearData);
+  const byJurisdiction = jurisdictionTotals(prevYearData);
   d1Baseline = {
-    total: d3.sum(allData, d => d["Speeding Fines"]),
+    total: prevYearData.length ? d3.sum(prevYearData, d => d["Speeding Fines"]) : null,
     peak: byYear.length ? byYear.reduce((p, c) => (p.value > c.value) ? p : c) : null,
     topJurisdiction: byJurisdiction.length ? byJurisdiction[0] : null
   };
@@ -221,19 +235,19 @@ function updateKpis(data, allData) {
   // 1. UPDATE KPI CARDS
   d3.select("#kpiTotalFines").text(formatNumber(total));
   d3.select("#kpiTotalNote").text(`${selectedStart}–${selectedEnd}`);
-  d3.select("#kpiTotalDelta").html(d1FormatKpiDelta(total, baseline.total));
+  d3.select("#kpiTotalDelta").html(d1FormatKpiDelta(total, baseline.total, { label: "vs previous year" }));
 
   d3.select("#kpiPeakYear").text(peak ? peak.year : "--");
   d3.select("#kpiPeakNote").text(peak ? `${formatNumber(peak.value)} fines` : "No data");
   d3.select("#kpiPeakDelta").html(
-    (peak && baseline.peak) ? d1FormatKpiDelta(peak.value, baseline.peak.value, { label: "vs all-time peak" }) : ""
+    (peak && baseline.peak) ? d1FormatKpiDelta(peak.value, baseline.peak.value, { label: "vs previous year" }) : ""
   );
 
   d3.select("#kpiTopJurisdiction").text(topJurisdiction ? topJurisdiction.jurisdiction : "--");
   d3.select("#kpiTopNote").text(topJurisdiction ? `${formatNumber(topJurisdiction.value)} fines` : "No data");
   d3.select("#kpiTopDelta").html(
     (topJurisdiction && baseline.topJurisdiction)
-      ? d1FormatKpiDelta(topJurisdiction.value, baseline.topJurisdiction.value, { label: "vs leading jurisdiction" })
+      ? d1FormatKpiDelta(topJurisdiction.value, baseline.topJurisdiction.value, { label: "vs previous year" })
       : ""
   );
 

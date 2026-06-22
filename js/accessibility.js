@@ -245,6 +245,8 @@
     localStorage.setItem("a11y_zoom", currentZoom);
     // Rebuild the magnifier clone whenever zoom changes so it matches the new page size
     if (magnifierOn) refreshMagClone();
+    // Notify other modules (e.g. onboarding guide) that zoom changed
+    window.dispatchEvent(new CustomEvent("a11y-zoom-change", { detail: { zoom: currentZoom } }));
   }
 
   document.getElementById("a11y-zi").addEventListener("click", () => setZoom(currentZoom + 0.1));
@@ -277,8 +279,69 @@
 function refreshMagClone() {
     if (!magnifierOn) return;
     
+    // ── SVG size fix ────────────────────────────────────────────────────────
+    // D3 chart SVGs have hardcoded width/height attributes (e.g. width="1160")
+    // but CSS rules override them to width:100%/height:auto using ID-based
+    // selectors like `#dashboard1 #d1-heatmap-chart svg`. The clone strips
+    // ALL ids (to avoid conflicts), so those CSS rules no longer apply in the
+    // clone — the SVGs fall back to their hardcoded 1160px width, making the
+    // magnifier show a misaligned view vs the actual page.
+    //
+    // Fix: snapshot every SVG's actual rendered pixel rect BEFORE cloning
+    // (getBoundingClientRect returns the true on-screen size), then after
+    // cloning apply those exact dimensions as inline styles so the clone
+    // layout matches the live page regardless of which CSS rules are active.
+    const originalSVGs = Array.from(document.body.querySelectorAll("svg"));
+    const svgRects = originalSVGs.map(svg => {
+      const r = svg.getBoundingClientRect();
+      // Store the un-zoomed logical size: the clone has body{zoom:currentZoom}
+      // applied, so supplying the un-zoomed size lets the clone's own zoom
+      // scale it back up to exactly match the live page appearance.
+      return { width: r.width / currentZoom, height: r.height / currentZoom };
+    });
+    // ────────────────────────────────────────────────────────────────────────
+
     const newClone = document.body.cloneNode(true);
-    
+
+    // Snapshot chart container widths too — ID-scoped CSS rules for chart
+    // containers (e.g. #dashboard1 .chart-grid) won't match after ID stripping,
+    // which can change container widths and misalign SVGs inside the clone.
+    const originalContainers = Array.from(document.body.querySelectorAll(
+      ".story-chart-card, .heatmap-card, #d1-heatmap-chart, #d2-heatmap-chart, " +
+      ".fine-trend-heatmap-svg, .kpi-grid, .filter-panel, .chart-grid, .story-dashboard"
+    ));
+    const containerWidths = originalContainers.map(el => el.getBoundingClientRect().width / currentZoom);
+
+    // Pin each cloned SVG to its snapshotted logical size via inline style.
+    // Using style (not attributes) gives higher specificity than any CSS rule,
+    // so the clone always matches the live layout even after IDs are stripped.
+    const clonedSVGs = Array.from(newClone.querySelectorAll("svg"));
+    svgRects.forEach((size, i) => {
+      if (clonedSVGs[i] && size.width > 0 && size.height > 0) {
+        clonedSVGs[i].style.width  = size.width  + "px";
+        clonedSVGs[i].style.height = size.height + "px";
+        clonedSVGs[i].style.minWidth  = "0";
+        clonedSVGs[i].style.maxWidth  = "none";
+        clonedSVGs[i].style.maxHeight = "none";
+        // Remove the hardcoded D3 width/height attributes so they don't
+        // fight the inline styles in browsers that weight attributes highly.
+        clonedSVGs[i].removeAttribute("width");
+        clonedSVGs[i].removeAttribute("height");
+      }
+    });
+
+    // Pin container widths so layout stays identical after ID stripping.
+    const clonedContainers = Array.from(newClone.querySelectorAll(
+      ".story-chart-card, .heatmap-card, #d1-heatmap-chart, #d2-heatmap-chart, " +
+      ".fine-trend-heatmap-svg, .kpi-grid, .filter-panel, .chart-grid, .story-dashboard"
+    ));
+    containerWidths.forEach((w, i) => {
+      if (clonedContainers[i] && w > 0) {
+        clonedContainers[i].style.width    = w + "px";
+        clonedContainers[i].style.maxWidth = "none";
+      }
+    });
+
     // Copy dropdown selections so the lens shows the current filter state
     const originalSelects = document.body.querySelectorAll("select");
     const clonedSelects = newClone.querySelectorAll("select");
@@ -446,8 +509,9 @@ function startMag() {
 
       /* ── Navigation / header ── */
       nav,.site-header{background:${c.navBg}!important;background-image:none!important}
-      nav a,.nav-links a{color:${isHC ? "#FFFF00" : "#fff"}!important}
-      nav a:hover,nav a.active,.nav-links a:hover,.nav-links a.active{background-color:${c.hoverBg}!important;color:${c.hoverColor}!important}
+      nav a,.nav-links a,.nav-menu a,.site-brand{color:${isHC ? "#FFFF00" : "#fff"}!important}
+      .brand-copy strong,.brand-copy small{color:${isHC ? "#FFFF00" : "#fff"}!important}
+      nav a:hover,nav a.active,.nav-links a:hover,.nav-links a.active,.nav-menu a:hover,.nav-menu a.active{background-color:${c.hoverBg}!important;color:${c.hoverColor}!important}
 
       /* ── Headings & text ── */
       h1,h2,h3,h4,h5,h6{color:${c.textDark}!important}
@@ -591,7 +655,9 @@ function startMag() {
       saveOrig(el, ["fill"]);
       const jur = el.getAttribute("data-jurisdiction");
       const idx = jur ? JURISDICTION_ORDER.indexOf(jur) : -1;
-      el.setAttribute("data-a11y-color", s[idx >= 0 ? idx % s.length : 0]);
+      const newColor = s[idx >= 0 ? idx % s.length : 0];
+      el.setAttribute("fill", newColor);
+      el.setAttribute("data-a11y-color", newColor);
     });
 
     // ── Chart legends ─────────────────────────────────────────────────────

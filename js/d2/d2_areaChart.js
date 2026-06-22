@@ -85,7 +85,7 @@ function d2DrawAreaChart(data) {
   };
   const areaPointTipHtml = d => {
     const color = D2_JURISDICTION_COLORS[d.jurisdiction] || '#999';
-    return `<strong>${d.year}</strong><br><span style="color:${color}">${d.jurisdiction}: ${d2FormatNum(d.val)}</span>`;
+    return `<strong>${d.year}</strong><br><span style="color:${color}">${d.jurisdiction}: ${d2FormatNum(d.val)}</span><br>Cumulative: ${d2FormatNum(d.yPos)}`;
   };
 
   root.selectAll("circle.area-hover-point").data(pointData, d => `${d.year}-${d.jurisdiction}`).join(
@@ -95,6 +95,7 @@ function d2DrawAreaChart(data) {
         .attr("cx", d => x(d.year)).attr("cy", d => y(d.yPos))
         .attr("data-tooltip", areaPointTipHtml)
         .attr("data-key", d => `point-${d.year}-${d.jurisdiction}`)
+        .attr("data-jurisdiction", d => d.jurisdiction)
         .on("mouseenter", function(event, d) {
           d3.select(this).attr("r", 11).attr("stroke", "#111827").attr("stroke-width", 2); // Emphasize point on hover
           d2ShowTooltipPinned(event, areaPointTipHtml(d));
@@ -105,6 +106,7 @@ function d2DrawAreaChart(data) {
         }),
       update => update.attr("data-tooltip", areaPointTipHtml).attr("fill", d => D2_JURISDICTION_COLORS[d.jurisdiction] || '#999')
         .attr("data-key", d => `point-${d.year}-${d.jurisdiction}`)
+        .attr("data-jurisdiction", d => d.jurisdiction)
         .transition(t).attr("cx", d => x(d.year)).attr("cy", d => y(d.yPos)),
       exit => exit.remove()
     );
